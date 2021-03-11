@@ -1,0 +1,28 @@
+All svg files follow this guidline:
+
+1. Resize Page to brand/selection
+2. Transform size to 250px width
+3. Scale Page with the factor 1.2
+4. Align brand/selection to center
+5. Compress svg file
+
+The background-image color is 75, 50 or 25% lighten of the brand color:
+``
+$brand: #XXXXXX;
+
+$color-75: lighten($brand,75%); /* mostly white */
+$color-50: lighten($brand,50%); /* sometimes white */
+$color-25: lighten($brand,25%); /* never white */
+
+convert {
+  color-75: $color-75;
+  color-50: $color-50;
+  color-25: $color-25;
+  
+  convert-75: rgba($color-75, 0.533);
+  convert-50: rgba($color-50, 0.533);
+  convert-25: rgba($color-25, 0.533);
+}
+``
+
+Afterwards add 88 as opacity.

@@ -1,0 +1,124 @@
+a.is-disabled {
+ cursor: not-allowed;
+}
+
+a.is-disabled:hover {
+ color: red;
+}
+
+a.is-disabled:hover:after {
+ color: red;
+ content: "\00A0is disabled";
+}
+
+span.edit {
+  color:rgba(10,10,10,.2);
+  cursor: pointer;
+}
+
+span.edit:focus,
+span.edit:hover {
+ color: rgba(10, 10, 10, 0.75);
+}
+
+span.tag {
+  opacity: 0.2; 
+  cursor: pointer;
+  font-style: italic;
+  font-variant: oldstyle-nums;
+  font-family: initial;
+  font-size: medium;
+  background-color: unset;
+  display: inline-flex; 
+  align-items: center;
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+span.tag:focus,
+span.tag:hover {
+ scale: 1.05;
+ color: black;
+}
+
+.delete:focus,
+.delete:hover {
+ background-color: rgba(139,0,0,1.000);
+}
+
+.modal-card-foot,
+.modal-card-head {
+ background-color: rgba(255,255,255,1.000);
+}
+
+.card-background {
+ background-position: center;
+ background-repeat: no-repeat;
+ background-size: auto;
+ background-attachment: inherit;
+}
+
+.card-content {
+ word-wrap: anywhere;
+}
+
+.card {
+ height: 100%;
+ border-radius: 4px;
+}
+
+.card-header {
+  background:hsla(0, 0%, 100%, .3);
+  -webkit-backdrop-filter: blur(3px);
+  -moz-backdrop-filter: blur(3px);
+  -khtml-backdrop-filter: blur(3px);
+  -ms-backdrop-filter: blur(3px);
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 5px 5px 3px rgba(10,10,10,.1),0 0 0 1px rgba(10,10,10,.1);
+}
+
+.card a {
+ height: 175px;
+ display: block;
+}
+
+footer.card-footer {
+  justify-content: space-between; 
+  border: none; 
+  margin: 0.5rem; 
+  align-items: center;
+}
+
+.jumbotron {
+  box-shadow: unset; 
+  padding: 0;
+}
+
+.limitbar {
+  box-shadow: unset; 
+  padding-bottom: 0;
+}
+
+.progress.is-small {
+  height: 0.05rem;
+}
+
+.section {
+  padding: 2rem 1.5rem;
+}
+
+.osano-cm-widget {
+  opacity: 0.2;
+}
+
+@media (max-width: 768px) {
+  .jumbotron {
+    padding-left: 1.25rem;
+  }
+}

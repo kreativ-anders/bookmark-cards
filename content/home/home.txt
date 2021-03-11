@@ -1,0 +1,38 @@
+Title: myStartseite
+
+----
+
+Bookmarks:
+
+- 
+  title: Ihre persönliche Startseite mit Ihren Lieblingslinks im Internet - organisiert in schönen Kärtchen. 😎<br />Nie mehr gepinnte Tabs!
+  link: 
+  tags:
+- 
+  title: Fügen Sie Freunde auf einer beliebigen Social Media-Plattform als Karten hinzu, indem Sie einen Titel und den Link speichern. 
+  link: 
+  tags: Social Media
+- 
+  title: Ihre Lesezeichen bleiben sicher vor Unternehmen, die Ihre Daten wollen. Es wird keine Datenbank verwendet, die kompromittiert werden kann! 👀
+  link: 
+  tags: Security
+- 
+  title: Kaufen Sie gerne ein? Fügen Sie einfach Ihren Online-Shop hinzu. 😉
+  link: 
+  tags: Shopping
+- 
+  title: Wir ❤️ Open Source. 🤓
+  link: https://github.com/kreativ-anders/myStartseite/
+  tags: Open Source, Code
+- 
+  title: Noch nicht überzeugt? 🤔<br/>Vielleicht registrieren Sie sich und versuchen es selbst - es ist völlig KOSTENLOS! 💸<br/>(bis der Server abstürzt 😅).
+  link: 
+  tags:
+- 
+  title: Mit einem großartigen CMS erstellt
+  link: https://getkirby.com/
+  tags: Open Source
+-
+  title: Rückmeldungen und Kommentare sind sehr willkommen.<br/>Zögern Sie also nicht, sich zu melden! 😊
+  link: mailto:myStartseite@kreativ-anders.de?subject=myStartseite-Feedback
+  tags: Was auch immer Sie taggen wollen 😉
