@@ -28,10 +28,6 @@
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <link rel="manifest" href="/site.webmanifest">
 
-  <?php  if(option('osano')): ?>
-    <script src="https://cmp.osano.com/Azyw0MRqrHJ51Hyu/17b58c70-e801-4f4c-b412-94406e2013c5/osano.js"></script>
-  <?php endif; ?>
-
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.0/css/bulma.min.css">
 
   
