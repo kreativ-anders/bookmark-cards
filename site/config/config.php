@@ -8,13 +8,26 @@
  * All config options: https://getkirby.com/docs/reference/system/options
  */
 return [
-    'debug' => true,
-    'panel' =>[
-        'install' => true
-    ],
-    'session' => [
-      'durationNormal' => 1209600, 
-      'timeout'        => 604800,
-    ],
-    'osano' => false
+  'debug' => true,
+  'panel' =>[
+      'install' => true
+  ],
+  'session' => [
+    'durationNormal' => 1209600, 
+    'timeout'        => 604800,
+  ],
+  'routes' => [
+    [
+      'pattern' => 'logout',
+      'action'  => function() {
+
+        if ($user = kirby()->user()) {
+          $user->logout();
+        }
+
+        go('login');
+
+      }
+    ]
+  ]
 ];

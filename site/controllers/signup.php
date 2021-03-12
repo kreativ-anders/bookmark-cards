@@ -5,41 +5,37 @@ return function ($kirby) {
   if($kirby->user()) {
     go('/');
   } 
-
-  $error = null;
   
-	if($kirby->request()->is('POST') and get('email') and get('password')) {
+  $error = false;
 
-    $error = 1;
+	if($kirby->request()->is('post') && get('register')) {
 
-     try {
+    $kirby = kirby();
+    $kirby->impersonate('kirby');
 
-      // impersonate
-      $kirby->impersonate('editor@mystartseite.net');
+    try {
 
-      // create user
+      // CREATE USER
       $user = $kirby->users()->create([
         'email'     => esc(get('email')),
-        'role'      => 'visitor',
+        'role'      => 'user',
         'language'  => 'en',
         'password'  => esc(get('password'))
       ]);
 
-      // deimpersonate
       $kirby->impersonate();
 
-      // login user
+      // LOGIN USER
       if($user and $user->login(get('password'))) {
         go();
       }   
 
     } catch(Exception $e) {
     
-      $error = $e->getMessage();    
+      $error = true;  
     }
-
-  }
-    
+  };
+      
   return [
     'error' => $error
   ];
