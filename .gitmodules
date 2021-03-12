@@ -4,3 +4,6 @@
 [submodule "site/plugins/kirby-memberkit"]
 	path = site/plugins/kirby-memberkit
 	url = https://github.com/kreativ-anders/kirby-memberkit.git
+[submodule "assets/css/bulma"]
+	path = assets/css/bulma
+	url = https://github.com/jgthms/bulma.git
