@@ -67,8 +67,8 @@
           <div class="navbar-end">
             <div class="navbar-item">
               <div class="buttons is-right">
-                <?php  if(!$kirby->user()): ?>
-                  <button id="register" class="button is-primary" onclick="$('#signupModal').toggleClass('is-active');"><strong>Registrieren</strong></button>
+                <?php  if(!$kirby->user() && $page->id() != 'register'): ?>
+                  <button id="register" class="button is-primary" onclick="$('#registerModal').toggleClass('is-active');"><strong>Registrieren</strong></button>
                   <button id="login" class="button is-light" onclick="$('#loginModal').toggleClass('is-active');">Anmelden</button>
                 <?php endif; ?>
                 <?php  if($kirby->user()): ?>

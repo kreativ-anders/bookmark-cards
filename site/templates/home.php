@@ -12,7 +12,7 @@
 
 <?php snippet('header') ?>
 <?php snippet('modals/login') ?>
-<?php snippet('modals/signup') ?>
+<?php snippet('modals/register') ?>
 
 <?php  if($kirby->user()) {
   snippet('modals/change'); 
