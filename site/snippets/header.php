@@ -38,6 +38,12 @@
   <link rel="stylesheet" href="assets/css/brands.css">
 
 </head>
+<pre>
+<?php
+
+var_dump(option('kreativ-anders.memberkit.secretKey'));
+?>
+</pre>
 <body>
   <div class="page">
     <header class="header">
@@ -82,13 +88,13 @@
                       <i class="fas fa-user-cog"></i>
                     </span>
                   </button>
-                  <a class="button is-link is-light" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=Q5FEJZKEAR4H4&source=url">
+                  <a class="button is-warning is-light" href="#">
                     <span class="icon">
-                      <i class="fab fa-paypal"></i>
+                      <i class="fas fa-crown"></i>
                     </span>
-                    <span>PayPal</span>
+                    <strong>Premium</strong>
                   </a>
-                  <a id="logout" href="logout" class="button is-danger is-light" onclick="logout()"><strong>Abmelden</strong></a>
+                  <a id="logout" href="logout" class="button is-danger is-light"><span>Abmelden</span></a>
                 <?php endif; ?>
               </div>
             </div>
