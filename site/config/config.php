@@ -29,5 +29,23 @@ return [
 
       }
     ]
+  ],
+  'kreativ-anders.memberkit.secretKey'     => 'sk_test_xxx',
+  'kreativ-anders.memberkit.publicKey'     => 'pk_test_xxx',
+  'kreativ-anders.memberkit.webhookSecret' => 'whsec_xxx',
+  'kreativ-anders.memberkit.stripeURLSlug' => 'checkout',
+  'kreativ-anders.memberkit.successURL'    => '../success',
+  'kreativ-anders.memberkit.cancelURL'     => '../cancel',
+  'kreativ-anders.memberkit.tiers'         => [
+    // INDEX 0
+    [ 'name'  => 'Free'
+     ,'price' => null],
+    // INDEX 1
+    [ 'name'  => 'Basic'
+     ,'price' => 'price_xxxx'],
+    // INDEX 2
+    [ 'name'  => 'Premium'
+     ,'price' => 'price_xxxx'],
+    // INDEX X
   ]
 ];
