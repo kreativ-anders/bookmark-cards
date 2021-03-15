@@ -8,86 +8,56 @@
     <section class="modal-card-body">
       <form action="" method="POST">
         <div class="field has-addons">
-          <p class="control is-expanded">
-            <a class="button is-static is-fullwidth">
-              Neue
-            </a>
+          <p class="control">
+            <label for="email" class="button is-fullwidth">Email</label>
           </p>
-          <div class="control">
-            <input class="input" type="email" placeholder="Email" disabled>
+          <div class="control is-expanded">
+            <input class="input" type="email" id="email" name="email" value="<?= esc(get('email')) ?>"
+            placeholder="<?= (get('email'))? get('email') : $kirby->user()->email() ?>" autocomplete="email">
           </div>
           <div class="control">
-            <button type="submit" class="button is-primary is-static">Aktualisieren&nbsp;<b>(Bald verfügbar!)</b></button>
+            <input type="submit" class="button is-primary" name="update" value="Updaten">
           </div>
         </div>
       </form>
       <br />
       <form action="" method="POST">
         <div class="field has-addons">
-          <p class="control is-expanded">
-            <a class="button is-static is-fullwidth">
-              Neues
-            </a>
+          <p class="control">
+            <label for="password" class="button is-fullwidth">Password</label>
           </p>
-          <div class="control">
-            <input class="input" type="password" placeholder="Password" disabled>
+          <div class="control is-expanded">
+            <input class="input" type="password" id="password" name="password" value="<?= esc(get('password')) ?>"
+            placeholder="Password" autocomplete="new-password">
           </div>
           <div class="control">
-            <button type="submit" class="button is-primary is-static">Aktualisieren&nbsp;<b>(Bald verfügbar!)</b></button>
+            <input type="submit" class="button is-primary" name="update" value="Updaten"> 
           </div>
         </div>
       </form>
     </section>
-    <footer class="modal-card-foot">
+    <footer class="modal-card-foot">  
+
+      <?php
+        $portal_url = $kirby->user()->getStripePortalURL();                           
+        if ($kirby->user()->isAllowed(option('kreativ-anders.memberkit.tiers')[1]['name'])): 
+      ?>
+      <a class="button is-info is-light" href="<?= $portal_url ?>">
+        <span class="icon">
+          <i class="fas fa-money-check"></i>
+        </span>
+        <p>Manage Subscriptions</p>
+      </a>
+      <?php endif ?>
+
       <a href="user.json" target="_blank" class="button is-info is-light">meine Daten anfordern</a>
-      <form action="user" method="POST" onsubmit="return confirm('Diese Aktion kann nicht rückgängig gemacht werden! Sind Sie sich sicher, dass der Account gelöscht werden soll?');">
+
+      <form action="user" method="POST" onsubmit="return confirm('Cannot be revert!');">
         <div class="buttons">
-          <input type="hidden" name="user" value="<?= $kirby->user()->email(); ?>" />
-          <input class="button is-danger" type="submit" name="deleteUser" value="Account löschen" />
+          <input class="button is-danger" type="submit" name="delete" value="Delete Account">
         </div>
         
       </form>
-      
-      
     </footer>
-    <form method="post" action="<?= $page->url() ?>">
-      <fieldset>
-        <legend><?= $kirby->user()->email() ?></legend>
-
-        <section>
-          <label for="email"><?= $page->email()->html() ?></label>
-          <input type="email" id="email" name="email" value="<?= esc(get('email')) ?>"
-            placeholder="<?= (get('email'))? get('email') : $kirby->user()->email() ?>" autocomplete="email">
-        </section>
-
-        <section>
-          <label for="password"><?= $page->password()->html() ?></label>
-          <input type="password" id="password" name="password" value="<?= esc(get('password')) ?>"
-            placeholder="<?= $page->password()->html() ?>" autocomplete="new-password">
-        </section>
-
-        <section>
-          <input type="submit" name="update" value="<?= $page->button()->html() ?>">
-        </section>
-
-      </fieldset>
-    </form>
-
-    <p>
-      <?= $page->export()->html() ?> ( <a href="user.json" target="_blank"><abbr
-          title="JavaScript Object Notation">JSON</abbr></a> | <a href="user.csv" target="_blank"><abbr
-          title="Comma-Separated Values">CSV</abbr></a> )
-    </p>
-
-    <form method="post" action="<?= $page->url() ?>" onsubmit="return confirm('<?= $page->delete_warning()->html() ?>');">
-      <fieldset>
-        <legend><?=$page->danger()->html() ?></legend>
-
-        <section>
-          <input type="submit" name="delete" value="<?= $page->delete_button()->email() ?>">
-        </section>
-
-      </fieldset>
-    </form>
   </div>
 </div>
