@@ -28,20 +28,20 @@
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <link rel="manifest" href="/site.webmanifest">
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.0/css/bulma.min.css">
-
-  
+  <link rel="stylesheet" href="assets/css/bulma-custom/bulma-custom.css">
 
   <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 
   <link rel="stylesheet" href="assets/css/main.css">
   <link rel="stylesheet" href="assets/css/brands.css">
+  
 
 </head>
 <pre>
 <?php
 
 var_dump(option('kreativ-anders.memberkit.secretKey'));
+
 ?>
 </pre>
 <body>
