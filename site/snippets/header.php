@@ -88,12 +88,22 @@ var_dump(option('kreativ-anders.memberkit.secretKey'));
                       <i class="fas fa-user-cog"></i>
                     </span>
                   </button>
-                  <a class="button is-warning is-light" href="#">
-                    <span class="icon">
-                      <i class="fas fa-crown"></i>
-                    </span>
-                    <strong>Premium</strong>
-                  </a>
+
+                  <?php
+                    $url = $kirby->user()->getStripeCheckoutURL(option('kreativ-anders.memberkit.tiers')[1]['name']);                            
+                    if (!$kirby->user()->isAllowed(option('kreativ-anders.memberkit.tiers')[1]['name'])): 
+                  ?>
+                  <?= 
+                    snippet('stripe-checkout-button', [ 'id'      => 'premium-checkout-button'
+                                                       ,'classes' => 'button is-warning is-light'
+                                                       ,'text'    => '<span class="icon">
+                                                                        <i class="fas fa-crown"></i>
+                                                                      </span>
+                                                                      <strong>Premium</strong>'
+                                                       ,'url'     => $url]);
+                  ?>
+                  <?php endif ?>
+
                   <a id="logout" href="logout" class="button is-danger is-light"><span>Abmelden</span></a>
                 <?php endif; ?>
               </div>
