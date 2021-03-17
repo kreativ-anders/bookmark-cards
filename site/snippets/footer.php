@@ -14,8 +14,8 @@
 
     <div class="content has-text-centered">
       <p>
-        <strong>myStartseite</strong> by <a href="https://kreativ-anders.de/">kreativ-anders.de</a>
-        gebaut mit <a href="https://getkirby.com/">Kirby</a>.
+        <strong>Bookmarks.cards</strong> by <a href="https://kreativ-anders.de/">kreativ-anders.de</a>
+        built with <a href="https://getkirby.com/">Kirby</a>.
       </p>
     </div>
 

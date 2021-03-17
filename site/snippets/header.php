@@ -54,10 +54,10 @@ var_dump(option('kreativ-anders.memberkit.secretKey'));
               <div class="hero-body" style="padding: 2rem 3rem 0rem 5rem">
                 <div class="container">
                   <h1 class="title">
-                    myStartseite              
+                    Bookmarks              
                   </h1>
                   <h2 class="subtitle">
-                    #StopPinTab
+                    .cards
                   </h2>
                 </div>
               </div>
@@ -74,8 +74,8 @@ var_dump(option('kreativ-anders.memberkit.secretKey'));
             <div class="navbar-item">
               <div class="buttons is-right">
                 <?php  if(!$kirby->user() && $page->id() != 'register'): ?>
-                  <button id="register" class="button is-primary" onclick="$('#registerModal').toggleClass('is-active');"><strong>Registrieren</strong></button>
                   <button id="login" class="button is-light" onclick="$('#loginModal').toggleClass('is-active');">Anmelden</button>
+                  <button id="register" class="button is-primary" onclick="$('#registerModal').toggleClass('is-active');"><strong>Registrieren</strong></button>
                 <?php endif; ?>
                 <?php  if($kirby->user()): ?>
                   <button class="button is-success is-light is-hidden-tablet " onclick="$('#jumbotron').toggleClass('is-hidden-mobile');">

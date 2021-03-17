@@ -6,7 +6,7 @@
       <button onclick="$('#userModal').toggleClass('is-active');" class="delete" aria-label="close"></button>
     </header>
     <section class="modal-card-body">
-      <form action="" method="POST">
+      <form action="/user" method="POST">
         <div class="field has-addons">
           <p class="control">
             <label for="email" class="button is-fullwidth">Email</label>
@@ -21,7 +21,7 @@
         </div>
       </form>
       <br />
-      <form action="" method="POST">
+      <form action="/user" method="POST">
         <div class="field has-addons">
           <p class="control">
             <label for="password" class="button is-fullwidth">Password</label>
@@ -38,18 +38,13 @@
     </section>
     <footer class="modal-card-foot">  
 
-      <?php
-        $portal_url = $kirby->user()->getStripePortalURL();                           
-        if ($kirby->user()->isAllowed(option('kreativ-anders.memberkit.tiers')[1]['name'])): 
-      ?>
-      <a class="button is-info is-light" href="<?= $portal_url ?>">
+      <a class="button is-info is-light" href="<?= $kirby->user()->getStripePortalURL() ?>">
         <span class="icon">
           <i class="fas fa-money-check"></i>
         </span>
         <p>Manage Subscriptions</p>
       </a>
-      <?php endif ?>
-
+    
       <a href="user.json" target="_blank" class="button is-info is-light">meine Daten anfordern</a>
 
       <form action="user" method="POST" onsubmit="return confirm('Cannot be revert!');">
