@@ -17,10 +17,11 @@ return function ($kirby, $page) {
       try {
 
         $kirby->user()->changeEmail(get('email'));
+        go();
       
       } catch(Exception $e) {
       
-        $error = true;
+        $error = $e;
       }
     }
 
@@ -30,10 +31,11 @@ return function ($kirby, $page) {
       try {
 
         $kirby->user()->changePassword(get('password'));
+        go();
       
       } catch(Exception $e) {
       
-        $error = true;  
+        $error = $e;  
       }
     } 
   }
@@ -44,11 +46,11 @@ return function ($kirby, $page) {
     try {
 
       $kirby->user()->delete();
-      go('/');
+      go();
     
     } catch(Exception $e) {
     
-      $error = true;    
+      $error = $e;    
     }
   }
     
