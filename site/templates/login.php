@@ -10,19 +10,16 @@
  */
 ?>
 <?php snippet('header') ?>
+<?php snippet('modals/login') ?>
+<?php snippet('modals/register') ?>
 
-<main>
-
-<?php 
-  if(isset($error)) {
-    echo "Error: " . $error. "<br />";
-  }
-  go();
-
-?>
-
-  <div class="text">
-    <?= $page->text()->kt() ?>
+<main class="section">
+  <div class="container">
+  <?php if(isset($error) && $kirby->request()->is('POST')): ?> 
+    <div class="notification is-danger">
+      <?= $error ?>
+    </div>
+  <?php else: go(); endif;?> 
   </div>
 </main>
 
