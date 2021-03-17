@@ -3,7 +3,7 @@
 return function ($kirby) {
 
   if ($kirby->user()) {
-    go('/');
+    go();
   }
 
   $error = false;
@@ -14,11 +14,11 @@ return function ($kirby) {
     try {
 
       $kirby->auth()->login(get('email'), get('password'));
-      go();
+      go('login');
 
     } catch (Exception $e) {
 
-      $error = true;
+      $error = 'Email or Password invalid.';
     }
   }
 
