@@ -72,10 +72,14 @@
             </div>
           </a>
           <?php  if($kirby->user()): ?>
-            <footer class="card-footer">     
+            <footer class="card-footer">  
+
+              <?php if ((option('kreativ-anders.memberkit.tiers')[0]['name'] === $kirby->user()->tier()->toString() && count($bookmarks) <= option('freecardlimit')) || $kirby->user()->isAllowed(option('kreativ-anders.memberkit.tiers')[1]['name'])): ?>   
               <span class="icon edit">                
                 <i class="fas fa-edit" onclick="changeData('<?= $i ?>','<?= $bookmark['title'] ?>', '<?= $bookmark['link'] ?>', '<?= $bookmark['tags'] ?>'); $('#changeModal').toggleClass('is-active');"></i>
               </span>
+
+              <?php endif; ?>
             
                 <?php foreach (Str::split($bookmark['tags']) as $tag): ?>
                   <span class="tag" onclick="toggleTag('<?= $tag ?>')"><?= $tag ?></span>
