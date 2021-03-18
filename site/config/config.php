@@ -12,6 +12,7 @@ return [
   'panel' =>[
       'install' => true
   ],
+  'freecardlimit' => 12,
   'session' => [
     'durationNormal' => 1209600, 
     'timeout'        => 604800,
