@@ -58,11 +58,18 @@ return function ($kirby, $page) {
 
       $bookmarks = $user->bookmarks()->yaml();
 
-      $arr = array(
-         'title' => get('c_title')
-        ,'link'  => get('c_link')
-        ,'tags'  => $tags);
-
+      if (option('kreativ-anders.memberkit.tiers')[0]['name'] === $kirby->user()->tier()->toString() && count($bookmarks) >= 2) {
+        $arr = array(
+          'title' => "Become Premium for unlimited cards!"
+         ,'link'  => "javascript:document.getElementById('premium-checkout-button').click()"
+         ,'tags'  => $tags);
+      }
+      else {
+        $arr = array(
+          'title' => get('c_title')
+         ,'link'  => get('c_link')
+         ,'tags'  => $tags);
+      }
       
       array_push($bookmarks, $arr);
 
