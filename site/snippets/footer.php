@@ -8,19 +8,28 @@
  */
 ?>
 
-  <footer class="footer">
+<footer class="footer">
 
+  <div class="container">
     <div class="content has-text-centered">
       <p>
-        <strong>Bookmarks.cards</strong> by <a href="https://kreativ-anders.de/">kreativ-anders.de</a>
-        built with <a href="https://getkirby.com/">Kirby</a>.
+        <strong>Bookmarks.cards</strong>
+        <br>
+        by 
+        <a href="https://kreativ-anders.de/" target="_blank">
+          <figure class="image is-128x128" style="margin: auto">
+            <img src="https://static-assets.kreativ-anders.de/logo/dark-512.png">
+          </figure>
+        </a>
       </p>
     </div>
+  </div>
 
-    <script src="assets/js/main.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/instant.page/5.1.0/instantpage.min.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/instant.page/5.1.0/instantpage.min.js"></script>
 
-  </footer>
+</footer>
 
 </body>
+
 </html>
