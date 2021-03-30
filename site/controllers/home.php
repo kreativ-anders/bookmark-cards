@@ -60,9 +60,9 @@ return function ($kirby, $page) {
 
       if (option('kreativ-anders.memberkit.tiers')[0]['name'] === $kirby->user()->tier()->toString() && count($bookmarks) >= option('freecardlimit')) {
         $arr = array(
-          'title' => "Bookmarks.card PREMIUM"
+          'title' => "BECOME PREMIUM"
          ,'link'  => "javascript:document.getElementById('premium-checkout-button').click()"
-         ,'tags'  => 'PREMIUM required');
+         ,'tags'  => 'NO LIMITS');
       }
       else {
         $arr = array(
