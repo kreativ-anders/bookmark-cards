@@ -17,7 +17,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
   <!-- The title tag we show the title of our site and the title of the current page -->
-  <title><?= $site->title() ?> | <?= $page->title() ?></title>
+  <title><?= $page->title() ?></title>
   <meta name="description" content="">
 
   <link rel="dns-prefetch" href="//mystartseite.net">
@@ -29,6 +29,8 @@
   <link rel="manifest" href="/site.webmanifest">
 
   <link rel="stylesheet" href="assets/css/bulma-custom/bulma-custom.css">
+  <!-- <link rel="stylesheet" href="assets/css/bulma/css/bulma.min.css"> -->
+  <!-- <link rel="stylesheet" href="assets/css/bulma/bulma.css"> -->
 
   <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 
@@ -37,13 +39,6 @@
   
 
 </head>
-<pre>
-<?php
-
-var_dump(option('kreativ-anders.memberkit.secretKey'));
-
-?>
-</pre>
 <body>
   <div class="page">
     <header class="header">
