@@ -40,3 +40,4 @@ Icon
 # ---------------
 /site/config/.license
 site/config/config.bookmarks-card.test.php
+assets/css/prepros.config
