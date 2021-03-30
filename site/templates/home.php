@@ -51,6 +51,13 @@
     </div>
   </form>
 </div> 
+  <?php if ((option('kreativ-anders.memberkit.tiers')[0]['name'] === $kirby->user()->tier()->toString() && count($bookmarks) >= option('noPremiumLimit'))): ?>
+  <div class="container">
+    <div class="notification is-info is-light">
+      <?= $page->Premium()->markdown(); ?>
+    </div>
+  </div>
+  <?php endif; ?>
 <?php endif; ?>
 
 <section class="section">
@@ -74,9 +81,9 @@
           <?php  if($kirby->user()): ?>
             <footer class="card-footer">  
 
-              <?php if ((option('kreativ-anders.memberkit.tiers')[0]['name'] === $kirby->user()->tier()->toString() && count($bookmarks) <= option('freecardlimit')) || $kirby->user()->isAllowed(option('kreativ-anders.memberkit.tiers')[1]['name'])): ?>   
+              <?php if ((option('kreativ-anders.memberkit.tiers')[0]['name'] === $kirby->user()->tier()->toString() && count($bookmarks) <= option('noPremiumLimit')) && $bookmark['title'] != option('noPremiumTitle') || $kirby->user()->isAllowed(option('kreativ-anders.memberkit.tiers')[1]['name'])): ?>   
               <span class="icon edit">                
-                <i class="fas fa-edit" onclick="changeData('<?= $i ?>','<?= $bookmark['title'] ?>', '<?= $bookmark['link'] ?>', '<?= $bookmark['tags'] ?>'); $('#changeModal').toggleClass('is-active');"></i>
+                <i class="fas fa-edit" onclick="changeData('<?= $i ?>','<?= $bookmark['title'] ?>', '<?= htmlspecialchars($bookmark['link']) ?>', '<?= $bookmark['tags'] ?>'); $('#changeModal').toggleClass('is-active');"></i>
               </span>
 
               <?php endif; ?>

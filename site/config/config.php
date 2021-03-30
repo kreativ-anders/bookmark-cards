@@ -12,7 +12,10 @@ return [
   'panel' =>[
       'install' => true
   ],
-  'freecardlimit' => 12,
+  'noPremiumLimit' => 12,
+  'noPremiumTitle' => 'BECOME PREMIUM',
+  'noPremiumLink' => '#',
+  'noPremiumTags' => 'NO LIMITS',
   'session' => [
     'durationNormal' => 1209600, 
     'timeout'        => 604800,
