@@ -50,14 +50,15 @@
       </p>
     </div>
   </form>
-</div> 
-  <?php if ((option('kreativ-anders.memberkit.tiers')[0]['name'] === $kirby->user()->tier()->toString() && count($bookmarks) >= option('noPremiumLimit'))): ?>
-  <div class="container">
-    <div class="notification is-info is-light">
-      <?= $page->Premium()->markdown(); ?>
-    </div>
+</div>
+<?php endif; ?>
+
+<?php if ($kirby->user() && option('kreativ-anders.memberkit.tiers')[0]['name'] === $kirby->user()->tier()->toString() && count($bookmarks) >= option('noPremiumLimit')): ?>
+<div class="container">
+  <div class="notification is-info is-light">
+    <?= $page->Premium()->markdown(); ?>
   </div>
-  <?php endif; ?>
+</div>
 <?php endif; ?>
 
 <section class="section">
