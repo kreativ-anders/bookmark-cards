@@ -39,6 +39,6 @@ Icon
 # License
 # ---------------
 /site/config/.license
-site/config/config.bookmarks-card.test.php
+site/config/config.*.php
 assets/css/prepros.config
 assets/css/bulma
