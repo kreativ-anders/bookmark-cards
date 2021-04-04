@@ -7,8 +7,12 @@ if($kirby->user()) {
   $bookmarks = $kirby->user()->bookmarks()->yaml();
 
   $json = [
-    'User'        => $kirby->user()->email(),
-    'Bookmarks'   => $bookmarks
+    'User'          => [
+      'Email'       => $kirby->user()->email(),
+      'Password'    => '*********************',
+      'LastLogin'   => $kirby->user()->lastLogin()->toString(),
+      'Subscription'  => $kirby->user()->tier()->toString()],
+    'Bookmarks'     => $bookmarks,
   ];
 
 }
