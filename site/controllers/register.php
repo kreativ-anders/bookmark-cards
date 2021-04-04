@@ -7,36 +7,81 @@ return function ($kirby) {
   } 
   
   $error = false;
+  $alert = null;
 
 	if($kirby->request()->is('post') && get('register')) {
 
-    $kirby = kirby();
-    $kirby->impersonate('kirby');
+    $data = [
+      'email'     => get('email'),
+      'password'  => get('password'),
+      'tos'       => get('tos')
+    ];
 
-    try {
+    $rules = [
+      'email'     => ['required', 'email'],
+      'password'  => ['required', 'minLength' => 8],
+      'tos'       => ['required'],
+    ];
 
-      // CREATE USER
-      $user = $kirby->users()->create([
-        'email'     => esc(get('email')),
-        'role'      => 'user',
-        'language'  => 'en',
-        'password'  => esc(get('password'))
-      ]);
+    $messages = [
+      'email'     => 'Please enter a valid email address',
+      'password'  => 'Please enter a valid password',
+      'tos'       => 'Please check the box or close the browser window'
+    ];
 
-      $kirby->impersonate();
+    // INVALID DATA
+    if($invalid = invalid($data, $rules, $messages)) {
 
-      // LOGIN USER
-      if($user and $user->login(get('password'))) {
-        go();
-      }   
+      $alert = $invalid;
+      $error = true;
 
-    } catch(Exception $e) {
+    // DATA IS GOOD
+    } else {
     
-      $error = $e;  
-    }
+      $kirby = kirby();
+      $kirby->impersonate('kirby');
+
+      try {
+
+        // CREATE USER
+        $user = $kirby->users()->create([
+          'email'     => esc(get('email')),
+          'role'      => 'user',
+          'language'  => 'en',
+          'password'  => esc(get('password'))
+        ]);
+
+        $kirby->impersonate();
+
+        // LOGIN USER
+        if($user && $user->login(get('password'))) {
+          go('/#welcome');
+        } 
+
+      } catch(Exception $e) {
+      
+        if(option('debug')) {
+          $alert['error'] = 'Register failed: <strong>' . $e->getMessage() . '</strong>';
+        }
+        else {
+          $alert['error'] = 'Could not register user!';
+        } 
+        
+        $error = true;          
+      }
+
+      // SUCCESS MESSAGE
+      if (empty($alert) === true) {
+        $success = 'User has been created, welcome. Lets get started!';
+        $data = [];
+      }
+    } 
   };
       
   return [
-    'error' => $error
+    'error'   => $error,
+    'alert'   => $alert,
+    'data'    => $data ?? false,
+    'success' => $success ?? false
   ];
 };
