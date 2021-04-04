@@ -14,7 +14,7 @@ return function ($kirby) {
     try {
 
       $kirby->auth()->login(get('email'), get('password'));
-      go('/#hello');
+      go('/#yee-haw');
 
     } catch (Exception $e) {
 
