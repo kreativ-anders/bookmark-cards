@@ -20,6 +20,13 @@ return [
     'durationNormal' => 1209600, 
     'timeout'        => 604800,
   ],
+  'hooks' => [
+    'user.login:after' => function ($user, $session) {
+        $user->update([
+          'lastLogin' => date("m.d.Y")
+        ]);
+    }
+  ],
   'routes' => [
     [
       'pattern' => 'logout',
