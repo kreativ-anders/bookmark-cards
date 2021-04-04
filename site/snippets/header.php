@@ -17,7 +17,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
   <!-- The title tag we show the title of our site and the title of the current page -->
-  <title><?= $page->title() ?></title>
+  <title>Bookmarks</title>
   <meta name="description" content="">
 
   <link rel="dns-prefetch" href="//mystartseite.net">
@@ -48,7 +48,7 @@
               <div class="hero-body" style="padding: 2rem 3rem 0rem 5rem">
                 <div class="container">
                   <h1 class="title">
-                    Bookmarks              
+                    Bookmark            
                   </h1>
                   <h2 class="subtitle">
                     .cards 
@@ -70,7 +70,7 @@
           <div class="navbar-end">
             <div class="navbar-item">
               <div class="buttons is-right">
-                <?php  if(!$kirby->user() && $page->id() != 'register'): ?>
+                <?php  if(!$kirby->user()): ?>
                   <button id="login" class="button is-light" onclick="$('#loginModal').toggleClass('is-active');">Anmelden</button>
                   <button id="register" class="button is-primary" onclick="$('#registerModal').toggleClass('is-active');"><strong>Registrieren</strong></button>
                 <?php endif; ?>
