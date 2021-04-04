@@ -58,5 +58,6 @@ return [
     [ 'name'  => 'Premium'
      ,'price' => 'price_xxxx'],
     // INDEX X
-  ]
+  ],
+  'migrate' => false,
 ];
