@@ -51,7 +51,10 @@
                     Bookmarks              
                   </h1>
                   <h2 class="subtitle">
-                    .cards
+                    .cards 
+                    <?php if ($kirby->user() && $kirby->user()->isAllowed(option('kreativ-anders.memberkit.tiers')[1]['name'])): ?>
+                      <span><strong style="color: darkgoldenrod">Premium</strong></span>
+                    <?php endif; ?>
                   </h2>
                 </div>
               </div>
