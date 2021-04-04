@@ -14,111 +14,26 @@
 <?php snippet('modals/login') ?>
 <?php snippet('modals/register') ?>
 
-<?php  if($kirby->user()) {
+<?php  if ($kirby->user()) {
   snippet('modals/change'); 
   snippet('modals/user'); 
 } ?>
 
-
 <hr>
 
-<?php if($kirby->user()): ?>
-<div class="jumbotron container box is-hidden-mobile" id="jumbotron">
-  <form method="POST">
-    <div class="field is-grouped is-grouped-multiline has-addons">
-      <p class="control has-icons-right">
-        <input class="input" id="s_title" type="search" name="c_title" placeholder="Titel" minlength="2" maxlength="200" autocomplete="on" required>
-        <span class="icon is-small is-right">
-          <i class="fas fa-search"></i>
-        </span>
-      </p>
-      <p class="control is-expanded has-icons-right">
-        <input class="input" id="s_link" type="url" name="c_link" placeholder="Link" maxlength="255" onblur="checkURL(this)"
-          required>
-        <span class="icon is-small is-right">
-          <i class="fas fa-search"></i>
-        </span>
-      </p>
-      <p class="control has-icons-right">
-        <input class="input" id="s_tags" type="search" name="c_tags" placeholder="Tag1, Tag2, Tag3" maxlength="200" autocomplete="on">
-        <span class="icon is-small is-right">
-          <i class="fas fa-search"></i>
-        </span>
-      </p>
-      <p class="control">
-        <button type="submit" class="button">Lesezeichen hinzufügen</button>
-      </p>
-    </div>
-  </form>
-</div>
-<?php endif; ?>
+<?php if ($kirby->user()) {
+  snippet('jumbotron'); 
+} ?>
 
-<?php if ($kirby->user() && option('kreativ-anders.memberkit.tiers')[0]['name'] === $kirby->user()->tier()->toString() && count($bookmarks) >= option('noPremiumLimit')): ?>
-<div class="container">
-  <div class="notification is-info is-light">
-    <?= $page->Premium()->markdown(); ?>
-  </div>
-</div>
-<?php endif; ?>
+<?php if ($kirby->user() && option('kreativ-anders.memberkit.tiers')[0]['name'] === $kirby->user()->tier()->toString() && count($bookmarks) >= option('noPremiumLimit')) {
+  snippet('premiumbanner');
+} ?>
 
-<section class="section">
-  <div class="container">
-    <div class="columns is-multiline" id="bookmarks">
+<?php snippet('bookmarks') ?>
 
-      <?php foreach ($bookmarks as $i => $bookmark): ?>
-      <div class="column is-one-quarter" 
-        data-search="<?= $bookmark['title'] . ';' . $bookmark['link'] . ';' . $bookmark['tags'] ?>" 
-        data-tags="<?= $bookmark['tags'] ?>">
-        <div class="card card-background" brand="<?= Str::lower($bookmark['title']) ?>">
-          <a rel="noopener noreferrer" target="_self" href="<?= $bookmark['link'] ?>">
-            <header class="card-header">
-              <p class="card-header-title"><?= $bookmark['title'] ?></p>
-            </header>
-            <div class="card-content">
-              <div class="content">
-              </div>
-            </div>
-          </a>
-          <?php  if($kirby->user()): ?>
-            <footer class="card-footer">  
 
-              <?php if ((option('kreativ-anders.memberkit.tiers')[0]['name'] === $kirby->user()->tier()->toString() && count($bookmarks) <= option('noPremiumLimit')) && $bookmark['title'] != option('noPremiumTitle') || $kirby->user()->isAllowed(option('kreativ-anders.memberkit.tiers')[1]['name'])): ?>   
-              <span class="icon edit">                
-                <i class="fas fa-edit" onclick="changeData('<?= $i ?>','<?= $bookmark['title'] ?>', '<?= htmlspecialchars($bookmark['link']) ?>', '<?= $bookmark['tags'] ?>'); $('#changeModal').toggleClass('is-active');"></i>
-              </span>
 
-              <?php endif; ?>
-            
-                <?php foreach (Str::split($bookmark['tags']) as $tag): ?>
-                  <span class="tag" onclick="toggleTag('<?= $tag ?>')"><?= $tag ?></span>
-                <?php endforeach; ?>
-              
-              <form action="" method="POST">
-                <input name="d_bookmark" value="<?= $i ?>" type="hidden" />
-                <button class="delete" type="submit">
-              </form>                   
-            </footer>
-          <?php else: ?>
-            <footer class="card-footer">
-              <span class="icon edit">                
-                <i class="fas fa-edit"></i>
-              </span>
-              
-              <?php foreach (Str::split($bookmark['tags']) as $tag): ?>
-                <span class="tag" onclick="toggleTag('<?= $tag ?>')"><?= $tag ?></span>
-              <?php endforeach; ?>
-              
-              <button class="delete" type="submit" disabled>
-                
-            </footer>
-            <?php endif; ?>
-        </div>
-      </div>
-      <?php endforeach ?>
 
-    </div>
-  </div>
-</section>
 </body>
 
 </main>
