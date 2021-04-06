@@ -55,7 +55,3 @@ AddOutputFilterByType DEFLATE application/json
 AddOutputFilterByType DEFLATE application/javascript
 AddOutputFilterByType DEFLATE application/x-javascript
 </IfModule>
-
-# Error Handling
-php_flag display_errors off
-
