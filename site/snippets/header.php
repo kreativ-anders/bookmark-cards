@@ -20,8 +20,8 @@
   <title>Bookmarks</title>
   <meta name="description" content="">
 
-  <link rel="dns-prefetch" href="//mystartseite.net">
-  <link rel="preconnect" href="//mystartseite.net">
+  <link rel="dns-prefetch" href="//bookmark.cards">
+  <link rel="preconnect" href="//bookmark.cards">
   
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
