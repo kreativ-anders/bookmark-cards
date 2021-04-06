@@ -55,7 +55,7 @@ return function ($kirby) {
 
         // LOGIN USER
         if($user && $user->login(get('password'))) {
-          go('/#welcome');
+          go('/#welcome', 204);
         } 
 
       } catch(Exception $e) {
