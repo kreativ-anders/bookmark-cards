@@ -8,9 +8,9 @@
  * All config options: https://getkirby.com/docs/reference/system/options
  */
 return [
-  'debug' => true,
+  'debug' => false,
   'panel' =>[
-      'install' => true
+      'install' => false
   ],
   'noPremiumLimit' => 12,
   'noPremiumTitle' => 'BECOME PREMIUM',
@@ -19,13 +19,6 @@ return [
   'session' => [
     'durationNormal' => 1209600, 
     'timeout'        => 604800,
-  ],
-  'hooks' => [
-    'user.login:after' => function ($user, $session) {
-        $user->update([
-          'lastLogin' => date("m.d.Y")
-        ]);
-    }
   ],
   'routes' => [
     [
