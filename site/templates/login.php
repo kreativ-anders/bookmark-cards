@@ -15,9 +15,13 @@
 
 <main class="section">
   <div class="container">
-  <?php if(isset($error) && $kirby->request()->is('POST')): ?> 
+  <?php if(isset($error) && isset($alert) && $kirby->request()->is('POST')): ?> 
     <div class="notification is-danger">
-      <?= $error ?>
+
+      <?= isset($alert['error']) ? $alert['error'] : '' ?>
+      <?= isset($alert['email']) ? $alert['email'] : '' ?>
+      <?= isset($alert['password']) ? $alert['password'] : '' ?>
+
     </div>
   <?php else: go(); endif;?> 
   </div>

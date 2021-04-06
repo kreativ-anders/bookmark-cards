@@ -6,7 +6,7 @@ return function ($kirby) {
     go('/');
   } 
   
-  $error = false;
+  $error = null;
   $alert = null;
 
 	if($kirby->request()->is('post') && get('register')) {
@@ -70,9 +70,8 @@ return function ($kirby) {
         $error = true;          
       }
 
-      // SUCCESS MESSAGE
+      // SUCCESS
       if (empty($alert) === true) {
-        $success = 'User has been created, welcome. Lets get started!';
         $data = [];
       }
     } 

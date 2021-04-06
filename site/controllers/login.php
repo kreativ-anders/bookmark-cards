@@ -6,24 +6,64 @@ return function ($kirby) {
     go();
   }
 
-  $error = false;
+  $error = null;
+  $alert = null;
 
   if ($kirby->request()->is('POST') && get('login')) {
 
-    // LOGIN USER
-    try {
+    $data = [
+      'email'     => get('email'),
+      'password'  => get('password')
+    ];
 
-      $kirby->auth()->login(get('email'), get('password'));
-      go('/#yee-haw');
+    $rules = [
+      'email'     => ['required', 'email'],
+      'password'  => ['required']
+    ];
 
-    } catch (Exception $e) {
+    $messages = [
+      'email'     => 'Please enter a valid email address',
+      'password'  => 'Please enter a valid password'
+    ];
 
-      $error = 'Email or Password invalid.';
+    // INVALID DATA
+    if($invalid = invalid($data, $rules, $messages)) {
+
+      $alert = $invalid;
+      $error = true;
+
+    // DATA IS GOOD
+    } else {
+
+      // LOGIN USER
+      try {
+
+        $kirby->auth()->login(get('email'), get('password'));
+        go('/#yee-haw');
+
+      } catch (Exception $e) {
+
+        if(option('debug')) {
+          $alert['error'] = 'Login failed: <strong>' . $e->getMessage() . '</strong>';
+        }
+        else {
+          $alert['error'] = 'Could not log in user!';
+        } 
+        
+        $error = true;
+      }
+
+      // SUCCESS
+      if (empty($alert) === true) {
+        $data = [];
+      }
     }
   }
 
   return [
-    'error' => $error
+    'error'   => $error,
+    'alert'   => $alert,
+    'data'    => $data ?? false,
+    'success' => $success ?? false
   ];
-
 };

@@ -10,21 +10,25 @@
  */
 ?>
 <?php snippet('header') ?>
+<?php snippet('modals/login') ?>
+<?php snippet('modals/register') ?>
 
-<main>
+<?php  if ($kirby->user()) {
+  snippet('modals/change'); 
+  snippet('modals/user'); 
+} ?>
 
-<?php 
-  if(isset($error)) {
-    echo "Error: " . $error. "<br />";
-  } else {
-    go('/');
-  }
+<main class="section">
+  <div class="container">
+  <?php if(isset($error) && isset($alert) && $kirby->request()->is('POST')): ?> 
+    <div class="notification is-danger">
 
+      <?= isset($alert['error']) ? $alert['error'] : '' ?>
+      <?= isset($alert['email']) ? $alert['email'] : '' ?>
+      <?= isset($alert['password']) ? $alert['password'] : '' ?>
 
-?>
-
-  <div class="text">
-    <?= $page->text()->kt() ?>
+    </div>
+  <?php else: go(); endif;?> 
   </div>
 </main>
 
