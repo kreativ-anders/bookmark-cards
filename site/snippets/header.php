@@ -71,8 +71,8 @@
             <div class="navbar-item">
               <div class="buttons is-right">
                 <?php  if(!$kirby->user()): ?>
-                  <button id="login" class="button is-light" onclick="$('#loginModal').toggleClass('is-active');">Anmelden</button>
-                  <button id="register" class="button is-primary" onclick="$('#registerModal').toggleClass('is-active');"><strong>Registrieren</strong></button>
+                  <button id="login" class="button is-light" onclick="$('#loginModal').toggleClass('is-active');">Login</button>
+                  <button id="register" class="button is-primary" onclick="$('#registerModal').toggleClass('is-active');"><strong>Register</strong></button>
                 <?php endif; ?>
                 <?php  if($kirby->user()): ?>
                   <button class="button is-success is-light is-hidden-tablet " onclick="$('#jumbotron').toggleClass('is-hidden-mobile');">

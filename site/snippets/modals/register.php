@@ -2,7 +2,7 @@
   <div class="modal-background" onclick="$('#registerModal').toggleClass('is-active');"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p class="modal-card-title">Registrieren</p>
+      <p class="modal-card-title">Register</p>
       <button onclick="$('#registerModal').toggleClass('is-active');" class="delete" aria-label="close"></button>
     </header>
     <form action="register" method="POST">
@@ -13,7 +13,7 @@
             <span class="icon is-small is-left">
               <i class="fas fa-envelope"></i>
             </span>
-            <p class="help"><i style="color: rgba(80,80,80,.5)">Die Email Adresse wird lediglich für die Authentifizierung gespeichert und verwendet.</i> 😬</p>
+            <p class="help"><i style="color: rgba(80,80,80,.5)">The email address is used for authentification and payments (later) only.</i> 😬</p>
           </p>
         </div>
         <div class="field">
@@ -22,7 +22,7 @@
             <span class="icon is-small is-left">
               <i class="fas fa-lock"></i>
             </span>
-            <p class="help"><i style="color: rgba(80,80,80,.5)">Einmal das Passwort eingeben sollte ausreichen!?</i></p>
+            <p class="help"><i style="color: rgba(80,80,80,.5)">Re-type the password? Nah... You can do it!</i></p>
           </p>
         </div>
         <div class="field">

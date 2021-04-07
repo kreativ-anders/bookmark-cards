@@ -11,34 +11,34 @@ Upgrade to **Premium** 👑 with **unlimited bookmarks** 🌌, **no restrictions
 Bookmarks:
 
 - 
-  title: Ihre persönliche Startseite mit Ihren Lieblingslinks im Internet - organisiert in schönen Kärtchen. 😎<br />Nie mehr gepinnte Tabs!
-  link: 
-  tags:
+  title: Your Bookmarks 😎
+  link: #
+  tags: Privacy, No Import
 - 
-  title: Fügen Sie Freunde auf einer beliebigen Social Media-Plattform als Karten hinzu, indem Sie einen Titel und den Link speichern. 
-  link: 
-  tags: Social Media
+  title: Cross Browser
+  link: #
+  tags: Landing Page
 - 
-  title: Ihre Lesezeichen bleiben sicher vor Unternehmen, die Ihre Daten wollen. Es wird keine Datenbank verwendet, die kompromittiert werden kann! 👀
-  link: 
-  tags: Security
+  title: In Beautiful Cards! 👀
+  link: #
+  tags: Ooooh
 - 
-  title: Kaufen Sie gerne ein? Fügen Sie einfach Ihren Online-Shop hinzu. 😉
+  title: Brand in Title? 😉 e.g. Amazon
   link: 
-  tags: Shopping
+  tags: Indiviudal, Hand-Crafted
 - 
-  title: Wir ❤️ Open Source. 🤓
-  link: https://github.com/kreativ-anders/myStartseite/
+  title: We ❤️ GitHub 🤓
+  link: https://github.com/kreativ-anders/bookmark-cards
   tags: Open Source, Code
 - 
-  title: Noch nicht überzeugt? 🤔<br/>Vielleicht registrieren Sie sich und versuchen es selbst - es ist völlig KOSTENLOS! 💸<br/>(bis der Server abstürzt 😅).
+  title: Stripe Gateway 💸
   link: 
-  tags:
+  tags: Security, Payment
 - 
-  title: Mit einem großartigen CMS erstellt
+  title: Built with Kirby
   link: https://getkirby.com/
   tags: Open Source
 -
-  title: Rückmeldungen und Kommentare sind sehr willkommen.<br/>Zögern Sie also nicht, sich zu melden! 😊
-  link: mailto:myStartseite@kreativ-anders.de?subject=myStartseite-Feedback
-  tags: Was auch immer Sie taggen wollen 😉
+  title: Feedback? 😊
+  link: mailto:bookmark.cards@kreativ-anders.de?subject=Bookmark.cards-Feedback
+  tags: Contact

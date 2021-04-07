@@ -2,7 +2,7 @@
   <div class="modal-background" onclick="$('#loginModal').toggleClass('is-active');"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p class="modal-card-title">Anmelden</p>
+      <p class="modal-card-title">Login</p>
       <button onclick="$('#loginModal').toggleClass('is-active');" class="delete" aria-label="close"></button>
     </header>
     <form action="login" method="POST">
