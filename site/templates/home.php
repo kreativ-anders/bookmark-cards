@@ -31,6 +31,11 @@
 
 <?php snippet('bookmarks') ?>
 
+<?php if (!$kirby->user()) {
+  snippet('pricing'); 
+  snippet('features');   
+} ?>
+
 
 
 
