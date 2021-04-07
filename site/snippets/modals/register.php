@@ -33,7 +33,7 @@
         </div>
       </section>
       <footer class="modal-card-foot">
-        <input class="button is-success" name="register" type="submit" value="Register">     
+        <input class="button is-primary" name="register" type="submit" value="Register">     
       </footer>
     </form>
   </div>

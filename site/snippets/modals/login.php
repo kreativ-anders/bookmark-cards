@@ -25,7 +25,7 @@
         </div>
       </section>
       <footer class="modal-card-foot">
-        <input class="button is-success" type="submit" name="login" value="Login" >
+        <input class="button is-primary" type="submit" name="login" value="Login" >
       </footer>
     </form>
   </div>
