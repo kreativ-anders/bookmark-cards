@@ -330,3 +330,68 @@
   background-image: url("../../assets/brands/bitly.svg");
   background-color: rgba(247, 182, 153, 0.533);
 } 
+
+*[brand*=adobe] {
+  background-image: url("../../assets/brands/adobe.svg");
+  background-color: rgba(255, 128, 128, 0.533);
+}
+
+*[brand*=android] {
+  background-image: url("../../assets/brands/android.svg");
+  background-color: rgba(210, 227, 156, 0.533);
+}
+
+*[brand*=asana] {
+  background-image: url("../../assets/brands/asana.svg");
+  background-color: rgba(254, 224, 226, 0.533);
+}
+
+*[brand*=confluence] {
+  background-image: url("../../assets/brands/confluence.svg");
+  background-color: rgba(230, 242, 255, 0.533);
+}
+
+*[brand*=fastly] {
+  background-image: url("../../assets/brands/fastly.svg");
+  background-color: rgba(255, 168, 170, 0.533);
+}
+
+*[brand*=ghost] {
+  background-image: url("../../assets/brands/ghost.svg");
+  background-color: rgba(251, 252, 252, 0.533);
+}
+
+*[brand*=intuit] {
+  background-image: url("../../assets/brands/intuit.svg");
+  background-color: rgba(247, 249, 253, 0.533);
+}
+
+*[brand*=invision] {
+  background-image: url("../../assets/brands/invision.svg");
+  background-color: rgba(255, 179, 198, 0.533);
+}
+
+*[brand*=medium] {
+  background-image: url("../../assets/brands/medium.svg");
+  background-color: rgba(171, 255, 224, 0.533);
+}
+
+*[brand*=steam] {
+  background-image: url("../../assets/brands/steam.svg");
+  background-color: rgba(238, 250, 255, 0.533);
+}
+
+*[brand*=teamviewer] {
+  background-image: url("../../assets/brands/teamviewer.svg");
+  background-color: rgba(141, 211, 254, 0.533);
+}
+
+*[brand*=zoom] {
+  background-image: url("../../assets/brands/zoom.svg");
+  background-color: rgba(141, 211, 254, 0.533);
+}
+
+*[brand*=typeform] {
+  background-image: url("../../assets/brands/typeform.svg");
+  background-color: rgba(229, 229, 230, 0.533);
+}
