@@ -10,7 +10,8 @@
 return [
   'debug' => false,
   'panel' =>[
-      'install' => false
+      'install' => false,
+      'slug' => 'dashboard'
   ],
   'noPremiumLimit' => 12,
   'noPremiumTitle' => 'BECOME PREMIUM',
