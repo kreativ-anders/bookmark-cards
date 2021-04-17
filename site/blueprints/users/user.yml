@@ -2,3 +2,22 @@ title: User
 permissions:
   access:
     panel: false
+
+tabs:
+  # Meta Tab
+  meta:
+    label: Additional Info
+    fields:
+      bookmarks:
+        label: Bookmarks
+        type: structure
+        fields:
+          title:
+            label: Title
+            type: text
+          link:
+            label: Link
+            type: text
+          tags:
+            label: Tags
+            type: tags
