@@ -395,3 +395,23 @@
   background-image: url("../../assets/brands/typeform.svg");
   background-color: rgba(229, 229, 230, 0.533);
 }
+
+*[brand*=buffer] {
+  background-image: url("../../assets/brands/buffer.svg");
+  background-color: rgba(139, 199, 245, 0.533);
+}
+
+*[brand*=linkedin] {
+  background-image: url("../../assets/brands/linkedin.svg");
+  background-color: rgba(181, 230, 255, 0.533);
+}
+
+*[brand*=whatsapp] {
+  background-image: url("../../assets/brands/whatsapp.svg");
+  background-color: rgba(230, 253, 251, 0.533);
+}
+
+*[brand*=xing] {
+  background-image: url("../../assets/brands/xing.svg");
+  background-color: rgba(232, 254, 255, 0.533);
+}
