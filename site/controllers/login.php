@@ -39,7 +39,7 @@ return function ($kirby) {
       try {
 
         $kirby->auth()->login(get('email'), get('password'));
-        go('/#yee-haw', 202);
+        go('login/success', 202);
 
       } catch (Exception $e) {
 

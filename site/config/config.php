@@ -31,6 +31,15 @@ return [
         }
 
         go('login');
+      }
+    ],
+    [
+      'pattern' => 'login/success',
+      'action'  => function() {
+
+        if ($user = kirby()->user()) {
+          go('/#yee-haw');
+        }
 
       }
     ]
