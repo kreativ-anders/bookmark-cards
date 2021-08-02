@@ -33,8 +33,8 @@
 
   <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 
-  <link rel="stylesheet" href="assets/css/main.css">
-  <link rel="stylesheet" href="assets/css/brands.css">
+  <link rel="stylesheet" href="assets/css/main.min.css">
+  <link rel="stylesheet" href="assets/css/brands.min.css">
   
 
 </head>
