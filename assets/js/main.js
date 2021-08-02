@@ -33,7 +33,7 @@ $(document).ready(function () {
       b = 'linear-gradient(to bottom, white 0%,' + randomLightColor() + '  100%)';     
       $(this).css('background', b);
     }  
-  });  
+  }); 
 });
 
 // Lazy Load Bg-Images
@@ -105,8 +105,8 @@ function changeData(id, title, link, tags) {
 function toggleTag(tag) {
 
   var t = String(tag);
-  $("#bookmarks").find("span.tag").css("border", "none");
-  $("#bookmarks").find("span.tag").css("opacity", "0.2");
+  $("body").find("span.tag").css("border", "none");
+  $("body").find("span.tag").css("opacity", "0.2");
 
   if (localStorage.getItem("tag") == t) {
     $("#bookmarks").children().show();
@@ -123,7 +123,7 @@ function toggleTag(tag) {
         $(this).show();
         
         var s = "span:contains('" + t + "')";
-        $(s).css("border", "1px solid black");
+        $(s).css("border", "1px solid #26262688");
         $(s).css("opacity", "0.5");
       }
     });
@@ -136,4 +136,24 @@ function randomLightColor() {
   var colors = ['#ADD8E6', '#F08080', '#E0FFFF', '#FAFAD2', '#D3D3D3', '#D3D3D3', '#90EE90', '#FFB6C1', '#FFA07A', '#20B2AA', '#87CEFA', '#778899', '#778899', '#B0C4DE', '#FFFFE0'];
 
   return colors[Math.floor(Math.random() * colors.length)];
+}
+
+function topTags() {
+  // identify top x tags
+  var arr = $("span.tag").map( function () {
+    return $( this ).text();
+  }).get();
+
+  var hist = {};
+  arr.map( function (a) { if (a in hist) hist[a] ++; else hist[a] = 1; } );
+  var sort = Object.keys(hist).sort(function(a,b) { return hist[a] - hist[b]; });
+  var topTags = sort.slice(Math.max(sort.length - 10, 1));
+
+  // create topTags next to user settings button
+  topTags.forEach(tag => {
+    $("button#user-settings").before("<span class=\"tag\" onclick=\"toggleTag('" + tag + "')\">" + tag + "</span>");
+  });
+  $("button#user-settings").before("&nbsp;");
+
+  
 }

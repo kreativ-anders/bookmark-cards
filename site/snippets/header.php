@@ -75,7 +75,7 @@
                   <button id="register" class="button is-primary" onclick="$('#registerModal').toggleClass('is-active');"><strong>Register</strong></button>
                 <?php endif; ?>
                 <?php  if($kirby->user()): ?>
-                  <button class="button is-success is-light is-hidden-tablet " onclick="$('#jumbotron').toggleClass('is-hidden-mobile');">
+                  <button id="user-settings" class="button is-success is-light is-hidden-tablet " onclick="$('#jumbotron').toggleClass('is-hidden-mobile');">
                     <span class="icon is-small">
                       <i class="fas fa-plus"></i>
                     </span>

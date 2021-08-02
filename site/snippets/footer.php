@@ -27,6 +27,11 @@
 
   <script src="assets/js/main.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/instant.page/5.1.0/instantpage.min.js"></script>
+  <?php  if($kirby->user()): ?>
+  <script>
+    $(document).ready(function () {topTags()});
+  </script>
+  <?php endif; ?>
 
 </footer>
 
