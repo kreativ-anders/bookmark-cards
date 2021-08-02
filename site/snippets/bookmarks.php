@@ -6,7 +6,7 @@
       <div class="column is-one-quarter" 
         data-search="<?= $bookmark['title'] . ';' . $bookmark['link'] . ';' . $bookmark['tags'] ?>" 
         data-tags="<?= $bookmark['tags'] ?>">
-        <div class="card card-background" brand="<?= Str::lower($bookmark['title']) ?>">
+        <div class="card card-background lazy" brand="<?= Str::lower($bookmark['title']) ?>">
           <a rel="noopener noreferrer" target="_self" href="<?= $bookmark['link'] ?>">
             <header class="card-header">
               <p class="card-header-title"><?= $bookmark['title'] ?></p>

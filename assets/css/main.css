@@ -59,6 +59,7 @@ span.tag:hover {
  background-repeat: no-repeat;
  background-size: auto;
  background-attachment: inherit;
+ background-image: none;
 }
 
 .card-content {
