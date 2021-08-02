@@ -415,3 +415,8 @@
   background-image: url("../../assets/brands/xing.svg");
   background-color: rgba(232, 254, 255, 0.533);
 }
+
+*[brand*=kuku] {
+  background-image: url("../../assets/brands/kuku.svg");
+  background-color: rgba(228, 242, 253, 0.533);
+}
