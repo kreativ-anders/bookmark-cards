@@ -147,7 +147,10 @@ function topTags() {
   var hist = {};
   arr.map( function (a) { if (a in hist) hist[a] ++; else hist[a] = 1; } );
   var sort = Object.keys(hist).sort(function(a,b) { return hist[a] - hist[b]; });
-  var topTags = sort.slice(Math.max(sort.length - 10, 1));
+
+  let n = Math.round(Math.sqrt(Object.keys(hist).length) / 5) * 5;
+  n = n > 10 ? 10 : n;
+  var topTags = sort.slice(Math.max(sort.length - n, 1));
 
   // create topTags next to user settings button
   topTags.forEach(tag => {
