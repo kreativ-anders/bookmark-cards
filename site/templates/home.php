@@ -21,6 +21,15 @@
 
 <hr>
 
+<?php if (!$kirby->user()) {
+  snippet('hero'); 
+  snippet('features');  
+  snippet('feature-tags'); 
+  snippet('feature-search'); 
+  snippet('feature-beauty'); 
+  snippet('feature-export'); 
+} ?>
+
 <?php if ($kirby->user()) {
   snippet('jumbotron'); 
 } ?>
@@ -33,7 +42,6 @@
 
 <?php if (!$kirby->user()) {
   snippet('pricing'); 
-  snippet('features');   
 } ?>
 
 

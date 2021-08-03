@@ -1,6 +1,6 @@
-<section class="section">
+<section class="section" id="pricing">
   <div class="container has-text-centered py-4">
-    <h2 class="title">Easy Pricing</h2>
+    <h2 class="title">And finally easy Pricing</h2>
     <p class="subtitle">... hopefully</p>
     <hr class="my-6">
     <div class="columns is-centered">

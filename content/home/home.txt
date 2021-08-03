@@ -11,34 +11,19 @@ Upgrade to **Premium** 👑 with **unlimited bookmarks** 🌌, **no restrictions
 Bookmarks:
 
 - 
-  title: Your Bookmarks 😎
-  link: #
-  tags: Privacy, No Import
+  title: Built with Kirby ❤️
+  link: https://getkirby.com/
+  tags: Open Source, CMS
 - 
-  title: Cross Browser
-  link: #
-  tags: Landing Page
-- 
-  title: In Beautiful Cards! 👀
-  link: #
-  tags: Ooooh
-- 
-  title: Brand in Title? 😉 e.g. Amazon
-  link: 
-  tags: Indiviudal, Hand-Crafted
-- 
-  title: We ❤️ GitHub 🤓
-  link: https://github.com/kreativ-anders/bookmark-cards
-  tags: Open Source, Code
-- 
-  title: Stripe Gateway 💸
+  title: Powered by Stripe 💳
   link: 
   tags: Security, Payment
 - 
-  title: Built with Kirby
-  link: https://getkirby.com/
-  tags: Open Source
+  title: Code on GitHub 🤓
+  link: https://github.com/kreativ-anders/bookmark-cards
+  tags: Open Source, Code
+
 -
-  title: Feedback? 😊
+  title: Any Questions or Feedback? 😊
   link: mailto:bookmark.cards@kreativ-anders.de?subject=Bookmark.cards-Feedback
   tags: Contact
