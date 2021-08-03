@@ -101,7 +101,7 @@
                   ?>
                   <?php endif ?>
 
-                  <a id="logout" href="logout" class="button is-danger is-light"><span>Abmelden</span></a>
+                  <a id="logout" href="logout" class="button is-danger is-light"><span>Logout</span></a>
                 <?php endif; ?>
               </div>
             </div>
