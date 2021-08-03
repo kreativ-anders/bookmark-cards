@@ -2,7 +2,7 @@
   <form method="POST">
     <div class="field is-grouped is-grouped-multiline has-addons">
       <p class="control has-icons-right">
-        <input class="input" id="s_title" type="search" name="c_title" placeholder="Titel" minlength="2" maxlength="200" autocomplete="on" required>
+        <input class="input" id="s_title" type="search" name="c_title" placeholder="Title" minlength="2" maxlength="200" autocomplete="on" required>
         <span class="icon is-small is-right">
           <i class="fas fa-search"></i>
         </span>
@@ -21,7 +21,7 @@
         </span>
       </p>
       <p class="control">
-        <button type="submit" class="button">Lesezeichen hinzufügen</button>
+        <button type="submit" class="button">Add Bookmark</button>
       </p>
     </div>
   </form>

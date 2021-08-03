@@ -2,7 +2,7 @@
   <div class="modal-background" onclick="$('#changeModal').toggleClass('is-active');"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p class="modal-card-title">Lesezeichen bearbeiten</p>
+      <p class="modal-card-title">Edit Bookmark</p>
       <button onclick="$('#changeModal').toggleClass('is-active');" class="delete" aria-label="close"></button>
     </header>
     <form action="" method="POST" autocomplete="off">
@@ -14,7 +14,7 @@
         </div>
         <div class="field">
           <p class="control has-icons-left">
-            <input class="input" type="text" id="title" name="u_title" value="" placeholder="Titel" required>
+            <input class="input" type="text" id="title" name="u_title" value="" placeholder="Title" required>
             <span class="icon is-small is-left">
               <i class="fas fa-heading"></i>
             </span>
@@ -38,7 +38,7 @@
         </div>
       </section>
       <footer class="modal-card-foot">
-        <button class="button is-success" type="submit">Aktualisiern</button>
+        <button class="button is-success" type="submit">Update</button>
       </footer>
     </form>
   </div>
