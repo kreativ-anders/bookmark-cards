@@ -10,7 +10,6 @@ if($kirby->user()) {
     'User'          => [
       'Email'       => $kirby->user()->email(),
       'Password'    => '*********************',
-      'LastLogin'   => $kirby->user()->lastLogin()->toString(),
       'Subscription'  => $kirby->user()->tier()->toString()],
     'Bookmarks'     => $bookmarks,
   ];
