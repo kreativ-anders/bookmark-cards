@@ -7,3 +7,6 @@
 [submodule "assets/css/bulma"]
 	path = assets/css/bulma
 	url = https://github.com/jgthms/bulma.git
+[submodule "assets/brand-names"]
+	path = assets/brand-names
+	url = https://github.com/kreativ-anders/brand-names.git
