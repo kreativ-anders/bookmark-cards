@@ -28,9 +28,6 @@
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 
   <link rel="stylesheet" href="assets/css/bulma-custom/bulma-custom.css">
-  <!-- <link rel="stylesheet" href="assets/css/bulma/css/bulma.min.css"> -->
-  <!-- <link rel="stylesheet" href="assets/css/bulma/bulma.css"> -->
-
   <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 
   <link rel="stylesheet" href="assets/css/main.min.css">
