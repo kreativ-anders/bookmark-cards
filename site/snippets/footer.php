@@ -16,9 +16,9 @@
         <strong>Bookmarks.cards</strong>
         <br>
         by 
-        <a href="https://kreativ-anders.de/" target="_blank">
+        <a href="https://kreativ-anders.de/" target="_blank" rel="noopener noreferrer">
           <figure class="image is-128x128" style="margin: auto">
-            <img src="https://static-assets.kreativ-anders.de/logo/dark.svg" style="width: 90px">
+            <img src="https://github.kreativ-anders.dev/logo/dark.svg" style="width: 90px">
           </figure>
         </a>
       </p>
