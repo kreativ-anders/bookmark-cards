@@ -2221,11 +2221,11 @@ a.navbar-item:focus, a.navbar-item:focus-within, a.navbar-item:hover, a.navbar-i
   }
   .column.is-2 {
     flex: none;
-    width: 16.6666666667%;
+    width: 16.66666674%;
   }
   .column.is-5 {
     flex: none;
-    width: 41.6666666667%;
+    width: 41.66666674%;
   }
   .column.is-6 {
     flex: none;
@@ -2233,17 +2233,17 @@ a.navbar-item:focus, a.navbar-item:focus-within, a.navbar-item:hover, a.navbar-i
   }
   .column.is-8 {
     flex: none;
-    width: 66.6666666667%;
+    width: 66.66666674%;
   }
    .column.is-10-tablet {
     flex: none;
-    width: 83.3333333333%;
+    width: 83.33333337%;
   }
 }
 @media screen and (min-width: 1024px) {
   .column.is-5-desktop {
     flex: none;
-    width: 41.6666666667%;
+    width: 41.66666674%;
   }
   .column.is-6-desktop {
     flex: none;
@@ -2677,26 +2677,4 @@ a.has-text-primary:hover, a.has-text-primary:focus {
 .footer {
   background-color: #fafafa;
   padding: 3rem 1.5rem 6rem;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    background-color: #363636;
-  }
-  html .navbar, html .box, html .modal-card-foot, html .modal-card-head, html .modal-card-body {
-    background-color: #363636;
-  }
-  html .footer {
-    background-color: #7a7a7a;
-  }
-  html .title, html .modal-card-title {
-    color: whitesmoke;
-  }
-  html .subtitle {
-    color: #b5b5b5;
-  }
-  html .input {
-    background-color: #b5b5b5;
-    border-color: #363636;
-  }
 }
