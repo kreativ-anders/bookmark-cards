@@ -18,10 +18,13 @@
 
   <!-- The title tag we show the title of our site and the title of the current page -->
   <title>Bookmarks</title>
-  <meta name="description" content="">
+  <meta name="description" content="Bookmarks in their easiest form.">
 
   <link rel="dns-prefetch" href="//bookmark.cards">
   <link rel="preconnect" href="//bookmark.cards">
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ffffff"/>
   
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -32,6 +35,12 @@
 
   <link rel="stylesheet" href="assets/css/main.min.css">
   <link rel="stylesheet" href="assets/css/brands.min.css">
+
+  <script type="module">
+    import 'https://cdn.jsdelivr.net/npm/@pwabuilder/pwaupdate';
+    const el = document.createElement('pwa-update');
+    document.body.appendChild(el);
+  </script>
   
 
 </head>
