@@ -23,7 +23,6 @@
 
 <?php if (!$kirby->user()) {
   snippet('hero'); 
-  snippet('features');  
   snippet('feature-tags'); 
   snippet('feature-search'); 
   snippet('feature-beauty'); 
@@ -42,6 +41,7 @@
 
 <?php if (!$kirby->user()) {
   snippet('pricing'); 
+  snippet('values');  
 } ?>
 
 
