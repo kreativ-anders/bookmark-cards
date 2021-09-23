@@ -1,6 +1,6 @@
-<section class="section" id="features">
+<section class="section" id="values">
   <div class="container has-text-centered">
-    <h2 class="title mb-6">Some of the core values</h2>
+    <h2 class="title mb-6">Loaded with the core values</h2>
   </div>
 </section>
 
