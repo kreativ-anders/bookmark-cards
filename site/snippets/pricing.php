@@ -1,7 +1,7 @@
 <section class="section" id="pricing">
   <div class="container has-text-centered py-4">
     <h2 class="title">And finally easy Pricing</h2>
-    <p class="subtitle">... hopefully</p>
+    <p class="subtitle"><i> ... hopefully</i></p>
     <hr class="my-6">
     <div class="columns is-centered">
       <div class="column is-8">
