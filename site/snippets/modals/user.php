@@ -12,7 +12,7 @@
             <label for="email" class="button is-fullwidth">Email</label>
           </p>
           <div class="control is-expanded">
-            <input class="input" type="email" id="email" name="email" value="<?= esc(get('email')) ?>"
+            <input class="input" type="email" id="email" name="email" value="<?= esc(get('email', '')) ?>"
               placeholder="<?= (get('email'))? get('email') : $kirby->user()->email() ?>" autocomplete="email">
           </div>
           <div class="control">
@@ -27,7 +27,7 @@
             <label for="password" class="button is-fullwidth">Password</label>
           </p>
           <div class="control is-expanded">
-            <input class="input" type="password" id="password" name="password" value="<?= esc(get('password')) ?>"
+            <input class="input" type="password" id="password" name="password" value="<?= esc(get('password', '')) ?>"
               placeholder="Password" autocomplete="new-password">
           </div>
           <div class="control">
