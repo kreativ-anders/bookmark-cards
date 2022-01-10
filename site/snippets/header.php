@@ -41,6 +41,10 @@
     const el = document.createElement('pwa-update');
     document.body.appendChild(el);
   </script>
+
+<script defer type="text/javascript" src="https://api.pirsch.io/pirsch.js"
+    id="pirschjs"
+    data-code="DKo22RMuBesw3XMADDNrwe0fQ7544AG1"></script>
   
 
 </head>
