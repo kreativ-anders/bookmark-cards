@@ -2,7 +2,7 @@
   <div class="container">
     <div class="columns is-multiline is-vcentered">
       <div class="column is-6 is-5-desktop mr-auto mb-5">
-        <img class="image is-fullwidth" src="/assets/images/search-google.png" alt="">
+        <img class="image is-fullwidth" src="/assets/images/search-google.png" alt="Search feature screenshot">
       </div>
       <div class="column is-6 is-5-desktop">
         <h2 class="mb-4 is-size-1 is-size-3-mobile has-text-weight-bold">Search your Bookmarks.</h2>

@@ -21,7 +21,7 @@
               </div>
             </div>
             <div class="column is-6 is-5-desktop ml-auto">
-              <img class="mb-5 image is-fullwidth" src="/assets/images/active-social-media-tag.png" alt="">
+              <img class="mb-5 image is-fullwidth" src="/assets/images/active-social-media-tag.png" alt="Tagging feature screenshot">
             </div>
           </div>
         </div>

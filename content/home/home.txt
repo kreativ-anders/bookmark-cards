@@ -16,7 +16,7 @@ Bookmarks:
   tags: Open Source, CMS
 - 
   title: Powered by Stripe 💳
-  link: 
+  link: https://stripe.com
   tags: Security, Payment
 - 
   title: Code on GitHub 🤓
