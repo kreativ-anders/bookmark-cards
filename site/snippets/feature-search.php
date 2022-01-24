@@ -9,17 +9,17 @@
         <p class="subtitle has-text-grey mb-5">Finding your bookmarks is as easy as googling them.</p>
         <div class="mb-4 is-flex">
           <div class="ml-3">
-            <h5 class="is-size-5 has-text-weight-normal">👥 Auto-search when creating a new bookmark to avoid duplicates. </h5>
+            <p class="is-size-5 has-text-weight-normal">🔸 Auto-search when creating a new bookmark to avoid duplicates.</p>
           </div>
         </div>
         <div class="mb-4 is-flex">
           <div class="ml-3">
-            <h5 class="is-size-5 has-text-weight-normal">⏱ Search by title, URL or tags to make your life easier. </h5>
+            <p class="is-size-5 has-text-weight-normal">🔸 Search by title, URL or tags to make your life easier.</p>
           </div>
         </div>
         <div class="is-flex">
           <div class="ml-3">
-            <h5 class="is-size-5 has-text-weight-normal">No additional fees just for searching! 💸</h5>
+            <p class="is-size-5 has-text-weight-normal">🔸 No additional fees just for searching!</p>
           </div>
         </div>
       </div>

@@ -9,17 +9,17 @@
         <p class="subtitle has-text-grey mb-5">Do whatever you like with your bookmarks.</p>
         <div class="mb-4 is-flex">
           <div class="ml-3">
-            <h5 class="is-size-5 has-text-weight-normal">❌ Delete your bookmarks. </h5>
+            <p class="is-size-5 has-text-weight-normal">🔸 Delete your bookmarks. (No in-active flag is used)</p>
           </div>
         </div>
         <div class="mb-4 is-flex">
           <div class="ml-3">
-            <h5 class="is-size-5 has-text-weight-normal">📥 Export your bookmarks in JSON or CSV format. </h5>
+            <p class="is-size-5 has-text-weight-normal">🔸 But you should export your bookmarks in JSON or CSV format first. </p>
           </div>
         </div>
         <div class="is-flex">
           <div class="ml-3">
-            <h5 class="is-size-5 has-text-weight-normal">🔒 Your data will never be sold. </h5>
+            <p class="is-size-5 has-text-weight-normal">🔸 Your data will never be sold nor used for ads. </p>
           </div>
         </div>
       </div>
