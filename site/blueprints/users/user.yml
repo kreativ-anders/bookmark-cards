@@ -11,6 +11,7 @@ tabs:
       bookmarks:
         label: Bookmarks
         type: structure
+        limit: 25
         fields:
           title:
             label: Title
