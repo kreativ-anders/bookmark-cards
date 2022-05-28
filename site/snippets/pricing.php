@@ -10,7 +10,7 @@
             <h4 class="title is-5">Basic</h4>
             <h3 class="title is-2 is-spaced">0€ <small class="has-text-grey">/ month</small></h3>
             <p class="subtitle">Check if Bookmark.cards <br />is the right tool for you <br/>with <?= option('noPremiumLimit'); ?> bookmarks.</p>
-            <button id="register" class="button is-primary" onclick="$('#registerModal').toggleClass('is-active');"><strong>Register</strong></button>
+            <button id="register" class="button is-primary" onclick="document.getElementById('registerModal').classList.toggle('is-active');"><strong>Register</strong></button>
           </div>
           <div class="column">
             <h4 class="title is-5">Premium</h4>

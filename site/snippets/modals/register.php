@@ -1,9 +1,9 @@
 <div class="modal" id="registerModal">
-  <div class="modal-background" onclick="$('#registerModal').toggleClass('is-active');"></div>
+  <div class="modal-background" onclick="document.getElementById('registerModal').classList.toggle('is-active');"></div>
   <div class="modal-card">
     <header class="modal-card-head">
       <p class="modal-card-title">Register</p>
-      <button onclick="$('#registerModal').toggleClass('is-active');" class="delete" aria-label="close"></button>
+      <button onclick="document.getElementById('registerModal').classList.toggle('is-active');" class="delete" aria-label="close"></button>
     </header>
     <form action="register" method="POST">
       <section class="modal-card-body">

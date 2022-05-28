@@ -1,15 +1,8 @@
-$(document).ready(function() {
+document.addEventListener('DOMContentLoaded', function() {
 
-  $("#suchen").click(function() {
-    Suchen($("#search").val());
-  });
-
-  // Check for click events on the navbar burger icon
-  $(".navbar-burger").click(function() {
-
-    // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
-    $(".navbar-burger").toggleClass("is-active");
-    $(".navbar-menu").toggleClass("is-active");
+  document.getElementsByClassName("navbar-burger")[0].addEventListener("click", function() {
+    document.getElementsByClassName("navbar-burger")[0].classList.toggle("is-active");
+    document.getElementsByClassName("navbar-menu")[0].classList.toggle("is-active");
   });
 
   // One-Pager! Prevent form resubmission
@@ -18,23 +11,32 @@ $(document).ready(function() {
   }
 
   // Search Title-Link-Tags
-  $("#s_title, #s_link, #s_tags").on("keyup", function() {
-    var value = $(this).val().toLowerCase();
-    $("#bookmarks > div").filter(function() {
-      $(this).toggle($(this).attr("data-search").toLowerCase().indexOf(value) > -1)
+  document.querySelectorAll("#s_title, #s_link, #s_tags").forEach(input => {
+    input.addEventListener("keyup", function() {
+      var value = input.value.toLowerCase();
+      Array.from(document.getElementById("bookmarks").children).filter(function(card) {
+        var indexOf = card.getAttribute("data-search").toLowerCase().indexOf(value);
+        if (indexOf > -1) {
+          card.style.display = "block";
+        } else {
+          card.style.display = "none";
+        }
+      });
     });
   });
 
   // Dyn background (without background-image)
-  $("div.card").each(function() {
+  Array.from(document.querySelectorAll("div.card")).map(function(card) {
     var b = null;
 
-    if ($(this).css('background-image') === 'none') {
+    if (window.getComputedStyle(card).backgroundImage === 'none') {
       b = 'linear-gradient(to bottom, white 0%,' + randomLightColor() + '  100%)';
-      $(this).css('background', b);
+      card.style.background = b;
     }
   });
-});
+
+
+}, false);
 
 // Lazy Load Bg-Images
 document.addEventListener("DOMContentLoaded", function() {
@@ -86,7 +88,12 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 })
 
-
+/**
+ * UX
+ * Add https:// when missing
+ * @param {*} url 
+ * @returns 
+ */
 function checkURL(url) {
   var s = url.value;
   if (!~s.indexOf("://")) {
@@ -96,35 +103,68 @@ function checkURL(url) {
   return url
 }
 
+/**
+ * MODAL
+ * Push initial values to modal form
+ * @param {*} id 
+ * @param {*} title 
+ * @param {*} link 
+ * @param {*} tags 
+ */
 function changeData(id, title, link, tags) {
-  $("#id").attr("value", id);
-  $("#title").attr("value", title);
-  $("#link").attr("value", link);
-  $("#tags").attr("value", tags);
+  document.getElementById("id").value = id;
+  document.getElementById("title").value = title;
+  document.getElementById("link").value = link;
+  document.getElementById("tags").value = tags;
 }
 
+/**
+ * FUNCTION
+ * Create a light color palete for cards without background images
+ * @returns colors
+ */
+function randomLightColor() {
+  var colors = ['#ADD8E6', '#F08080', '#E0FFFF', '#FAFAD2', '#D3D3D3', '#D3D3D3', '#90EE90', '#FFB6C1', '#FFA07A', '#20B2AA', '#87CEFA', '#778899', '#778899', '#B0C4DE', '#FFFFE0'];
+
+  return colors[Math.floor(Math.random() * colors.length)];
+}
+
+/**
+ * FEATURE
+ * Toggle visability of selected top tag
+ * @param {*} tag 
+ */
 function toggleTag(tag) {
 
   var t = String(tag);
-  $("body").find("span.tag").css("border", "none");
-  $("body").find("span.tag").css("opacity", "0.2");
+
+  document.querySelectorAll("span.tag").forEach(span => {
+    span.style.border = "none";
+    span.style.opacity = 0.2;
+  })
 
   if (localStorage.getItem("tag") == t) {
-    $("#bookmarks").children().show();
+
+    Array.from(document.getElementById("bookmarks").children).map(function(card) {
+      card.style.display = "block";
+    });
     localStorage.removeItem("tag");
+
   } else {
-    $("#bookmarks").children().hide();
 
-    $("#bookmarks").children().each(function() {
+    Array.from(document.getElementById("bookmarks").children).map(function(card) {
+      card.style.display = "none";
 
-      var s = String($(this).attr("data-tags"));
+      var s = String(card.getAttribute("data-tags"));
 
       if (s.includes(t)) {
-        $(this).show();
+        card.style.display = "block";
 
-        var s = "span:contains('" + t + "')";
-        $(s).css("border", "1px solid #26262688");
-        $(s).css("opacity", "0.5");
+        var s = "span[data-tag*='" + t + "']";
+        document.querySelectorAll(s).forEach(tag => {
+          tag.style.border = "1px solid #26262688";
+          tag.style.opacity = 0.5;
+        });
       }
     });
 
@@ -132,17 +172,15 @@ function toggleTag(tag) {
   }
 }
 
-function randomLightColor() {
-  var colors = ['#ADD8E6', '#F08080', '#E0FFFF', '#FAFAD2', '#D3D3D3', '#D3D3D3', '#90EE90', '#FFB6C1', '#FFA07A', '#20B2AA', '#87CEFA', '#778899', '#778899', '#B0C4DE', '#FFFFE0'];
-
-  return colors[Math.floor(Math.random() * colors.length)];
-}
-
+/**
+ * FEATURE
+ * Create tags of the most used tags at all
+ */
 function topTags() {
   // identify top x tags
-  var arr = $("span.tag").map(function() {
-    return $(this).text();
-  }).get();
+  var arr = Array.from(document.querySelectorAll('span.tag'), span => span.textContent).map(function(e) {
+    return e;
+  });
 
   var hist = {};
   arr.map(function(a) {
@@ -156,9 +194,16 @@ function topTags() {
   var topTags = sort.slice(Math.max(sort.length - n, 1));
   topTags = topTags.reverse();
 
+  const user_settings = document.getElementById('user-settings');
+
   // create topTags next to user settings button
   topTags.forEach(tag => {
-    $("button#user-settings").before("<span class=\"tag\" onclick=\"toggleTag('" + tag + "')\">" + tag + "</span>");
+    // $("button#user-settings").before("<span class=\"tag\" onclick=\"toggleTag('" + tag + "')\">" + tag + "</span>");
+    let span = document.createElement("span");
+    span.classList.add("tag");
+    span.dataset.tag = tag;
+    span.addEventListener('click', function() { toggleTag(tag) });
+    span.innerText = tag;
+    user_settings.before(span);
   });
-  $("button#user-settings").before("&nbsp;");
 }

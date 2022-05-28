@@ -21,13 +21,13 @@
 
               <?php if ((option('kreativ-anders.memberkit.tiers')[0]['name'] === $kirby->user()->tier()->toString() && count($bookmarks) <= option('noPremiumLimit')) && $bookmark['title'] != option('noPremiumTitle') || $kirby->user()->isAllowed(option('kreativ-anders.memberkit.tiers')[1]['name'])): ?>   
               <span class="icon edit">                
-                <i class="fas fa-edit" onclick="changeData('<?= $i ?>','<?= $bookmark['title'] ?>', '<?= htmlspecialchars($bookmark['link']) ?>', '<?= $bookmark['tags'] ?>'); $('#changeModal').toggleClass('is-active');"></i>
+                <i class="fas fa-edit" onclick="changeData('<?= $i ?>','<?= $bookmark['title'] ?>', '<?= htmlspecialchars($bookmark['link']) ?>', '<?= $bookmark['tags'] ?>'); document.getElementById('changeModal').classList.toggle('is-active');"></i>
               </span>
 
               <?php endif; ?>
             
                 <?php foreach (Str::split($bookmark['tags']) as $tag): ?>
-                  <span class="tag" onclick="toggleTag('<?= $tag ?>')"><?= $tag ?></span>
+                  <span class="tag" data-tag="<?= $tag ?>" onclick="toggleTag(this.getAttribute('data-tag'))"><?= $tag ?></span>
                 <?php endforeach; ?>
               
               <form action="" method="POST">
@@ -42,7 +42,7 @@
               </span>
               
               <?php foreach (Str::split($bookmark['tags']) as $tag): ?>
-                <span class="tag" onclick="toggleTag('<?= $tag ?>')"><?= $tag ?></span>
+                <span class="tag" data-tag="<?= $tag ?>" onclick="toggleTag(this.getAttribute('data-tag'))"><?= $tag ?></span>
               <?php endforeach; ?>
               
               <button class="delete" type="submit" disabled>
