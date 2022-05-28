@@ -1,9 +1,9 @@
 <div class="modal" id="userModal">
-  <div class="modal-background" onclick="$('#userModal').toggleClass('is-active');"></div>
+  <div class="modal-background" onclick="document.getElementById('userModal').classList.toggle('is-active');"></div>
   <div class="modal-card">
     <header class="modal-card-head">
       <p class="modal-card-title"><i><?= $kirby->user()->email(); ?></i> | Settings</p>
-      <button onclick="$('#userModal').toggleClass('is-active');" class="delete" aria-label="close"></button>
+      <button onclick="document.getElementById('userModal').classList.toggle('is-active');" class="delete" aria-label="close"></button>
     </header>
     <section class="modal-card-body">
       <form action="/user" method="POST">

@@ -3,7 +3,7 @@
   <div class="modal-card">
     <header class="modal-card-head">
       <p class="modal-card-title">Edit Bookmark</p>
-      <button onclick="$('#changeModal').toggleClass('is-active');" class="delete" aria-label="close"></button>
+      <button onclick="document.getElementById('changeModal').classList.toggle('is-active');" class="delete" aria-label="close"></button>
     </header>
     <form action="" method="POST" autocomplete="off">
       <section class="modal-card-body">

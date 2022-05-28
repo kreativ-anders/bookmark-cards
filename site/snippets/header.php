@@ -11,8 +11,6 @@
 <html lang="en">
 <head>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
@@ -33,6 +31,7 @@
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 
   <link rel="stylesheet" href="assets/css/bulma-custom/bulma-custom.min.css">
+  <!-- <link rel="stylesheet" href="assets/css/pico/css/pico.min.css"> -->
   <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 
   <link rel="stylesheet" href="assets/css/main.min.css">
@@ -83,16 +82,16 @@
             <div class="navbar-item">
               <div class="buttons is-right">
                 <?php  if(!$kirby->user()): ?>
-                  <button id="login" class="button is-light" onclick="$('#loginModal').toggleClass('is-active');">Login</button>
-                  <button id="register" class="button is-primary" onclick="$('#registerModal').toggleClass('is-active');"><strong>Register</strong></button>
+                  <button id="login" class="button is-light" onclick="document.getElementById('loginModal').classList.toggle('is-active');">Login</button>
+                  <button id="register" class="button is-primary" onclick="document.getElementById('registerModal').classList.toggle('is-active');"><strong>Register</strong></button>
                 <?php endif; ?>
                 <?php  if($kirby->user()): ?>
-                  <button id="user-settings" class="button is-success is-light is-hidden-tablet " onclick="$('#jumbotron').toggleClass('is-hidden-mobile');">
+                  <button id="user-settings" class="button is-success is-light is-hidden-tablet " onclick="document.getElementById('jumbotron').classList.toggle('is-hidden-mobile');">
                     <span class="icon is-small">
                       <i class="fas fa-plus"></i>
                     </span>
                   </button>
-                  <button id="user" class="button is-black is-light is-medium" onclick="$('#userModal').toggleClass('is-active');">
+                  <button id="user" class="button is-black is-light is-medium" onclick="document.getElementById('userModal').classList.toggle('is-active');">
                     <span class="icon is-small">
                       <i class="fas fa-user-cog"></i>
                     </span>
