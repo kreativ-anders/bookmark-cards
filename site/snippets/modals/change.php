@@ -1,5 +1,5 @@
 <div class="modal" id="changeModal">
-  <div class="modal-background" onclick="$('#changeModal').toggleClass('is-active');"></div>
+  <div class="modal-background" onclick="document.getElementById('changeModal').classList.toggle('is-active');"></div>
   <div class="modal-card">
     <header class="modal-card-head">
       <p class="modal-card-title">Edit Bookmark</p>
