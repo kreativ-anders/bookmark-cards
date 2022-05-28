@@ -10,6 +10,3 @@
 [submodule "assets/css/pico"]
 	path = assets/css/pico
 	url = https://github.com/picocss/pico.git
-[submodule "site/plugins/kirby-sitemap"]
-	path = site/plugins/kirby-sitemap
-	url = https://github.com/kreativ-anders/kirby-sitemap.git
