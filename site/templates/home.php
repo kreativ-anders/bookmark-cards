@@ -21,6 +21,8 @@
   snippet('top-tags');
 } ?>
 
+<hr style="margin-bottom: unset;">
+
 <?php if (!$kirby->user()) {
   snippet('hero'); 
   snippet('feature-tags'); 

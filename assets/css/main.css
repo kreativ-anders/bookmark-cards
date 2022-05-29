@@ -20,7 +20,7 @@ section#grid {
     grid-template-columns: repeat(4, minmax(0%, 1fr));
   }
   section#grid {
-    padding: 0px 6rem;
+    padding: 0px 8rem;
   }
 }
 
@@ -92,19 +92,28 @@ section#top-tags {
 }
 
 body>header:nth-child(1) {
-  padding: 2rem 0rem;
+  padding: 2rem;
+  padding-bottom: unset;
 }
 
 input#s_title,
 input#s_link,
 input#s_tags {
   opacity: 0.5;
+  border: none;
+  border-radius: 0;
+  border-top: 1px solid var(--primary);
 }
 
 input#s_title:focus,
 input#s_link:focus,
 input#s_tags:focus {
   opacity: 1;
+  border-radius: var(--border-radius);
+}
+
+a#logout:hover {
+  color: red;
 }
 
 
@@ -215,10 +224,6 @@ footer.card-footer {
 
 .section {
   padding: 2rem 1.5rem;
-}
-
-.osano-cm-widget {
-  opacity: 0.2;
 }
 
 @media (max-width: 768px) {
