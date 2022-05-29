@@ -1,0 +1,17 @@
+/* Custom SCSS */
+
+$primary-hue: 37;
+
+/* Pico */
+
+@import "pico/scss/pico.scss";
+
+/* Custom CSS*/
+
+:root {
+  --primary: #f5a000 !important;
+}
+
+h1 {
+  margin-bottom: 0px;
+}

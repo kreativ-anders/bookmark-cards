@@ -1,32 +1,16 @@
-<div class="modal" id="loginModal">
-  <div class="modal-background" onclick="document.getElementById('loginModal').classList.toggle('is-active');"></div>
-  <div class="modal-card">
-    <header class="modal-card-head">
-      <p class="modal-card-title">Login</p>
-      <button onclick="document.getElementById('loginModal').classList.toggle('is-active');" class="delete" aria-label="close"></button>
-    </header>
+<dialog id="loginModal">
+  <article>
+    <a href="#close"
+      aria-label="Close"
+      class="close"
+      data-target="loginModal"
+      onClick="toggleModal(event)">
+    </a>
+    <h3>Login</h3>
     <form action="login" method="POST">
-      <section class="modal-card-body">
-        <div class="field">
-          <p class="control has-icons-left">
-            <input class="input" type="email" name="email" value="" placeholder="Email" required>
-            <span class="icon is-small is-left">
-              <i class="fas fa-envelope"></i>
-            </span>
-          </p>
-        </div>
-        <div class="field">
-          <p class="control has-icons-left">
-            <input class="input" type="password" name="password" value="" placeholder="Passwort" required>
-            <span class="icon is-small is-left">
-              <i class="fas fa-lock"></i>
-            </span>
-          </p>
-        </div>
-      </section>
-      <footer class="modal-card-foot">
-        <input class="button is-primary" type="submit" name="login" value="Login" >
-      </footer>
+      <input type="email" name="email" value="" placeholder="Email" required>
+      <input type="password" name="password" value="" placeholder="Passwort" required>
+      <input type="submit" name="login" value="Login" >
     </form>
-  </div>
-</div>
+  </article>
+</dialog>

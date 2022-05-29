@@ -1,9 +1,6 @@
-document.addEventListener('DOMContentLoaded', function() {
+// @prepros-prepend pico-modal.js
 
-  document.getElementsByClassName("navbar-burger")[0].addEventListener("click", function() {
-    document.getElementsByClassName("navbar-burger")[0].classList.toggle("is-active");
-    document.getElementsByClassName("navbar-menu")[0].classList.toggle("is-active");
-  });
+document.addEventListener('DOMContentLoaded', function() {
 
   // One-Pager! Prevent form resubmission
   if (window.history.replaceState) {
