@@ -1,12 +1,14 @@
 <dialog id="registerModal">
   <article>
-    <a href="#close"
-      aria-label="Close"
-      class="close"
-      data-target="registerModal"
-      onClick="toggleModal(event)">
-    </a>
-    <h3>Register</h3>
+    <header>
+      <a href="#close"
+        aria-label="Close"
+        class="close"
+        data-target="registerModal"
+        onClick="toggleModal(event)">
+      </a>
+      <h3>Register</h3>
+    </header>
     <form action="register" method="POST">
       <input type="email" name="email" value="" placeholder="Email" required>
       <p><i style="color: rgba(80,80,80,.5)">The email address is used for authentification and payments (later).</i></p>

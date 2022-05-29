@@ -1,12 +1,14 @@
 <dialog id="userModal">
   <article>
-    <a href="#close"
-      aria-label="Close"
-      class="close"
-      data-target="userModal"
-      onClick="toggleModal(event)">
-    </a>
-    <h3><?= $kirby->user()->email(); ?></i> | Settings</h3>
+    <header>
+      <a href="#close"
+        aria-label="Close"
+        class="close"
+        data-target="userModal"
+        onClick="toggleModal(event)">
+      </a>
+      <h3><?= $kirby->user()->email(); ?></i> | Settings</h3>
+    </header>
     <form action="/user" method="POST">
       <input type="email" id="email" name="email" value="<?= esc(get('email', '')) ?>" placeholder="<?= (get('email'))? get('email') : $kirby->user()->email() ?>" autocomplete="email">
       <input type="submit" name="update" value="Change Email">

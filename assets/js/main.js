@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // Dyn background (without background-image)
-  Array.from(document.querySelectorAll("div.card")).map(function(card) {
+  Array.from(document.querySelectorAll("article.card-background")).map(function(card) {
     var b = null;
 
     if (window.getComputedStyle(card).backgroundImage === 'none') {
@@ -136,8 +136,8 @@ function toggleTag(tag) {
   var t = String(tag);
 
   document.querySelectorAll("span.tag").forEach(span => {
-    span.style.border = "none";
     span.style.opacity = 0.2;
+    span.style.fontSize = "initial";
   })
 
   if (localStorage.getItem("tag") == t) {
@@ -159,8 +159,9 @@ function toggleTag(tag) {
 
         var s = "span[data-tag*='" + t + "']";
         document.querySelectorAll(s).forEach(tag => {
-          tag.style.border = "1px solid #26262688";
-          tag.style.opacity = 0.5;
+          tag.style.color = "var(--h1-color)";
+          tag.style.opacity = 1;
+          // tag.style.fontSize = "larger";
         });
       }
     });
@@ -191,16 +192,15 @@ function topTags() {
   var topTags = sort.slice(Math.max(sort.length - n, 1));
   topTags = topTags.reverse();
 
-  const user_settings = document.getElementById('user-settings');
+  const tags_container = document.getElementById('top-tags').children[0];
 
   // create topTags next to user settings button
   topTags.forEach(tag => {
-    // $("button#user-settings").before("<span class=\"tag\" onclick=\"toggleTag('" + tag + "')\">" + tag + "</span>");
     let span = document.createElement("span");
     span.classList.add("tag");
     span.dataset.tag = tag;
     span.addEventListener('click', function() { toggleTag(tag) });
     span.innerText = tag;
-    user_settings.before(span);
+    tags_container.appendChild(span);
   });
 }

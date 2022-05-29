@@ -17,9 +17,9 @@
 <?php  if ($kirby->user()) {
   snippet('modals/change'); 
   snippet('modals/user'); 
-} ?>
 
-<hr>
+  snippet('top-tags');
+} ?>
 
 <?php if (!$kirby->user()) {
   snippet('hero'); 

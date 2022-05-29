@@ -3,6 +3,110 @@ svg {
   width: var(--font-size);
 }
 
+input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file])[type=search] {
+  border-radius: var(--border-radius);
+}
+
+section#grid {
+  padding: 0px 1rem;
+}
+
+.card-grid {
+  grid-template-columns: repeat(3, minmax(0%, 1fr));
+}
+
+@media (min-width: 768px) {
+  div#bookmarks.grid {
+    grid-template-columns: repeat(4, minmax(0%, 1fr));
+  }
+  section#grid {
+    padding: 0px 6rem;
+  }
+}
+
+div#bookmarks article header {
+  background: hsla(0, 0%, 100%, .3);
+  -webkit-backdrop-filter: blur(3px);
+  -moz-backdrop-filter: blur(3px);
+  -khtml-backdrop-filter: blur(3px);
+  -ms-backdrop-filter: blur(3px);
+  border: none;
+  padding: calc(var(--grid-spacing-horizontal) / 2);
+}
+
+div#bookmarks article footer {
+  padding: 0 calc(var(--block-spacing-horizontal)/ 2) 10px calc(var(--block-spacing-horizontal)/ 2);
+  border: none;
+  background-color: transparent;
+}
+
+div#bookmarks article footer .grid {
+  align-items: center;
+}
+
+div#bookmarks article footer form {
+  margin: 0;
+}
+
+div#bookmarks article svg {
+  color: rgba(10, 10, 10, .2)
+}
+
+div#bookmarks article {
+  margin: calc(var(--grid-spacing-horizontal) / 2) 0;
+}
+
+div#bookmarks article footer button {
+  width: fit-content;
+  padding: 5px;
+  font-size: initial;
+  float: right;
+  background-color: transparent;
+  border-color: transparent;
+  margin: 0;
+}
+
+.delete svg {
+  width: 0.66rem;
+  color: var(--primary);
+}
+
+.delete svg:focus,
+.delete svg:hover {
+  color: rgba(139, 0, 0, 1.000) !important;
+}
+
+.card-spanner {
+  display: block;
+  height: 1px;
+}
+
+.card-tags {
+  width: max-content;
+}
+
+section#top-tags {
+  text-align: center;
+  padding: 0 2rem;
+  margin-bottom: unset;
+}
+
+body>header:nth-child(1) {
+  padding: 2rem 0rem;
+}
+
+input#s_title,
+input#s_link,
+input#s_tags {
+  opacity: 0.5;
+}
+
+input#s_title:focus,
+input#s_link:focus,
+input#s_tags:focus {
+  opacity: 1;
+}
+
 
 /* ---------------------------- OLD --------------------*/
 
@@ -44,17 +148,13 @@ span.tag {
   -webkit-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  padding-right: 1rem;
 }
 
 span.tag:focus,
 span.tag:hover {
   scale: 1.05;
   color: black;
-}
-
-.delete:focus,
-.delete:hover {
-  background-color: rgba(139, 0, 0, 1.000);
 }
 
 .modal-card-foot,
@@ -87,7 +187,7 @@ span.tag:hover {
   -ms-backdrop-filter: blur(3px);
 }
 
-.card:hover {
+.card-background:hover {
   transform: scale(1.05);
   box-shadow: 5px 5px 3px rgba(10, 10, 10, .1), 0 0 0 1px rgba(10, 10, 10, .1);
 }
@@ -102,11 +202,6 @@ footer.card-footer {
   border: none;
   margin: 0.5rem;
   align-items: center;
-}
-
-.jumbotron {
-  box-shadow: unset;
-  padding: 0;
 }
 
 .limitbar {
