@@ -2,28 +2,26 @@ Title: Bookmarks
 
 ----
 
-Premium:
-
-Upgrade to **Premium** 👑 with **unlimited bookmarks** 🌌, **no restrictions** (_like this banner_) ❌, and **support** the App. 🧡
+Premium: Upgrade to **Premium** with **unlimited bookmarks**, **no distractions** (_like this banner_), and **support** the App — Please. ❤️
 
 ----
 
 Bookmarks:
 
 - 
-  title: Built with Kirby ❤️
+  title: Built with Kirby
   link: https://getkirby.com/
-  tags: Open Source, CMS
+  tags: Open Source
 - 
-  title: Powered by Stripe 💳
+  title: Powered by Stripe
   link: https://stripe.com
-  tags: Security, Payment
+  tags: Payment
 - 
-  title: Code on GitHub 🤓
+  title: Code on GitHub
   link: https://github.com/kreativ-anders/bookmark-cards
-  tags: Open Source, Code
+  tags: Open Source
 
 -
-  title: Any Questions or Feedback? 😊
+  title: Any Questions or Feedback?
   link: mailto:bookmark.cards@kreativ-anders.de?subject=Bookmark.cards-Feedback
   tags: Contact

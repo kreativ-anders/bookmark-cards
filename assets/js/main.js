@@ -202,6 +202,7 @@ function topTags() {
     let li = document.createElement("li");
     let span = document.createElement("span");
     span.classList.add("tag");
+    li.classList.add("top-tag");
     span.dataset.tag = tag;
     span.addEventListener('click', function() { toggleTag(tag) });
     span.innerText = tag;

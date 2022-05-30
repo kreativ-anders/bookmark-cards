@@ -11,8 +11,8 @@ section#grid {
   padding: 0px 1rem;
 }
 
-.card-grid {
-  grid-template-columns: repeat(3, minmax(0%, 1fr));
+li.top-tag {
+  display: none;
 }
 
 @media (min-width: 768px) {
@@ -21,6 +21,9 @@ section#grid {
   }
   section#grid {
     padding: 0px 8rem;
+  }
+  li.top-tag {
+    display: block;
   }
 }
 
@@ -32,12 +35,20 @@ div#bookmarks article header {
   -ms-backdrop-filter: blur(3px);
   border: none;
   padding: calc(var(--grid-spacing-horizontal) / 2);
+  margin-bottom: unset;
+}
+
+.card-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 div#bookmarks article footer {
   padding: 0 calc(var(--block-spacing-horizontal)/ 2) 10px calc(var(--block-spacing-horizontal)/ 2);
   border: none;
   background-color: transparent;
+  margin-top: unset;
 }
 
 div#bookmarks article footer .grid {
@@ -76,9 +87,16 @@ div#bookmarks article footer button {
   color: rgba(139, 0, 0, 1.000) !important;
 }
 
+.edit svg:focus,
+.edit svg:hover {
+  color: #262626 !important;
+}
+
 .card-spanner {
   display: block;
-  height: 1px;
+  min-height: 150px;
+  max-height: 200px;
+  height: auto;
 }
 
 .card-tags {
@@ -114,6 +132,14 @@ input#s_tags:focus {
 
 a#logout:hover {
   color: red;
+}
+
+article.bookmark a {
+  width: 100%;
+  display: block;
+  color: #363636;
+  text-decoration: none;
+  font-weight: bold;
 }
 
 
@@ -158,6 +184,7 @@ span.tag {
   -ms-user-select: none;
   user-select: none;
   padding-right: 1rem;
+  white-space: nowrap;
 }
 
 span.tag:focus,
