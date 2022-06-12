@@ -1,5 +1,5 @@
 <section id="values" class="container">
-  <h2>Loaded with the our core values:</h2>
+  <h2>Loaded with core values:</h2>
   <div class="grid">
     <article>
       <header>
@@ -11,19 +11,19 @@
       <header>
         <h5>Privacy</h5>
       </header>
-      <p>No activity tracking or ads! You own the data.</p>
+      <p>No persoanal activity tracking or ads! You own the data.</p>
     </article>
     <article>
       <header>
         <h5>Open Source</h5>
       </header>
-      <p>Transparency creates trust. Check out GitHub.</p>
+      <p>Transparency creates trust. Check out the code at GitHub.</p>
     </article>
     <article>
       <header>
         <h5>Lean</h5>
       </header>
-      <p>No bloat. Just bookmarks.</p>
+      <p>No bloat. <br>Just bookmarks.</p>
     </article>
   </div>
 </section>

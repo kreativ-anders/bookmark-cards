@@ -11,7 +11,7 @@ Bookmarks:
 - 
   title: Built with Kirby
   link: https://getkirby.com/
-  tags: Open Source
+  tags: CMS
 - 
   title: Powered by Stripe
   link: https://stripe.com
@@ -22,6 +22,6 @@ Bookmarks:
   tags: Open Source
 
 -
-  title: Any Questions or Feedback?
-  link: mailto:bookmark.cards@kreativ-anders.de?subject=Bookmark.cards-Feedback
-  tags: Contact
+  title: Analytics with Pirsch
+  link: https://pirsch.io/
+  tags: Analytics
