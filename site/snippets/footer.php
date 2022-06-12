@@ -7,7 +7,7 @@
     </p> 
     <a href="https://kreativ-anders.de/" target="_blank" rel="noopener noreferrer">
       <figure class="image is-128x128" style="margin: auto">
-        <img src="https://github.kreativ-anders.dev/logo/dark.svg" style="width: 90px" alt="kreativ-anders logo">
+        <img src="https://github.kreativ-anders.dev/logo/dark.svg" style="width: 100px" alt="kreativ-anders logo">
       </figure>
     </a>
   </div>
