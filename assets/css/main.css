@@ -27,6 +27,12 @@ li.top-tag {
   }
 }
 
+article header,
+dialog article>footer,
+dialog article>header {
+  padding-bottom: unset;
+}
+
 div#bookmarks article header {
   background: hsla(0, 0%, 100%, .3);
   -webkit-backdrop-filter: blur(3px);
