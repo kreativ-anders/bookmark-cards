@@ -137,6 +137,7 @@ function toggleTag(tag) {
 
   document.querySelectorAll("span.tag").forEach(span => {
     span.style.opacity = 0.2;
+    span.style.border = "none";
   })
 
   if (localStorage.getItem("tag") == t) {
@@ -166,6 +167,14 @@ function toggleTag(tag) {
 
     localStorage.setItem("tag", t);
   }
+
+  // top Tags row only
+  const topTag = document.querySelector("nav span[data-tag*='" + t + "']");
+  console.log(topTag);
+  topTag.style.border = "1px solid hsl(205deg,15%,41%)";
+  topTag.style.borderRadius = "var(--border-radius)";
+  topTag.style.padding = "3px 0.75rem";
+  topTag.style.opacity = 1;
 
   // const jumbo = document.getElementById("jumbotron").getBoundingClientRect();
   // const jumbo_y = jumbo.y + jumbo.height;
@@ -204,7 +213,9 @@ function topTags() {
     span.classList.add("tag");
     li.classList.add("top-tag");
     span.dataset.tag = tag;
-    span.addEventListener('click', function() { toggleTag(tag) });
+    span.addEventListener('click', function() {
+      toggleTag(tag)
+    });
     span.innerText = tag;
     li.appendChild(span);
     ttp.before(li);
