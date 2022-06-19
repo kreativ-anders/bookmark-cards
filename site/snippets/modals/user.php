@@ -10,12 +10,15 @@
       <h3><?= $kirby->user()->email(); ?></i> | Settings</h3>
     </header>
     <form action="/user" method="POST">
-      <input type="email" id="email" name="email" value="<?= esc(get('email', '')) ?>" placeholder="<?= (get('email'))? get('email') : $kirby->user()->email() ?>" autocomplete="email" required>
+      <fieldset>
+        <input type="email" id="email" name="email" value="<?= esc(get('email', '')) ?>" placeholder="<?= (get('email'))? get('email') : $kirby->user()->email() ?>" autocomplete="email" required>
+      </fieldset>
       <input type="submit" name="update" value="Change Email">
     </form>
-      
     <form action="/user" method="POST">
-      <input type="password" id="password" name="password" value="<?= esc(get('password', '')) ?>" placeholder="Password" autocomplete="new-password" required>
+      <fieldset>
+        <input type="password" id="password" name="password" value="<?= esc(get('password', '')) ?>" placeholder="New Password" autocomplete="new-password" required>
+      </fieldset>
       <input type="submit" name="update" value="Change Password">
     </form>
     <a role="button" class="contrast" href="<?= $kirby->user()->getStripePortalURL() ?>">Manage Subscriptions</a>
