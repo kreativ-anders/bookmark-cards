@@ -48,7 +48,7 @@
             </h1>
           </a>
           <p style="margin: 0">
-            .cards
+            .cards <?= e(option('debug'), " ❤ Kirby v" . Kirby::version())?>
             <?php if ($kirby->user() && $kirby->user()->isAllowed(option('kreativ-anders.memberkit.tiers')[1]['name'])): ?>
             <span><strong style="color: darkgoldenrod">Premium</strong></span>
             <?php endif; ?>
