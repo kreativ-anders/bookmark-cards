@@ -6,7 +6,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-  <!-- The title tag we show the title of our site and the title of the current page -->
   <title>Bookmark.cards | bookmarket tool in its simplest form.</title>
   <meta name="description"
     content="Organize and store your articles, websites or other online links privacy friendly. Search and find those again with an easy to use tagging or search feature.">
@@ -17,6 +16,22 @@
   <?php if ($kirby->user()): ?>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#ffffff" />
+  <!-- UpUp.js --> 
+  <script src="/upup.min.js"></script>
+  <script>
+  UpUp.start({
+    'cache-version': Date.now(),
+    'content-url': 'offline.html',
+    'assets': [
+      'favicon.ico', 
+      'assets/css/brands.min.css', 
+      'assets/css/main.min.css', 
+      'offline.min.js', 
+      'user.json', 
+      'assets/js/main.min.js'],
+    'service-worker-url': '/upup.sw.min.js'
+  });
+  </script>
   <?php endif; ?>
 
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">

@@ -19,6 +19,7 @@
     document.addEventListener('DOMContentLoaded', function() {
       topTags()
     });
+
   </script>
   <?php endif; ?>
 

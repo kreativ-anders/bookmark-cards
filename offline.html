@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+
+<html lang="en" data-theme="light">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+  <title>Bookmark.cards | bookmarket tool in its simplest form.</title>
+  <meta name="description" content="Organize and store your articles, websites or other online links privacy friendly. Search and find those again with an easy to use tagging or search feature.">
+
+  <script src="/offline.min.js"></script>
+
+  <link rel="stylesheet" href="assets/css/main.min.css" defer>
+  <link rel="stylesheet" href="assets/css/brands.min.css">
+
+</head>
+
+<body>
+  <header>
+    <nav role="navigation" aria-label="main navigation">
+      <ul>
+        <li>
+          <a class="navbar-item" href="https://bookmark-cards.test">
+            <h1>
+              Bookmark
+            </h1>
+          </a>
+          <p style="margin: 0">
+            .cards <span><strong style="color: darkgoldenrod">Premium</strong> <span style="color: red">Offline</span></span>
+          </p>
+        </li>
+      </ul>
+      <ul>
+        <!-- Top Tags -->
+        <li id="top-tags-placeholder"></li>
+      </ul>
+    </nav>
+  </header>
+
+  <hr style="margin-bottom: unset;">
+
+  <section id="jumbotron" class="container">
+    <form method="POST">
+      <div class="grid" style="grid-column-gap: unset;">
+        <input id="s_title" type="search" name="c_title" placeholder="Title / Brand" minlength="2" maxlength="200" autocomplete="on" disabled>
+        <input id="s_link" type="url" name="c_link" placeholder="Web Link (https://)" maxlength="255" onblur="checkURL(this)" disabled>
+        <input id="s_tags" type="text" name="c_tags" placeholder="Search Tag" maxlength="200" autocomplete="on" disabled>
+      </div>
+    </form>
+  </section>
+
+  <section id="grid">
+    <div id="bookmarks" class="grid"></div>
+  </section>
+
+</body>
+
+</main>
+
+<footer class="container" style="text-align: center;">
+  <div class="grid">
+    <p>
+      <b>Bookmarks.cards</b>
+      <br> by Manuel Steinberg
+    </p>
+    <a href="https://kreativ-anders.de/" target="_blank" rel="noopener noreferrer">
+      <figure class="image is-128x128" style="margin: auto">
+        <img src="https://github.kreativ-anders.dev/logo/dark.svg" style="width: 100px" alt="kreativ-anders logo">
+      </figure>
+    </a>
+  </div>
+
+</footer>
+</body>
+
+</html>
