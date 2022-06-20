@@ -17,8 +17,6 @@
 <?php  if ($kirby->user()) {
   snippet('modals/change'); 
   snippet('modals/user'); 
-
-  snippet('top-tags');
 } ?>
 
 <hr style="margin-bottom: unset;">
