@@ -11,7 +11,7 @@
       <header>
         <h5>Privacy</h5>
       </header>
-      <p>No persoanal activity tracking or ads! You own the data.</p>
+      <p>No personal activity tracking or ads! You own the data.</p>
     </article>
     <article>
       <header>
