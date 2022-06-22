@@ -55,7 +55,7 @@
             <!-- Bookmark Tags -->  
             <div>
               <?php foreach (Str::split($bookmark['tags']) as $tag): ?>
-                <span class="tag" data-tag="<?= $tag ?>" onclick="toggleTag(this.getAttribute('data-tag'))"><?= $tag ?></span>
+                <span class="tag" data-tag="<?= $tag ?>"><?= $tag ?></span>
               <?php endforeach; ?>
             </div>
 
