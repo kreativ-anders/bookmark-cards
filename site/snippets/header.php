@@ -93,14 +93,13 @@
           $url = $kirby->user()->getStripeCheckoutURL(option('kreativ-anders.memberkit.tiers')[1]['name']);                            
           if (!$kirby->user()->isAllowed(option('kreativ-anders.memberkit.tiers')[1]['name'])): 
         ?>
+        <li>
         <?= snippet( 'stripe-checkout-button', [ 'id'      => 'premium-checkout-button'
-                    ,'classes' => 'button is-warning is-light'
-                    ,'text'    => '<span class="icon">
-                                    <i class="fas fa-crown"></i>
-                                  </span>
-                                  <strong>Premium</strong>'
+                    ,'classes' => ''
+                    ,'text'    => 'Premium'
                     ,'url'     => $url]);
                   ?>
+        </li>
         <?php endif ?>
 
         <li>
