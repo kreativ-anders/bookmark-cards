@@ -167,19 +167,6 @@ function toggleTag(tag) {
 
     localStorage.setItem("tag", t);
   }
-
-  // top Tags row only
-  const topTag = document.querySelector("nav span[data-tag*='" + t + "']");
-  console.log(topTag);
-  topTag.style.border = "1px solid hsl(205deg,15%,41%)";
-  topTag.style.borderRadius = "var(--border-radius)";
-  topTag.style.padding = "3px 0.75rem";
-  topTag.style.opacity = 1;
-
-  // const jumbo = document.getElementById("jumbotron").getBoundingClientRect();
-  // const jumbo_y = jumbo.y + jumbo.height;
-  // const y = (document.getElementById("bookmarks").getBoundingClientRect().y + jumbo_y) / 2;
-  // window.scrollTo(0, y);
 }
 
 /**
