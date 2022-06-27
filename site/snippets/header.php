@@ -34,6 +34,8 @@
   </script>
   <?php endif; ?>
 
+  <script src="assets/js/main.min.js"></script>
+
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -44,7 +46,6 @@
   <!-- <script src="https://kit.fontawesome.com/4520751a1c.js" crossorigin="anonymous"></script> -->
 
   <link rel="stylesheet" href="assets/css/main.min.css">
-  <link rel="stylesheet" href="assets/css/brands.min.css">
 
   <script defer type="text/javascript" src="https://api.pirsch.io/pirsch.js" id="pirschjs"
     data-code="DKo22RMuBesw3XMADDNrwe0fQ7544AG1"></script>
