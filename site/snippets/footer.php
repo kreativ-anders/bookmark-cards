@@ -12,7 +12,7 @@
       </a>
       Enhanced by
       <br>
-      <a href="https://kreaitv-anders.de/" target="_blank">
+      <a href="https://kreativ-anders.de/" target="_blank">
         <svg xmlns="http://www.w3.org/2000/svg" style="width: 5rem" version="1.2" viewBox="0 0 225 177.873">
           <g fill="none" fill-rule="evenodd" stroke-linecap="square" stroke-linejoin="bevel">
             <path fill="#f5a000" d="M58.38 30.355h108.485v4.339H58.38v-4.34"/>
