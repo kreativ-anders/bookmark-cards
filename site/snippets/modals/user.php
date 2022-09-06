@@ -25,7 +25,7 @@
     <a href="user.json" class="outline" target="_blank" data-tooltip="in JSON or CSV format" role="button">Export Data</a>
     <footer>
       <form action="user" method="POST" onsubmit="return confirm('This action cannot be revert! Are you sure?');">
-        <input style="background-color: red;" type="submit" name="delete" value="Delete Account">
+        <input style="background-color: red; border-color: grey;" type="submit" name="delete" value="Delete Account">
       </form>
     </footer>
   </article>
