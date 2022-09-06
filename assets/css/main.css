@@ -195,8 +195,9 @@ span.tag {
 
 span.tag:focus,
 span.tag:hover {
+  opacity: 1;
   scale: 1.05;
-  color: black;
+  color: #f5a000;
 }
 
 .modal-card-foot,
