@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var b = null;
 
     if (window.getComputedStyle(card).backgroundImage === 'none') {
-      b = 'linear-gradient(to bottom, white 0%,' + randomLightColor() + '  100%)';
+      b = 'linear-gradient(to bottom, white 0%,' + randomBgColor() + '  100%)';
       card.style.background = b;
     }
   });
@@ -117,11 +117,17 @@ function changeData(id, title, link, tags) {
 
 /**
  * FUNCTION
- * Create a light color palete for cards without background images
+ * Create a color palete for cards without background images
  * @returns colors
  */
-function randomLightColor() {
-  var colors = ['#ADD8E6', '#F08080', '#E0FFFF', '#FAFAD2', '#D3D3D3', '#D3D3D3', '#90EE90', '#FFB6C1', '#FFA07A', '#20B2AA', '#87CEFA', '#778899', '#778899', '#B0C4DE', '#FFFFE0'];
+function randomBgColor() {
+  // Light colors
+  var colors = ['#ADD8E6', '#F08080', '#E0FFFF', '#FAFAD2', '#D3D3D3', '#90EE90', '#FFB6C1', '#FFA07A', '#20B2AA', '#87CEFA', '#778899', '#B0C4DE', '#FFFFE0'];
+
+
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches && document.documentElement.getAttribute("data-theme") != "light") {
+    var colors = ['#235e71', '#650c0c', '#00e0e0', '#b9b915', '#545454', '#116e11', '#b6001b', '#7a2300', '#0d4643', '#054f7d', '#07090a', '#2a4465', '#e0e000'];
+  }
 
   return colors[Math.floor(Math.random() * colors.length)];
 }
@@ -138,6 +144,7 @@ function toggleTag(tag) {
   document.querySelectorAll("span.tag").forEach(span => {
     span.style.opacity = 0.2;
     span.style.border = "none";
+    span.setAttribute("aria-selected", false)
   })
 
   if (localStorage.getItem("tag") == t) {
@@ -161,6 +168,7 @@ function toggleTag(tag) {
         document.querySelectorAll(s).forEach(tag => {
           tag.style.color = "var(--h1-color)";
           tag.style.opacity = 1;
+          tag.setAttribute("aria-selected", true)
         });
       }
     });
@@ -200,6 +208,10 @@ function topTags() {
     span.classList.add("tag");
     li.classList.add("top-tag");
     span.dataset.tag = tag;
+    span.setAttribute("role", "tab");
+    span.setAttribute("aria-controls", tag)
+    span.setAttribute("aria-selected", false)
+    span.setAttribute("tabindex", 0)
     span.addEventListener('click', function() {
       toggleTag(tag)
     });
