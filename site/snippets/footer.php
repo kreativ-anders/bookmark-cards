@@ -1,16 +1,16 @@
 <footer class="container" style="text-align: center;">
 
-    <p>
-      <b>Bookmarks.cards</b>
-      <br>
-      by
-      <a href="https://steinberg.agency/" target="_blank">
-      <figure style="margin: auto">
-        <img src="/assets/images/steinberg-name-transparent.png" style="width: 10vw" alt="kreativ-anders logo">
-      </figure>
+  <p>
+    <b>Bookmarks.cards</b>
+    <br>
+    by
+    <a href="https://steinberg.agency/" target="_blank">
+    <figure style="margin: auto">
+      <img src="/assets/images/steinberg-name-transparent.png" style="width: 10vw" alt="kreativ-anders logo">
+    </figure>
 
-      </a>
-    </p> 
+    </a>
+  </p> 
     
   <link rel="stylesheet" href="assets/css/brands.min.css">  
   
