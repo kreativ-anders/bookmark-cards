@@ -13,6 +13,9 @@ return [
       'install' => false,
       'slug' => 'dashboard'
   ],
+  'content' => [
+    'uuid' => false
+  ],
   'noPremiumLimit' => 12,
   'noPremiumTitle' => 'BECOME PREMIUM',
   'noPremiumLink' => '#',
