@@ -13,8 +13,8 @@ return function ($kirby, $page) {
   if($kirby->request()->is('post') && get('update')) {
 
     $data = [
-      'email'     => esc(get('email')),
-      'password'  => esc(get('password'))
+      'email'     => get('email'),
+      'password'  => get('password')
     ];
 
     $rules = [
