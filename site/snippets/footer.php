@@ -4,9 +4,9 @@
     <b>Bookmarks.cards</b>
     <br>
     by
-    <a href="https://steinberg.agency/" target="_blank">
+    <a href="https://kreativ-anders.de/" target="_blank">
     <figure style="margin: auto">
-      <img src="/assets/images/steinberg-name-transparent.png" style="width: 10vw" alt="kreativ-anders logo">
+      <img src="https://github.kreativ-anders.dev/images/share_square.png" style="width: 10vw" alt="kreativ-anders logo">
     </figure>
 
     </a>
