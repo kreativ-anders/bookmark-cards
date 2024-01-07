@@ -8,7 +8,7 @@
       </header>  
       <h4>0€ <small>/ month</small></h4>
       <p>Check if Bookmark.cards <br />is the right tool for you <br/>with <?= option('noPremiumLimit'); ?> bookmarks.</p>
-      <button id="register" class="primary outline" data-target="registerModal" onclick="toggleModal(event)"><strong>Register</strong></button>
+      <button id="register" class="primary" data-target="registerModal" onclick="toggleModal(event)"><strong>Register</strong></button>
     </article>
     <article>
       <header>

@@ -1,5 +1,5 @@
 <section id="values" class="container">
-  <h2>Loaded with core values:</h2>
+  <h2>Built With Core Values:</h2>
   <div class="grid">
     <article>
       <header>

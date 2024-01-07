@@ -23,10 +23,11 @@
 
 <?php if (!$kirby->user()) {
   snippet('hero'); 
-  snippet('feature-tags'); 
-  snippet('feature-search'); 
-  snippet('feature-beauty'); 
-  snippet('feature-export'); 
+  snippet('features/feature-tags'); 
+  snippet('features/feature-search'); 
+  snippet('features/feature-beauty'); 
+  snippet('features/feature-export'); 
+  snippet('features/feature-extra'); 
 } ?>
 
 <?php if ($kirby->user()) {
@@ -37,12 +38,12 @@
   snippet('premiumbanner');
 } ?>
 
-<?php snippet('bookmarks') ?>
-
 <?php if (!$kirby->user()) {
-  snippet('pricing'); 
   snippet('values');  
+  snippet('pricing');
 } ?>
+
+<?php snippet('bookmarks') ?>
 
 
 
