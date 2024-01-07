@@ -12,7 +12,7 @@
 <?php snippet('header') ?>
 
 <main>
-  <div class="text">
+  <div class="container">
     <?= $page->text()->kt() ?>
   </div>
 </main>
