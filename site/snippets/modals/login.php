@@ -10,6 +10,7 @@
       <h3>Login</h3>
     </header>
     <form action="login" method="POST">
+      <input type="hidden" name="csrf" value="<?= csrf() ?>">
       <fieldset>
         <input type="email" name="email" value="" placeholder="Email" required>
         <input type="password" name="password" value="" placeholder="Passwort" required>

@@ -3,7 +3,7 @@
 return function ($kirby) {
 
   if ($kirby->user()) {
-    go();
+    go('/');
   }
 
   $error = null;
@@ -11,59 +11,68 @@ return function ($kirby) {
 
   if ($kirby->request()->is('POST') && get('login')) {
 
-    $data = [
-      'email'     => get('email'),
-      'password'  => get('password')
-    ];
+    // VALIDATE CSRF TOKEN
+    if (csrf(get('csrf')) === true) {
 
-    $rules = [
-      'email'     => ['required', 'email'],
-      'password'  => ['required']
-    ];
+      // GET FORM DATA
+      $data = [
+        'email'     => get('email'),
+        'password'  => get('password')
+      ];
 
-    $messages = [
-      'email'     => 'Please enter a valid email address',
-      'password'  => 'Please enter a valid password'
-    ];
+      $rules = [
+        'email'     => ['required', 'email'],
+        'password'  => ['required']
+      ];
 
-    // INVALID DATA
-    if($invalid = invalid($data, $rules, $messages)) {
+      $messages = [
+        'email'     => 'Please enter a valid email adress',
+        'password'  => 'Please enter a password'
+      ];
 
-      $alert = $invalid;
-      $error = true;
+      // VALIDATE FORM DATA
+      if($invalid = invalid($data, $rules, $messages)) {
 
-    // DATA IS GOOD
+        $alert = $invalid;
+        $error = true;
+
+      // VALID DATA
+      } else {
+
+        // LOGIN USER
+        try {
+
+          $kirby->auth()->login($data['email'], $data['password']);
+
+        } catch (Exception $e) {
+
+          if(option('debug')) {
+
+            $alert['error'] = 'Invalid email or password: ' . $e->getMessage();
+          }
+          else {
+
+            $alert['error'] = 'Invalid email or password!';
+          }
+        }
+
+        // SUCCESSFUL
+        if (empty($alert) === true) {
+
+          $data = [];
+          go();
+        }
+      }
+    // INVALID CSRF TOKEN    
     } else {
 
-      // LOGIN USER
-      try {
-
-        $kirby->auth()->login(get('email'), get('password'));
-        go('login/success', 202);
-
-      } catch (Exception $e) {
-
-        if(option('debug')) {
-          $alert['error'] = 'Login failed: <strong>' . $e->getMessage() . '</strong>';
-        }
-        else {
-          $alert['error'] = 'Could not log in user!';
-        } 
-        
-        $error = true;
-      }
-
-      // SUCCESS
-      if (empty($alert) === true) {
-        $data = [];
-      }
+      $alert['error'] = 'Invalid CSRF token!';
     }
   }
 
   return [
     'error'   => $error,
     'alert'   => $alert,
-    'data'    => $data ?? false,
-    'success' => $success ?? false
+    'data'    => $data ?? false
   ];
 };

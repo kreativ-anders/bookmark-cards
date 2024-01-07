@@ -10,6 +10,7 @@
       <h3>Register</h3>
     </header>
     <form action="register" method="POST">
+      <input type="hidden" name="csrf" value="<?= csrf() ?>">
       <fieldset>
         <input type="email" name="email" value="" placeholder="Email" required>
         <i style="color: rgba(80,80,80,.5)">The email address is used for authentification and payments (later).</i>
