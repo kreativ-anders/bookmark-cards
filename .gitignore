@@ -43,3 +43,4 @@ site/config/config.*.php
 assets/css/prepros.config
 assets/css/bulma
 .vscode/settings.json
+/node_modules
