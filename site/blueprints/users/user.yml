@@ -6,8 +6,12 @@ permissions:
 tabs:
   # Meta Tab
   meta:
-    label: Additional Info
     fields:
+      info:
+        label: Info
+        type: info
+        theme: passive
+        text: "User was last modified on {{ user.modified('l, d. M  Y — g:i a') }}"
       bookmarks:
         label: Bookmarks
         type: structure
