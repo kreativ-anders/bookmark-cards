@@ -1,6 +1,6 @@
 @import "custom.pico.css";
 svg {
-  width: var(--font-size);
+  width: 1rem;
 }
 
 input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file])[type=search] {
@@ -40,7 +40,7 @@ div#bookmarks article header {
   -khtml-backdrop-filter: blur(3px);
   -ms-backdrop-filter: blur(3px);
   border: none;
-  padding: calc(var(--grid-spacing-horizontal) / 2);
+  padding: calc(var(--pico-spacing) / 2);
   margin-bottom: unset;
 }
 
@@ -51,7 +51,7 @@ div#bookmarks article header {
 }
 
 div#bookmarks article footer {
-  padding: 0 calc(var(--block-spacing-horizontal)/ 2) 10px calc(var(--block-spacing-horizontal)/ 2);
+  padding: 0 calc(var(--pico-block-spacing-horizontal)/ 2) 10px calc(var(--pico-block-spacing-horizontal)/ 2);
   border: none;
   background-color: transparent;
   margin-top: unset;
@@ -126,14 +126,14 @@ input#s_tags {
   opacity: 0.5;
   border: none;
   border-radius: 0;
-  border-top: 1px solid var(--primary);
+  border-top: 1px solid var(--pico-primary);
 }
 
 input#s_title:focus,
 input#s_link:focus,
 input#s_tags:focus {
   opacity: 1;
-  border-radius: var(--border-radius);
+  border-radius: var(--pico-border-radius);
 }
 
 a#logout:hover {

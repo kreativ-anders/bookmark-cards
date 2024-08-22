@@ -1,6 +1,7 @@
 /* Custom SCSS */
 
-$primary-hue: 37;
+// Theme color
+$theme-color: "pumpkin" !default; // amber, azure, blue, cyan, fuchsia, green, grey, indigo, jade, lime, orange, pink, pumpkin, purple, red, sand, slate, violet, yellow, zinc
 
 /* Pico */
 
@@ -9,7 +10,7 @@ $primary-hue: 37;
 /* Custom CSS*/
 
 :root {
-  --primary: #f5a000 !important;
+  --pico-primary: #f5a000 !important;
 }
 
 h1 {
