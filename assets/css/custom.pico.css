@@ -2951,3 +2951,7 @@ textarea,
 h1 {
   margin-bottom: 0px;
 }
+
+[type=search] {
+  --pico-border-radius: unset;
+}

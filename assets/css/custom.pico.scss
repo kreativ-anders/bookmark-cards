@@ -16,3 +16,7 @@ $theme-color: "pumpkin" !default; // amber, azure, blue, cyan, fuchsia, green, g
 h1 {
   margin-bottom: 0px;
 }
+
+[type=search] {
+  --pico-border-radius: unset;
+}
