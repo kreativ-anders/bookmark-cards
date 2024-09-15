@@ -8,6 +8,7 @@
     },
     "scripts": {
         "cy:open": "cypress open",
-        "cy:test": "cypress run --spec 'cypress/e2e/register.cy.js,cypress/e2e/login.cy.js,cypress/e2e/delete.cy.js'"
+        "cy:test": "cypress run --spec 'cypress/e2e/register.cy.js,cypress/e2e/login.cy.js,cypress/e2e/delete.cy.js'",
+        "generateBrandsCSS": "node ./assets/css/generateBrandsCSS.js"
     }
 }

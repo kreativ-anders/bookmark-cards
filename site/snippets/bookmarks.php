@@ -2,7 +2,7 @@
   <div id="bookmarks" class="grid">
 
     <?php foreach ($bookmarks as $i => $bookmark): ?>
-        <article class="bookmark card-background lazy" data-search="<?= $bookmark['title'] . ';' . $bookmark['link'] . ';' . $bookmark['tags'] ?>" data-tags="<?= $bookmark['tags'] ?>" brand="<?= Str::lower($bookmark['title']) ?>">
+        <article class="bookmark card-background lazy" data-search="<?= $bookmark['title'] . ';' . $bookmark['link'] . ';' . $bookmark['tags'] ?>" data-tags="<?= $bookmark['tags'] ?>" brand="<?= Str::lower($bookmark['title']) ?>" style="background-image: url('../../assets/brand-names/<?= Str::lower($bookmark['title']) ?>.svg')">
 
           <header>
             <a class="card-title" rel="noopener noreferrer" target="_self" href="<?= $bookmark['link'] ?>">

@@ -2,6 +2,15 @@
 
 Bookmark.cards is a bookmarket collection tool in its simpliest form.
 
+## BrandsCSS
+
+```bash
+npm i --save-dev colorthief
+npm i --save-dev jimp
+npm i --save-dev get-image-colors
+npm run generateBrandsCSS
+```
+
 ## Test
 
 ```bash
