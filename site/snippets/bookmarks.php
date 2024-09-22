@@ -7,7 +7,7 @@
           data-search="<?= $bookmark['title'] . ';' . $bookmark['link'] . ';' . $bookmark['tags'] ?>" 
           data-tags="<?= $bookmark['tags'] ?>" 
           <?php 
-            $title = Str::lower($bookmark['title']); 
+            $title = Str::replace(Str::lower($bookmark['title']), ' ',''); 
             $hasBackgroundImage = F::exists('assets/brand-names/' . $title . '.svg');
           ?>
           brand="<?= $title ?>" 
