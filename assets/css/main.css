@@ -143,7 +143,7 @@ a#logout:hover {
 article.bookmark a {
   width: 100%;
   display: block;
-  color: #363636;
+  color: var(--pico-contrast);
   text-decoration: none;
   font-weight: bold;
 }

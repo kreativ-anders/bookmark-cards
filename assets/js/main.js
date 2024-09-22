@@ -219,3 +219,36 @@ function topTags() {
     ttp.before(li);
   });
 }
+
+/**
+ * FEATURE
+ * Create tags of the most used tags at all
+ */
+function generateBackgroundColors() {
+  // Initialize ColorThief instance
+  const colorThief = new ColorThief();
+
+  // Select all bookmarks with background images
+  var bookmarks = document.querySelectorAll('div#bookmarks article[data-background=yes]');
+
+  // Iterate over each div element
+  bookmarks.forEach(function(bookmark) {
+      // Get the computed style for the bookmark
+      var style = window.getComputedStyle(bookmark);
+      
+      // Extract the background image property
+      var backgroundImage = style.backgroundImage;
+
+      const image2 = document.createElement("img");
+      var bg_image2 = backgroundImage.slice(4, -1).replace(/"/g, "");
+      image2.src = bg_image2;
+      image2.crossOrigin = "anonymous";
+
+      image2.onload = () => {
+        //const colorRGB2 = colorThief.getColor(image2);
+        const colorRGB2 = colorThief.getPalette(image2,2)[1];
+        console.log(colorRGB2);
+        bookmark.style.backgroundColor = `rgb(${colorRGB2[0]},${colorRGB2[1]},${colorRGB2[2]},0.33)`;
+      };
+  });
+}

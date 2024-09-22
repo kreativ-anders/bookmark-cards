@@ -2,7 +2,18 @@
   <div id="bookmarks" class="grid">
 
     <?php foreach ($bookmarks as $i => $bookmark): ?>
-        <article class="bookmark card-background lazy" data-search="<?= $bookmark['title'] . ';' . $bookmark['link'] . ';' . $bookmark['tags'] ?>" data-tags="<?= $bookmark['tags'] ?>" brand="<?= Str::lower($bookmark['title']) ?>" style="background-image: url('../../assets/brand-names/<?= Str::lower($bookmark['title']) ?>.svg')">
+        <article 
+          class="bookmark card-background lazy" 
+          data-search="<?= $bookmark['title'] . ';' . $bookmark['link'] . ';' . $bookmark['tags'] ?>" 
+          data-tags="<?= $bookmark['tags'] ?>" 
+          <?php 
+            $title = Str::lower($bookmark['title']); 
+            $hasBackgroundImage = F::exists('assets/brand-names/' . $title . '.svg');
+          ?>
+          brand="<?= $title ?>" 
+          style="<?= e($hasBackgroundImage, "background-image: url('../../assets/brand-names/" . $title . ".svg')") ?>"
+          data-background="<?= e($hasBackgroundImage, "yes", "no") ?>" 
+          >
 
           <header>
             <a class="card-title" rel="noopener noreferrer" target="_self" href="<?= $bookmark['link'] ?>">
