@@ -34,14 +34,11 @@ dialog article>header {
 }
 
 div#bookmarks article header {
-  background: hsla(0, 0%, 100%, .3);
-  -webkit-backdrop-filter: blur(3px);
-  -moz-backdrop-filter: blur(3px);
-  -khtml-backdrop-filter: blur(3px);
-  -ms-backdrop-filter: blur(3px);
+  background: rgba(255, 255, 255, 0.2);
   border: none;
   padding: calc(var(--pico-spacing) / 2);
   margin-bottom: unset;
+  backdrop-filter: blur(3px);
 }
 
 .card-title {
@@ -220,14 +217,6 @@ span.tag:hover {
 .card {
   height: 100%;
   border-radius: 4px;
-}
-
-.card-header {
-  background: hsla(0, 0%, 100%, .3);
-  -webkit-backdrop-filter: blur(3px);
-  -moz-backdrop-filter: blur(3px);
-  -khtml-backdrop-filter: blur(3px);
-  -ms-backdrop-filter: blur(3px);
 }
 
 .card-background:hover {
