@@ -9,19 +9,19 @@ Premium: Upgrade to **Premium** with **unlimited bookmarks**, **no distractions*
 Bookmarks:
 
 - 
-  title: Built with Kirby
+  title: Kirby
   link: https://getkirby.com/
   tags: CMS
 - 
-  title: Powered by Stripe
+  title: Stripe
   link: https://stripe.com
   tags: Payment
 - 
-  title: Code on GitHub
+  title: GitHub
   link: https://github.com/kreativ-anders/bookmark-cards
   tags: Open Source
 
 -
-  title: Analytics with Pirsch
+  title: Pirsch
   link: https://pirsch.io/
   tags: Analytics

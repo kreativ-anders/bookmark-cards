@@ -41,6 +41,7 @@
 <?php if (!$kirby->user()) {
   snippet('values');  
   snippet('pricing');
+  snippet('techstack');
 } ?>
 
 <?php snippet('bookmarks') ?>
