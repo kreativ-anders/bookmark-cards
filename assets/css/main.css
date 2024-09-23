@@ -11,6 +11,10 @@ section#grid {
   padding: 0px 1rem;
 }
 
+.container {
+  margin: 3rem auto;
+}
+
 li.top-tag {
   display: none;
 }
