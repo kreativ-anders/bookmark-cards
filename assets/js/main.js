@@ -141,8 +141,9 @@ function toggleTag(tag) {
   var t = String(tag);
 
   document.querySelectorAll("span.tag").forEach(span => {
-    span.style.opacity = 0.2;
+    span.style.opacity = 0.7;
     span.style.border = "none";
+    span.style.color = "unset";
     span.setAttribute("aria-selected", false)
   })
 
@@ -165,7 +166,7 @@ function toggleTag(tag) {
 
         var s = "span[data-tag*='" + t + "']";
         document.querySelectorAll(s).forEach(tag => {
-          tag.style.color = "var(--h1-color)";
+          tag.style.color = "var(--pico-primary)";
           tag.style.opacity = 1;
           tag.setAttribute("aria-selected", true)
         });
@@ -207,7 +208,6 @@ function topTags() {
     span.classList.add("tag");
     li.classList.add("top-tag");
     span.dataset.tag = tag;
-    span.setAttribute("role", "tab");
     span.setAttribute("aria-controls", tag)
     span.setAttribute("aria-selected", false)
     span.setAttribute("tabindex", 0)
@@ -247,7 +247,6 @@ function generateBackgroundColors() {
       image2.onload = () => {
         //const colorRGB2 = colorThief.getColor(image2);
         const colorRGB2 = colorThief.getPalette(image2,2)[1];
-        console.log(colorRGB2);
         bookmark.style.backgroundColor = `rgb(${colorRGB2[0]},${colorRGB2[1]},${colorRGB2[2]},0.33)`;
       };
   });

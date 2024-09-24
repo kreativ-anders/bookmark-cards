@@ -176,7 +176,7 @@ span.edit:hover {
 }
 
 span.tag {
-  opacity: 0.2;
+  opacity: 0.7;
   cursor: pointer;
   font-style: italic;
   font-variant: oldstyle-nums;
@@ -224,7 +224,7 @@ span.tag:hover {
 }
 
 .card-background:hover {
-  transform: scale(1.05);
+  transform: scale(1.048);
   box-shadow: 5px 5px 3px rgba(10, 10, 10, .1), 0 0 0 1px rgba(10, 10, 10, .1);
 }
 

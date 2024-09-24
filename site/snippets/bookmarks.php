@@ -22,7 +22,7 @@
           </header>
 
           <!-- Middle -->
-          <a rel="noopener noreferrer" target="_self" href="<?= $bookmark['link'] ?>">
+          <a rel="noopener noreferrer" aria-label="<?= $bookmark['title'] ?>" target="_self" href="<?= $bookmark['link'] ?>">
             <span class="card-spanner"></span>
           </a>
 
