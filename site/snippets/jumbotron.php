@@ -1,4 +1,4 @@
-<section id="jumbotron" class="container">
+<section id="jumbotron" class="container" style="margin-top: 0">
   <form method="POST">
     <fieldset role="group">
       <input id="s_title" type="search" name="c_title" placeholder="Title / Brand" minlength="2" maxlength="200" autocomplete="on" required>
