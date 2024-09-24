@@ -1,6 +1,6 @@
 @import "custom.pico.css";
 svg {
-  width: var(--font-size);
+  width: 1rem;
 }
 
 input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file])[type=search] {
@@ -9,6 +9,10 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file])[
 
 section#grid {
   padding: 0px 1rem;
+}
+
+.container {
+  margin: 3rem auto;
 }
 
 li.top-tag {
@@ -34,14 +38,11 @@ dialog article>header {
 }
 
 div#bookmarks article header {
-  background: hsla(0, 0%, 100%, .3);
-  -webkit-backdrop-filter: blur(3px);
-  -moz-backdrop-filter: blur(3px);
-  -khtml-backdrop-filter: blur(3px);
-  -ms-backdrop-filter: blur(3px);
+  background: rgba(255, 255, 255, 0.2);
   border: none;
-  padding: calc(var(--grid-spacing-horizontal) / 2);
+  padding: calc(var(--pico-spacing) / 2);
   margin-bottom: unset;
+  backdrop-filter: blur(3px);
 }
 
 .card-title {
@@ -51,7 +52,7 @@ div#bookmarks article header {
 }
 
 div#bookmarks article footer {
-  padding: 0 calc(var(--block-spacing-horizontal)/ 2) 10px calc(var(--block-spacing-horizontal)/ 2);
+  padding: 0 calc(var(--pico-block-spacing-horizontal)/ 2) 10px calc(var(--pico-block-spacing-horizontal)/ 2);
   border: none;
   background-color: transparent;
   margin-top: unset;
@@ -126,14 +127,14 @@ input#s_tags {
   opacity: 0.5;
   border: none;
   border-radius: 0;
-  border-top: 1px solid var(--primary);
+  border-top: 1px solid var(--pico-primary);
 }
 
 input#s_title:focus,
 input#s_link:focus,
 input#s_tags:focus {
   opacity: 1;
-  border-radius: var(--border-radius);
+  border-radius: var(--pico-border-radius);
 }
 
 a#logout:hover {
@@ -143,7 +144,7 @@ a#logout:hover {
 article.bookmark a {
   width: 100%;
   display: block;
-  color: #363636;
+  color: var(--pico-contrast);
   text-decoration: none;
   font-weight: bold;
 }
@@ -175,7 +176,7 @@ span.edit:hover {
 }
 
 span.tag {
-  opacity: 0.2;
+  opacity: 0.7;
   cursor: pointer;
   font-style: italic;
   font-variant: oldstyle-nums;
@@ -222,16 +223,8 @@ span.tag:hover {
   border-radius: 4px;
 }
 
-.card-header {
-  background: hsla(0, 0%, 100%, .3);
-  -webkit-backdrop-filter: blur(3px);
-  -moz-backdrop-filter: blur(3px);
-  -khtml-backdrop-filter: blur(3px);
-  -ms-backdrop-filter: blur(3px);
-}
-
 .card-background:hover {
-  transform: scale(1.05);
+  transform: scale(1.048);
   box-shadow: 5px 5px 3px rgba(10, 10, 10, .1), 0 0 0 1px rgba(10, 10, 10, .1);
 }
 

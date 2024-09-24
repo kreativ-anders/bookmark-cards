@@ -141,8 +141,9 @@ function toggleTag(tag) {
   var t = String(tag);
 
   document.querySelectorAll("span.tag").forEach(span => {
-    span.style.opacity = 0.2;
+    span.style.opacity = 0.7;
     span.style.border = "none";
+    span.style.color = "unset";
     span.setAttribute("aria-selected", false)
   })
 
@@ -165,7 +166,7 @@ function toggleTag(tag) {
 
         var s = "span[data-tag*='" + t + "']";
         document.querySelectorAll(s).forEach(tag => {
-          tag.style.color = "var(--h1-color)";
+          tag.style.color = "var(--pico-primary)";
           tag.style.opacity = 1;
           tag.setAttribute("aria-selected", true)
         });
@@ -207,7 +208,6 @@ function topTags() {
     span.classList.add("tag");
     li.classList.add("top-tag");
     span.dataset.tag = tag;
-    span.setAttribute("role", "tab");
     span.setAttribute("aria-controls", tag)
     span.setAttribute("aria-selected", false)
     span.setAttribute("tabindex", 0)
@@ -217,5 +217,37 @@ function topTags() {
     span.innerText = tag;
     li.appendChild(span);
     ttp.before(li);
+  });
+}
+
+/**
+ * FEATURE
+ * Create tags of the most used tags at all
+ */
+function generateBackgroundColors() {
+  // Initialize ColorThief instance
+  const colorThief = new ColorThief();
+
+  // Select all bookmarks with background images
+  var bookmarks = document.querySelectorAll('div#bookmarks article[data-background=yes]');
+
+  // Iterate over each div element
+  bookmarks.forEach(function(bookmark) {
+      // Get the computed style for the bookmark
+      var style = window.getComputedStyle(bookmark);
+      
+      // Extract the background image property
+      var backgroundImage = style.backgroundImage;
+
+      const image2 = document.createElement("img");
+      var bg_image2 = backgroundImage.slice(4, -1).replace(/"/g, "");
+      image2.src = bg_image2;
+      image2.crossOrigin = "anonymous";
+
+      image2.onload = () => {
+        //const colorRGB2 = colorThief.getColor(image2);
+        const colorRGB2 = colorThief.getPalette(image2,2)[1];
+        bookmark.style.backgroundColor = `rgb(${colorRGB2[0]},${colorRGB2[1]},${colorRGB2[2]},0.33)`;
+      };
   });
 }
