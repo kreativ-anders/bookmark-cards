@@ -85,7 +85,7 @@ return function ($kirby, $page) {
     }
 
     // DeleteBookmark()
-    if(get('d_bookmark')) {
+    if(is_numeric(get('d_bookmark'))) {
 
       $bookmarks = $user->bookmarks()->yaml();
 
@@ -100,10 +100,7 @@ return function ($kirby, $page) {
   
         $error = $e->getMessage(); 
       }
-    }
-
-
-
+    } 
   }
     
   return [
