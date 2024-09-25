@@ -7,12 +7,9 @@
           data-search="<?= $bookmark['title'] . ';' . $bookmark['link'] . ';' . $bookmark['tags'] ?>" 
           data-tags="<?= $bookmark['tags'] ?>" 
           <?php 
-            $title = Str::replace(Str::lower($bookmark['title']), ' ',''); 
-            $hasBackgroundImage = F::exists('assets/brand-names/' . $title . '.svg');
+            $title = Str::lower($bookmark['title']); 
           ?>
-          brand="<?= $title ?>" 
-          style="<?= e($hasBackgroundImage, "background-image: url('../../assets/brand-names/" . $title . ".svg')") ?>"
-          data-background="<?= e($hasBackgroundImage, "yes", "no") ?>" 
+          brand="<?= $title ?>, <?= Str::replace($title, ' ', '') ?>"
           >
 
           <header>

@@ -3,10 +3,10 @@ const path = require('path');
 
 // Configuration
 const imagesFolder = './assets/brand-names';
-const outputCSSFile = './assets/css/output.css';
+const outputCSSFile = './assets/css/brands.css';
 
 // Supported image extensions
-const supportedExtensions = ['.svg', '.png', '.jpg', '.jpeg', '.gif'];
+const supportedExtensions = ['.svg'];
 
 // Function to generate CSS rules for images
 const generateCSSForImages = async (images) => {
@@ -14,11 +14,10 @@ const generateCSSForImages = async (images) => {
 
   for (const image of images) {
     const imageName = path.parse(image).name;
-    const imagePath = path.join(imagesFolder, image).replace(/\\/g, '/');
 
     cssContent += `
 *[brand*='${imageName}'] {
-  background-image: url('${imagePath}');
+  background-image: url('../../assets/brand-names/${imageName}.svg');
 }
 `;
   }

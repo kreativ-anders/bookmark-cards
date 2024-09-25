@@ -21,18 +21,6 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
   });
-
-  // Dyn background (without background-image)
-  Array.from(document.querySelectorAll("article.card-background")).map(function(card) {
-    var b = null;
-
-    if (window.getComputedStyle(card).backgroundImage === 'none') {
-      b = 'linear-gradient(to bottom, white 0%,' + randomBgColor() + '  100%)';
-      card.style.background = b;
-    }
-  });
-
-
 }, false);
 
 // Lazy Load Bg-Images
@@ -229,7 +217,7 @@ function generateBackgroundColors() {
   const colorThief = new ColorThief();
 
   // Select all bookmarks with background images
-  var bookmarks = document.querySelectorAll('div#bookmarks article[data-background=yes]');
+  var bookmarks = document.querySelectorAll('div#bookmarks article');
 
   // Iterate over each div element
   bookmarks.forEach(function(bookmark) {
@@ -238,6 +226,11 @@ function generateBackgroundColors() {
       
       // Extract the background image property
       var backgroundImage = style.backgroundImage;
+
+      // Dyn background (without background-image)
+      if (backgroundImage === 'none') {
+        bookmark.style.background = 'linear-gradient(to bottom, white 0%,' + randomBgColor() + '  100%)';
+      }
 
       const image2 = document.createElement("img");
       var bg_image2 = backgroundImage.slice(4, -1).replace(/"/g, "");
