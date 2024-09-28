@@ -16,7 +16,7 @@ const generateCSSForImages = async (images) => {
     const imageName = path.parse(image).name;
 
     cssContent += `
-*[brand*='${imageName}'] {
+*[brand~='${imageName}'] {
   background-image: url('../../assets/brand-names/${imageName}.svg');
 }
 `;
