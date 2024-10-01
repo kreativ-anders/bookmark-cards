@@ -30,7 +30,7 @@
         <input class="input" type="text" id="tags" name="u_tags" placeholder="Tag1, Tag2, Tag3" value="">
         <small><i>Seperate values with a comma.</i></small>
       </fieldset>
-      <button type="submit">Update Bookmark</button>
+      <button type="submit" data-pirsch-event="Update Bookmark">Update Bookmark</button>
     </form>
   </article>
 </dialog>

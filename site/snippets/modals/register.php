@@ -28,7 +28,7 @@
       </label>
       </fieldset>
       <br><br>      
-      <input type="submit" name="register" value="Register" >
+      <input type="submit" name="register" value="Register" data-pirsch-event="Register">
     </form>
   </article>
 </dialog>

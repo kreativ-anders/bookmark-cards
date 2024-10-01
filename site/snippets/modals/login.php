@@ -15,7 +15,7 @@
         <input type="email" name="email" value="" placeholder="Email" required>
         <input type="password" name="password" value="" placeholder="Passwort" required>
       </fieldset>
-      <input type="submit" name="login" value="Login" >
+      <input type="submit" name="login" value="Login" data-pirsch-event="Login">
     </form>
   </article>
 </dialog>
