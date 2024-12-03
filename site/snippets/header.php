@@ -47,9 +47,9 @@
 
   <link rel="stylesheet" href="assets/css/main.min.css">
 
-  <script defer type="text/javascript" src="https://api.pirsch.io/pirsch.js" id="pirschjs"
+  <script defer src="https://api.pirsch.io/pa.js"
+    id="pianjs"
     data-code="DKo22RMuBesw3XMADDNrwe0fQ7544AG1"></script>
-
 
 </head>
 
