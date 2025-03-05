@@ -1,0 +1,35 @@
+name: Generate Changelog
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  generate-changelog:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Generate Changelog (Last 90 days)
+      run: |
+        DAYS=90
+        echo "## Changelog" > CHANGELOG.md
+        echo "" >> CHANGELOG.md
+        echo "### Changes in the last $DAYS days" >> CHANGELOG.md
+        echo "" >> CHANGELOG.md
+        
+        git log --since="$DAYS days ago" --pretty=format:"- %s (%an, %ad)" --date=short >> CHANGELOG.md
+        echo "" >> CHANGELOG.md
+
+    - name: Commit Changelog
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        git add CHANGELOG.md
+        git commit -m '📝 update CHANGELOG'
+        git push
