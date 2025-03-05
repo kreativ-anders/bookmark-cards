@@ -15,9 +15,9 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Generate Changelog (Last 90 days)
+    - name: Generate Changelog
       run: |
-        DAYS=90
+        DAYS=365
         echo "## Changelog" > CHANGELOG.md
         echo "" >> CHANGELOG.md
         echo "### Changes in the last $DAYS days" >> CHANGELOG.md
