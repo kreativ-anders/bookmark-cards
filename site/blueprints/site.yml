@@ -6,17 +6,19 @@ sections:
     size: huge
     reports:
       - label: Total Users
-        value: €29,682
-      - label: Paying Users
-        value: 265
-        info: 12.5%
+        value: "{{ site.totalUsers }}"
+      - label: Free Users
+        value: "{{ site.freeUsers }}"
+      - label: Paid Users
+        value: "{{ site.paidUsers }}"
+        info: "{{ site.paidUsersPercentage }}"
   Bookmarks:
     type: stats
     # Available size options: small, medium, large, huge. Default is large
     size: medium
     reports:
       - label: Total Bookmarks
-        value: 365
+        value: "{{ site.totalBookmarks }}"
       - label: Total Tags
-        value: 156
+        value: "{{ site.totalTags }}"
 
