@@ -21,4 +21,15 @@ sections:
         value: "{{ site.totalBookmarks }}"
       - label: Total Tags
         value: "{{ site.totalTags }}"
+  Brands:
+    type: stats
+    # Available size options: small, medium, large, huge. Default is large
+    size: medium
+    reports:
+      - label: Available Brands
+        value: "{{ site.totalAvailableBrands }}"
+      - label: Brand Coverage
+        value: "{{ site.brandCoveragePercentage }}"
+      - label: Bookmarks Without Brands
+        value: "{{ site.bookmarksWithoutBrands }}"
 

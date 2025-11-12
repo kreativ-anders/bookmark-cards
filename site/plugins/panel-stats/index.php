@@ -76,6 +76,68 @@ Kirby::plugin('kreativ-anders/panel-stats', [
             $percentage = round(($paid / $total) * 100, 1);
             
             return $percentage . '%';
+        },
+        'availableBrands' => function () {
+            // Parse brands.css to get list of available brand names
+            $brandsFile = kirby()->root('assets') . '/css/brands.css';
+            $brands = [];
+            
+            if (file_exists($brandsFile)) {
+                $content = file_get_contents($brandsFile);
+                // Match patterns like *[brand~='brandname']
+                preg_match_all("/\*\[brand~='([^']+)'\]/", $content, $matches);
+                if (!empty($matches[1])) {
+                    $brands = $matches[1];
+                }
+            }
+            
+            return $brands;
+        },
+        'bookmarksWithoutBrands' => function () {
+            $availableBrands = site()->availableBrands();
+            $withoutBrands = 0;
+            
+            foreach (kirby()->users() as $user) {
+                $bookmarks = $user->bookmarks()->yaml();
+                if (is_array($bookmarks)) {
+                    foreach ($bookmarks as $bookmark) {
+                        if (!empty($bookmark['title'])) {
+                            $title = strtolower($bookmark['title']);
+                            $titleNoSpaces = str_replace(' ', '', $title);
+                            
+                            // Check if brand exists for this bookmark
+                            $hasBrand = false;
+                            foreach ($availableBrands as $brand) {
+                                if ($brand === $title || $brand === $titleNoSpaces) {
+                                    $hasBrand = true;
+                                    break;
+                                }
+                            }
+                            
+                            if (!$hasBrand) {
+                                $withoutBrands++;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return $withoutBrands;
+        },
+        'brandCoveragePercentage' => function () {
+            $total = site()->totalBookmarks();
+            if ($total === 0) {
+                return '100%';
+            }
+            
+            $without = site()->bookmarksWithoutBrands();
+            $withBrands = $total - $without;
+            $percentage = round(($withBrands / $total) * 100, 1);
+            
+            return $percentage . '%';
+        },
+        'totalAvailableBrands' => function () {
+            return count(site()->availableBrands());
         }
     ]
 ]);

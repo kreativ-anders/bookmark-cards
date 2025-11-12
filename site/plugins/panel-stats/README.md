@@ -16,6 +16,12 @@ The plugin adds the following site methods that can be used in panel blueprints:
 - `site.totalBookmarks()` - Returns the total number of bookmarks across all users
 - `site.totalTags()` - Returns the count of unique tags (case-insensitive) across all bookmarks
 
+### Brand Coverage Statistics (NEW)
+- `site.availableBrands()` - Returns array of available brand names from brands.css
+- `site.totalAvailableBrands()` - Returns the count of available brand logos
+- `site.bookmarksWithoutBrands()` - Returns count of bookmarks without matching brand logos
+- `site.brandCoveragePercentage()` - Returns brand coverage percentage as formatted string (e.g., "85.5%")
+
 ## Usage
 
 These methods are used in the `site.yml` blueprint to display dynamic statistics on the panel dashboard:
@@ -42,14 +48,63 @@ sections:
         value: "{{ site.totalBookmarks }}"
       - label: Total Tags
         value: "{{ site.totalTags }}"
+        
+  Brands:
+    type: stats
+    size: medium
+    reports:
+      - label: Available Brands
+        value: "{{ site.totalAvailableBrands }}"
+      - label: Brand Coverage
+        value: "{{ site.brandCoveragePercentage }}"
+      - label: Bookmarks Without Brands
+        value: "{{ site.bookmarksWithoutBrands }}"
 ```
+
+## Brand Coverage Feature
+
+The brand coverage feature helps administrators identify which bookmarks don't have matching brand logos.
+
+### How Brand Matching Works
+
+Bookmarks are matched against available brands using the bookmark's title:
+1. The title is converted to lowercase
+2. The system checks for an exact match with brand names in `brands.css`
+3. The system also checks the title with spaces removed
+
+For example, a bookmark titled "Google Drive" would match:
+- `google drive` (exact match)
+- `googledrive` (no spaces)
+
+### Viewing Brand Statistics
+
+1. Log in to the Kirby admin panel
+2. Navigate to the Site section
+3. View the "Brands" statistics panel
+
+### Improving Brand Coverage
+
+To improve brand coverage:
+1. Create SVG logos for missing brands
+2. Add them to `assets/brand-names/` directory
+3. Run `npm run generateBrandsCSS` to update brands.css
+4. Refresh the admin panel to see updated statistics
+
+Alternatively, use the CLI tool:
+```bash
+npm run check-brands
+```
+
+This will generate a detailed report showing which bookmarks lack brand logos.
 
 ## Dependencies
 
 - Requires the `kreativ-anders.memberkit` plugin for tier management
 - Requires user accounts with the `tier` field
 - Requires users to have a `bookmarks` field that returns YAML data
+- Requires `assets/css/brands.css` for brand coverage analysis
 
 ## Integration with Stripe
 
 This plugin is compatible with Stripe integration via the memberkit plugin. It distinguishes between free and paid users based on the tier configuration in `site/config/config.php`.
+

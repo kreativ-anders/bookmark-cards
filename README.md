@@ -11,6 +11,18 @@ npm i --save-dev get-image-colors
 npm run generateBrandsCSS
 ```
 
+## Brand Coverage Testing
+
+Check which bookmarks have matching brand logos:
+
+```bash
+npm run check-brands
+```
+
+Or view brand statistics in the admin panel under Site → Brands.
+
+See [Brand Logo Testing Guide](docs/brand-logo-testing-guide.md) for details.
+
 ## Test
 
 ```bash
