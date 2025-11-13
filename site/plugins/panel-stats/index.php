@@ -183,9 +183,22 @@ Kirby::plugin('kreativ-anders/panel-stats', [
             
             return $missingBrands;
         },
-        'missingBrandsForPanel' => function () {
-            // Return the list in YAML format for the structure field
-            return \Kirby\Data\Yaml::encode(site()->missingBrandsList());
+        'missingBrandsText' => function () {
+            $missing = site()->missingBrandsList();
+            
+            if (empty($missing)) {
+                return '✅ All bookmarks have matching brand logos!';
+            }
+            
+            $text = "The following bookmark titles don't have matching brand logos:\n\n";
+            
+            // Show all missing brands (no limit)
+            foreach ($missing as $item) {
+                $text .= "• **{$item['title']}** (used {$item['count']}x)\n";
+                $text .= "  Suggested brand name: `{$item['suggested']}`\n\n";
+            }
+            
+            return $text;
         }
     ]
 ]);
