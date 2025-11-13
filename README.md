@@ -13,15 +13,12 @@ npm run generateBrandsCSS
 
 ## Brand Coverage Testing
 
-Check which bookmarks have matching brand logos:
+View brand coverage statistics in the admin panel under **Site → Brands**.
 
-```bash
-npm run check-brands
-```
-
-Or view brand statistics in the admin panel under Site → Brands.
-
-See [Brand Logo Testing Guide](docs/brand-logo-testing-guide.md) for details.
+The admin panel shows:
+- Available brand logos count
+- Brand coverage percentage
+- List of bookmarks without matching brand logos
 
 ## Test
 
