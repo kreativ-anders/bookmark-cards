@@ -16,11 +16,13 @@ The plugin adds the following site methods that can be used in panel blueprints:
 - `site.totalBookmarks()` - Returns the total number of bookmarks across all users
 - `site.totalTags()` - Returns the count of unique tags (case-insensitive) across all bookmarks
 
-### Brand Coverage Statistics (NEW)
+### Brand Coverage Statistics
 - `site.availableBrands()` - Returns array of available brand names from brands.css
 - `site.totalAvailableBrands()` - Returns the count of available brand logos
 - `site.bookmarksWithoutBrands()` - Returns count of bookmarks without matching brand logos
 - `site.brandCoveragePercentage()` - Returns brand coverage percentage as formatted string (e.g., "85.5%")
+- `site.missingBrandsList()` - Returns detailed array of bookmarks without brands
+- `site.missingBrandsText()` - Returns formatted text list of missing brands for display
 
 ## Usage
 
@@ -59,11 +61,16 @@ sections:
         value: "{{ site.brandCoveragePercentage }}"
       - label: Bookmarks Without Brands
         value: "{{ site.bookmarksWithoutBrands }}"
+        
+  MissingBrands:
+    headline: Missing Brand Logos
+    type: info
+    text: "{{ site.missingBrandsText }}"
 ```
 
 ## Brand Coverage Feature
 
-The brand coverage feature helps administrators identify which bookmarks don't have matching brand logos.
+The brand coverage feature helps administrators identify which bookmarks don't have matching brand logos directly in the admin panel.
 
 ### How Brand Matching Works
 
@@ -80,22 +87,23 @@ For example, a bookmark titled "Google Drive" would match:
 
 1. Log in to the Kirby admin panel
 2. Navigate to the Site section
-3. View the "Brands" statistics panel
+3. View the "Brands" statistics panel for overview
+4. Scroll down to "Missing Brand Logos" section to see detailed list
+
+The panel shows:
+- Brand coverage statistics (count and percentage)
+- Detailed list of bookmark titles without brands
+- Usage count for each missing brand
+- Suggested brand name (lowercase, no spaces)
 
 ### Improving Brand Coverage
 
 To improve brand coverage:
-1. Create SVG logos for missing brands
-2. Add them to `assets/brand-names/` directory
-3. Run `npm run generateBrandsCSS` to update brands.css
-4. Refresh the admin panel to see updated statistics
-
-Alternatively, use the CLI tool:
-```bash
-npm run check-brands
-```
-
-This will generate a detailed report showing which bookmarks lack brand logos.
+1. Check the "Missing Brand Logos" section in the admin panel
+2. Create SVG logos for the most frequently used bookmarks without brands
+3. Add them to `assets/brand-names/` directory with the suggested name
+4. Run `npm run generateBrandsCSS` to update brands.css
+5. Refresh the admin panel to see updated statistics
 
 ## Dependencies
 

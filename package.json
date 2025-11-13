@@ -9,7 +9,6 @@
     "scripts": {
         "cy:open": "cypress open",
         "cy:test": "cypress run --spec 'cypress/e2e/register.cy.js,cypress/e2e/login.cy.js,cypress/e2e/delete.cy.js'",
-        "generateBrandsCSS": "node ./assets/css/generateBrandsCSS.js",
-        "check-brands": "node ./scripts/check-brand-coverage.js"
+        "generateBrandsCSS": "node ./assets/css/generateBrandsCSS.js"
     }
 }

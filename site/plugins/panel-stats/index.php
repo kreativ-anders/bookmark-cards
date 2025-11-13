@@ -138,6 +138,71 @@ Kirby::plugin('kreativ-anders/panel-stats', [
         },
         'totalAvailableBrands' => function () {
             return count(site()->availableBrands());
+        },
+        'missingBrandsList' => function () {
+            $availableBrands = site()->availableBrands();
+            $missingBrands = [];
+            
+            foreach (kirby()->users() as $user) {
+                $bookmarks = $user->bookmarks()->yaml();
+                if (is_array($bookmarks)) {
+                    foreach ($bookmarks as $bookmark) {
+                        if (!empty($bookmark['title'])) {
+                            $title = strtolower($bookmark['title']);
+                            $titleNoSpaces = str_replace(' ', '', $title);
+                            
+                            // Check if brand exists for this bookmark
+                            $hasBrand = false;
+                            foreach ($availableBrands as $brand) {
+                                if ($brand === $title || $brand === $titleNoSpaces) {
+                                    $hasBrand = true;
+                                    break;
+                                }
+                            }
+                            
+                            if (!$hasBrand) {
+                                // Track unique bookmark titles without brands
+                                if (!isset($missingBrands[$bookmark['title']])) {
+                                    $missingBrands[$bookmark['title']] = [
+                                        'title' => $bookmark['title'],
+                                        'count' => 0,
+                                        'suggested' => $titleNoSpaces
+                                    ];
+                                }
+                                $missingBrands[$bookmark['title']]['count']++;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Sort by count (most used first)
+            usort($missingBrands, function($a, $b) {
+                return $b['count'] - $a['count'];
+            });
+            
+            return $missingBrands;
+        },
+        'missingBrandsText' => function () {
+            $missing = site()->missingBrandsList();
+            
+            if (empty($missing)) {
+                return '✅ All bookmarks have matching brand logos!';
+            }
+            
+            $text = "The following bookmark titles don't have matching brand logos:\n\n";
+            
+            foreach (array_slice($missing, 0, 20) as $item) {
+                $text .= "• **{$item['title']}** (used {$item['count']}x)\n";
+                $text .= "  Suggested brand name: `{$item['suggested']}`\n\n";
+            }
+            
+            if (count($missing) > 20) {
+                $remaining = count($missing) - 20;
+                $text .= "\n_...and {$remaining} more. Showing top 20 most used._";
+            }
+            
+            return $text;
         }
     ]
 ]);

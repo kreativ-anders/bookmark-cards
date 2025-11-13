@@ -32,4 +32,8 @@ sections:
         value: "{{ site.brandCoveragePercentage }}"
       - label: Bookmarks Without Brands
         value: "{{ site.bookmarksWithoutBrands }}"
+  MissingBrands:
+    headline: Missing Brand Logos
+    type: info
+    text: "{{ site.missingBrandsText }}"
 
