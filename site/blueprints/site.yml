@@ -33,7 +33,28 @@ sections:
       - label: Bookmarks Without Brands
         value: "{{ site.bookmarksWithoutBrands }}"
   MissingBrands:
-    headline: Missing Brand Logos
-    type: info
-    text: "{{ site.missingBrandsText }}"
+    type: fields
+    fields:
+      missingbrands:
+        label: Missing Brand Logos
+        type: structure
+        columns:
+          title:
+            width: 1/3
+          count:
+            width: 1/3
+          suggested:
+            width: 1/3
+        fields:
+          title:
+            label: Bookmark Title
+            type: text
+          count:
+            label: Usage Count
+            type: number
+          suggested:
+            label: Suggested Brand Name
+            type: text
+        disabled: true
+        default: "{{ site.missingBrandsForPanel }}"
 

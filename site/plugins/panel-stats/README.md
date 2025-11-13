@@ -22,7 +22,7 @@ The plugin adds the following site methods that can be used in panel blueprints:
 - `site.bookmarksWithoutBrands()` - Returns count of bookmarks without matching brand logos
 - `site.brandCoveragePercentage()` - Returns brand coverage percentage as formatted string (e.g., "85.5%")
 - `site.missingBrandsList()` - Returns detailed array of bookmarks without brands
-- `site.missingBrandsText()` - Returns formatted text list of missing brands for display
+- `site.missingBrandsForPanel()` - Returns YAML-encoded list of missing brands for structure field
 
 ## Usage
 
@@ -63,9 +63,30 @@ sections:
         value: "{{ site.bookmarksWithoutBrands }}"
         
   MissingBrands:
-    headline: Missing Brand Logos
-    type: info
-    text: "{{ site.missingBrandsText }}"
+    type: fields
+    fields:
+      missingbrands:
+        label: Missing Brand Logos
+        type: structure
+        columns:
+          title:
+            width: 1/3
+          count:
+            width: 1/3
+          suggested:
+            width: 1/3
+        fields:
+          title:
+            label: Bookmark Title
+            type: text
+          count:
+            label: Usage Count
+            type: number
+          suggested:
+            label: Suggested Brand Name
+            type: text
+        disabled: true
+        default: "{{ site.missingBrandsForPanel }}"
 ```
 
 ## Brand Coverage Feature
@@ -92,7 +113,7 @@ For example, a bookmark titled "Google Drive" would match:
 
 The panel shows:
 - Brand coverage statistics (count and percentage)
-- Detailed list of bookmark titles without brands
+- Structured table of all bookmark titles without brands (sorted by usage frequency)
 - Usage count for each missing brand
 - Suggested brand name (lowercase, no spaces)
 

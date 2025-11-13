@@ -183,26 +183,9 @@ Kirby::plugin('kreativ-anders/panel-stats', [
             
             return $missingBrands;
         },
-        'missingBrandsText' => function () {
-            $missing = site()->missingBrandsList();
-            
-            if (empty($missing)) {
-                return '✅ All bookmarks have matching brand logos!';
-            }
-            
-            $text = "The following bookmark titles don't have matching brand logos:\n\n";
-            
-            foreach (array_slice($missing, 0, 20) as $item) {
-                $text .= "• **{$item['title']}** (used {$item['count']}x)\n";
-                $text .= "  Suggested brand name: `{$item['suggested']}`\n\n";
-            }
-            
-            if (count($missing) > 20) {
-                $remaining = count($missing) - 20;
-                $text .= "\n_...and {$remaining} more. Showing top 20 most used._";
-            }
-            
-            return $text;
+        'missingBrandsForPanel' => function () {
+            // Return the list in YAML format for the structure field
+            return \Kirby\Data\Yaml::encode(site()->missingBrandsList());
         }
     ]
 ]);
