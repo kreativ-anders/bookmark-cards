@@ -11,6 +11,15 @@ npm i --save-dev get-image-colors
 npm run generateBrandsCSS
 ```
 
+## Brand Coverage Testing
+
+View brand coverage statistics in the admin panel under **Site → Brands**.
+
+The admin panel shows:
+- Available brand logos count
+- Brand coverage percentage
+- List of bookmarks without matching brand logos
+
 ## Test
 
 ```bash
