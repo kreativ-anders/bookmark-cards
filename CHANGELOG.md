@@ -2,6 +2,8 @@
 
 ### Changes in the last 365 days
 
+- Run workflow on merged PRs instead of during PR lifecycle (#37) (Copilot, 2025-11-14)
+- 📝 update CHANGELOG (github-actions[bot], 2025-11-14)
 - Update brand-names submodule to latest version (#36) (github-actions[bot], 2025-11-14)
 - 📝 update CHANGELOG (github-actions[bot], 2025-11-14)
 - Add automated workflows for brand-names submodule updates and CSS generation (#35) (Copilot, 2025-11-14)
