@@ -6,10 +6,13 @@
           class="bookmark card-background lazy" 
           data-search="<?= $bookmark['title'] . ';' . $bookmark['link'] . ';' . $bookmark['tags'] ?>" 
           data-tags="<?= $bookmark['tags'] ?>" 
-          <?php 
-            $title = Str::lower($bookmark['title']); 
+          <?php
+            // normalize title for brand token: lowercase, remove spaces and hyphens
+            $title = Str::lower($bookmark['title']);
+            // keep only lowercase letters a-z (remove spaces, hyphens, apostrophes, digits, punctuation, etc.)
+            $brand = preg_replace('/[^a-z]+/', '', $title);
           ?>
-          brand="<?= $title ?>, <?= Str::replace($title, ' ', '') ?>"
+          brand="<?= $title ?>, <?= $brand ?>"
           >
 
           <header>
