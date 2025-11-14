@@ -2,6 +2,8 @@
 
 ### Changes in the last 365 days
 
+- Update brand-names submodule to latest version (#36) (github-actions[bot], 2025-11-14)
+- 📝 update CHANGELOG (github-actions[bot], 2025-11-14)
 - Add automated workflows for brand-names submodule updates and CSS generation (#35) (Copilot, 2025-11-14)
 - 📝 update CHANGELOG (github-actions[bot], 2025-11-14)
 - ⚡️improve brand CSS generation and file safety (Manuel Steinberg, 2025-11-14)
