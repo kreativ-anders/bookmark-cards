@@ -2,7 +2,7 @@ name: Generate and Minify Brands CSS
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [closed]
     paths:
       - 'assets/brand-names/**'
   workflow_dispatch: # Allow manual triggering
@@ -13,36 +13,38 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    
-    # Only run on PRs that update the brand-names submodule
-    if: contains(github.event.pull_request.title, 'brand-names') || github.event_name == 'workflow_dispatch'
-    
+
+    # Only run when PR was merged, or when manually dispatched
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+
     steps:
-      - name: Checkout PR branch
+      - name: Checkout repository (merged base or workflow ref)
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref }}
+          # If this run was triggered by a pull_request closed event, use the PR's base branch
+          # Otherwise, fall back to the workflow ref (e.g., workflow_dispatch)
+          ref: ${{ github.event.pull_request.base.ref || github.ref }}
           submodules: true
           token: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-      
+
       - name: Install dependencies
         run: |
           # Skip Cypress binary installation since we only need PostCSS tools
           CYPRESS_INSTALL_BINARY=0 npm install
-      
+
       - name: Generate brands.css
         run: |
           npm run generateBrandsCSS
-      
+
       - name: Autoprefix and minify to brands.min.css
         run: |
           npm run minifyBrandsCSS
-      
+
       - name: Commit and push changes
         run: |
           git config --global user.name 'github-actions[bot]'
