@@ -14,9 +14,13 @@ const generateCSSForImages = async (images) => {
 
   for (const image of images) {
     const imageName = path.parse(image).name;
+    // normalized token: lowercase and keep only a-z letters (match behavior as in PHP preg_replace('/[^a-z]+/', '', $title))
+    const token = imageName.toLowerCase().replace(/[^a-z]+/g, '');
 
+    // Use substring attribute selector (*=) for more permissive/ambiguous matching
+    // Keep the original image filename for the URL
     cssContent += `
-*[brand~='${imageName}'] {
+*[brand*='${token}'] {
   background-image: url('../../assets/brand-names/${imageName}.svg');
 }
 `;
