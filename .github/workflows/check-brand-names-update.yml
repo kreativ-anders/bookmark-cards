@@ -1,0 +1,74 @@
+name: Check Brand Names Submodule Update
+
+on:
+  schedule:
+    # Run monthly on the 1st day at 00:00 UTC
+    - cron: '0 0 1 * *'
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  check-submodule-update:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Check for brand-names updates
+        id: check_update
+        run: |
+          cd assets/brand-names
+          git fetch origin main
+          
+          # Get current commit and latest commit on main
+          CURRENT_COMMIT=$(git rev-parse HEAD)
+          LATEST_COMMIT=$(git rev-parse origin/main)
+          
+          echo "Current commit: $CURRENT_COMMIT"
+          echo "Latest commit: $LATEST_COMMIT"
+          
+          if [ "$CURRENT_COMMIT" != "$LATEST_COMMIT" ]; then
+            echo "update_available=true" >> $GITHUB_OUTPUT
+            echo "new_commit=$LATEST_COMMIT" >> $GITHUB_OUTPUT
+            echo "Update available!"
+          else
+            echo "update_available=false" >> $GITHUB_OUTPUT
+            echo "Already up to date"
+          fi
+      
+      - name: Update submodule
+        if: steps.check_update.outputs.update_available == 'true'
+        run: |
+          cd assets/brand-names
+          git checkout main
+          git pull origin main
+          cd ../..
+          git add assets/brand-names
+      
+      - name: Create Pull Request
+        if: steps.check_update.outputs.update_available == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'Update brand-names submodule to latest version'
+          branch: update-brand-names-submodule
+          delete-branch: true
+          title: '🔄 Update brand-names submodule'
+          body: |
+            ## Submodule Update
+            
+            This PR updates the `brand-names` submodule to the latest version from the main branch.
+            
+            **New commit:** ${{ steps.check_update.outputs.new_commit }}
+            
+            ### Next Steps
+            Once this PR is merged, the brand CSS generation workflow will automatically:
+            - Generate the updated `brands.css` file
+            - Autoprefix and minify it to `brands.min.css`
+            - Commit the changes to the repository
+          labels: |
+            dependencies
+            submodule-update

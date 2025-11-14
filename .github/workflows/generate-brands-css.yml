@@ -1,0 +1,67 @@
+name: Generate and Minify Brands CSS
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'assets/brand-names/**'
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  generate-brands-css:
+    runs-on: ubuntu-latest
+    
+    # Only run on PRs that update the brand-names submodule
+    if: contains(github.event.pull_request.title, 'brand-names') || github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          submodules: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install dependencies
+        run: |
+          npm install --save-dev postcss postcss-cli autoprefixer cssnano
+      
+      - name: Generate brands.css
+        run: |
+          npm run generateBrandsCSS
+      
+      - name: Create PostCSS config
+        run: |
+          cat > postcss.config.js << 'EOF'
+          module.exports = {
+            plugins: [
+              require('autoprefixer'),
+              require('cssnano')({
+                preset: 'default',
+              })
+            ]
+          };
+          EOF
+      
+      - name: Autoprefix and minify to brands.min.css
+        run: |
+          npx postcss assets/css/brands.css -o assets/css/brands.min.css
+      
+      - name: Commit and push changes
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add assets/css/brands.css assets/css/brands.min.css
+          
+          # Check if there are changes to commit
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m '🎨 Regenerate and minify brands CSS'
+            git push
+          fi
