@@ -29,6 +29,7 @@ jobs:
           # Get current commit and latest commit on main
           CURRENT_COMMIT=$(git rev-parse HEAD)
           LATEST_COMMIT=$(git rev-parse origin/main)
+          SHORT_COMMIT=$(git rev-parse --short=7 origin/main)
           
           echo "Current commit: $CURRENT_COMMIT"
           echo "Latest commit: $LATEST_COMMIT"
@@ -36,6 +37,7 @@ jobs:
           if [ "$CURRENT_COMMIT" != "$LATEST_COMMIT" ]; then
             echo "update_available=true" >> $GITHUB_OUTPUT
             echo "new_commit=$LATEST_COMMIT" >> $GITHUB_OUTPUT
+            echo "new_commit_short=$SHORT_COMMIT" >> $GITHUB_OUTPUT
             echo "Update available!"
           else
             echo "update_available=false" >> $GITHUB_OUTPUT
@@ -65,7 +67,7 @@ jobs:
             
             This PR updates the `brand-names` submodule to the latest version from the main branch.
             
-            **New commit:** ${{ steps.check_update.outputs.new_commit }}
+            **New commit:** [`${{ steps.check_update.outputs.new_commit_short }}`](https://github.com/kreativ-anders/brand-names/commit/${{ steps.check_update.outputs.new_commit }})
             
             ### Next Steps
             Once this PR is merged, the brand CSS generation workflow will automatically:
