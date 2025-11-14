@@ -10,6 +10,9 @@ on:
 jobs:
   generate-brands-css:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     
     # Only run on PRs that update the brand-names submodule
     if: contains(github.event.pull_request.title, 'brand-names') || github.event_name == 'workflow_dispatch'
@@ -29,28 +32,15 @@ jobs:
       
       - name: Install dependencies
         run: |
-          npm install --save-dev postcss postcss-cli autoprefixer cssnano
+          CYPRESS_INSTALL_BINARY=0 npm install
       
       - name: Generate brands.css
         run: |
           npm run generateBrandsCSS
       
-      - name: Create PostCSS config
-        run: |
-          cat > postcss.config.js << 'EOF'
-          module.exports = {
-            plugins: [
-              require('autoprefixer'),
-              require('cssnano')({
-                preset: 'default',
-              })
-            ]
-          };
-          EOF
-      
       - name: Autoprefix and minify to brands.min.css
         run: |
-          npx postcss assets/css/brands.css -o assets/css/brands.min.css
+          npm run minifyBrandsCSS
       
       - name: Commit and push changes
         run: |
