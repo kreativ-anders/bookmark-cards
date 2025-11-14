@@ -4,11 +4,16 @@
     "description": "Bookmark.cards is a bookmarket collection tool in its simpliest form.",
     "author": "kreativ-anders | Manuel Steinberg",
     "devDependencies": {
-        "cypress": "^13.14.2"
+        "autoprefixer": "^10.4.20",
+        "cssnano": "^7.0.6",
+        "cypress": "^13.14.2",
+        "postcss": "^8.4.49",
+        "postcss-cli": "^11.0.0"
     },
     "scripts": {
         "cy:open": "cypress open",
         "cy:test": "cypress run --spec 'cypress/e2e/register.cy.js,cypress/e2e/login.cy.js,cypress/e2e/delete.cy.js'",
-        "generateBrandsCSS": "node ./assets/css/generateBrandsCSS.js"
+        "generateBrandsCSS": "node ./assets/css/generateBrandsCSS.js",
+        "minifyBrandsCSS": "postcss assets/css/brands.css -o assets/css/brands.min.css"
     }
 }
