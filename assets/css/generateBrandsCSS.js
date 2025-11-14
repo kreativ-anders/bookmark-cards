@@ -14,14 +14,18 @@ const generateCSSForImages = async (images) => {
 
   for (const image of images) {
     const imageName = path.parse(image).name;
-    // normalized token: lowercase and keep only a-z letters (match behavior as in PHP preg_replace('/[^a-z]+/', '', $title))
-    const token = imageName.toLowerCase().replace(/[^a-z]+/g, '');
+    // normalized token: lowercase and keep only a-z letters
+    const token = String(imageName).toLowerCase().replace(/[^a-z]+/g, '');
 
-    // Use substring attribute selector (*=) for more permissive/ambiguous matching
-    // Keep the original image filename for the URL
+    // skip images that don't produce a token (defensive)
+    if (!token) continue;
+
+    // Use substring attribute selector (*=) for permissive matching
+    // Keep the original image filename for the URL but URL-encode it to be safe
+    const safeFile = encodeURI(imageName + '.svg');
     cssContent += `
 *[brand*='${token}'] {
-  background-image: url('../../assets/brand-names/${imageName}.svg');
+  background-image: url('../../assets/brand-names/${safeFile}');
 }
 `;
   }
