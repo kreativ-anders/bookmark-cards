@@ -2,6 +2,8 @@
 
 ### Changes in the last 365 days
 
+- Add automated workflows for brand-names submodule updates and CSS generation (#35) (Copilot, 2025-11-14)
+- 📝 update CHANGELOG (github-actions[bot], 2025-11-14)
 - ⚡️improve brand CSS generation and file safety (Manuel Steinberg, 2025-11-14)
 - ⚡️ sanitize bookmark output for improved security (Manuel Steinberg, 2025-11-14)
 - 🎨 switch brand CSS selectors to substring matching (Manuel Steinberg, 2025-11-14)
