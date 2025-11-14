@@ -7,8 +7,16 @@
   background-image: url('../../assets/brand-names/adobe.svg');
 }
 
+*[brand*='airtable'] {
+  background-image: url('../../assets/brand-names/airtable.svg');
+}
+
 *[brand*='algolia'] {
   background-image: url('../../assets/brand-names/algolia.svg');
+}
+
+*[brand*='aliexpress'] {
+  background-image: url('../../assets/brand-names/aliexpress.svg');
 }
 
 *[brand*='amazon'] {
@@ -71,12 +79,20 @@
   background-image: url('../../assets/brand-names/buffer.svg');
 }
 
+*[brand*='bundesliga'] {
+  background-image: url('../../assets/brand-names/bundesliga.svg');
+}
+
 *[brand*='buymeacoffee'] {
   background-image: url('../../assets/brand-names/buymeacoffee.svg');
 }
 
 *[brand*='canva'] {
   background-image: url('../../assets/brand-names/canva.svg');
+}
+
+*[brand*='capcut'] {
+  background-image: url('../../assets/brand-names/capcut.svg');
 }
 
 *[brand*='carbon'] {
@@ -99,12 +115,20 @@
   background-image: url('../../assets/brand-names/chip.svg');
 }
 
+*[brand*='cloudways'] {
+  background-image: url('../../assets/brand-names/cloudways.svg');
+}
+
 *[brand*='codepen'] {
   background-image: url('../../assets/brand-names/codepen.svg');
 }
 
 *[brand*='coffee'] {
   background-image: url('../../assets/brand-names/coffee.svg');
+}
+
+*[brand*='companymood'] {
+  background-image: url('../../assets/brand-names/companymood.svg');
 }
 
 *[brand*='confluence'] {
@@ -115,6 +139,10 @@
   background-image: url('../../assets/brand-names/contentin.svg');
 }
 
+*[brand*='coolers'] {
+  background-image: url('../../assets/brand-names/coolers.svg');
+}
+
 *[brand*='copy'] {
   background-image: url('../../assets/brand-names/copy.svg');
 }
@@ -123,8 +151,16 @@
   background-image: url('../../assets/brand-names/couchsurfing.svg');
 }
 
+*[brand*='coverr'] {
+  background-image: url('../../assets/brand-names/coverr.svg');
+}
+
 *[brand*='coworker'] {
   background-image: url('../../assets/brand-names/coworker.svg');
+}
+
+*[brand*='csstricks'] {
+  background-image: url('../../assets/brand-names/csstricks.svg');
 }
 
 *[brand*='deepl'] {
@@ -139,6 +175,18 @@
   background-image: url('../../assets/brand-names/dev.svg');
 }
 
+*[brand*='devk'] {
+  background-image: url('../../assets/brand-names/devk.svg');
+}
+
+*[brand*='dhl'] {
+  background-image: url('../../assets/brand-names/dhl.svg');
+}
+
+*[brand*='digitalocean'] {
+  background-image: url('../../assets/brand-names/digitalocean.svg');
+}
+
 *[brand*='dmca'] {
   background-image: url('../../assets/brand-names/dmca.svg');
 }
@@ -149,6 +197,10 @@
 
 *[brand*='ebay'] {
   background-image: url('../../assets/brand-names/ebay.svg');
+}
+
+*[brand*='ecosia'] {
+  background-image: url('../../assets/brand-names/ecosia.svg');
 }
 
 *[brand*='elevenlabs'] {
@@ -165,6 +217,10 @@
 
 *[brand*='envato'] {
   background-image: url('../../assets/brand-names/envato.svg');
+}
+
+*[brand*='ernstingsfamily'] {
+  background-image: url('../../assets/brand-names/ernstingsfamily.svg');
 }
 
 *[brand*='evernote'] {
@@ -207,6 +263,22 @@
   background-image: url('../../assets/brand-names/garmin.svg');
 }
 
+*[brand*='gebeco'] {
+  background-image: url('../../assets/brand-names/gebeco.svg');
+}
+
+*[brand*='geckoboard'] {
+  background-image: url('../../assets/brand-names/geckoboard.svg');
+}
+
+*[brand*='geizhals'] {
+  background-image: url('../../assets/brand-names/geizhals.svg');
+}
+
+*[brand*='getform'] {
+  background-image: url('../../assets/brand-names/getform.svg');
+}
+
 *[brand*='ghost'] {
   background-image: url('../../assets/brand-names/ghost.svg');
 }
@@ -227,6 +299,14 @@
   background-image: url('../../assets/brand-names/google.svg');
 }
 
+*[brand*='gumroad'] {
+  background-image: url('../../assets/brand-names/gumroad.svg');
+}
+
+*[brand*='heavenhr'] {
+  background-image: url('../../assets/brand-names/heavenhr.svg');
+}
+
 *[brand*='hellosign'] {
   background-image: url('../../assets/brand-names/hellosign.svg');
 }
@@ -235,8 +315,16 @@
   background-image: url('../../assets/brand-names/iconset.svg');
 }
 
+*[brand*='idealo'] {
+  background-image: url('../../assets/brand-names/idealo.svg');
+}
+
 *[brand*='indiehackers'] {
   background-image: url('../../assets/brand-names/indiehackers.svg');
+}
+
+*[brand*='ingdiba'] {
+  background-image: url('../../assets/brand-names/ingdiba.svg');
 }
 
 *[brand*='instagram'] {
@@ -259,6 +347,10 @@
   background-image: url('../../assets/brand-names/invision.svg');
 }
 
+*[brand*='ivanti'] {
+  background-image: url('../../assets/brand-names/ivanti.svg');
+}
+
 *[brand*='jquery'] {
   background-image: url('../../assets/brand-names/jquery.svg');
 }
@@ -267,8 +359,20 @@
   background-image: url('../../assets/brand-names/jsfiddle.svg');
 }
 
+*[brand*='kaggle'] {
+  background-image: url('../../assets/brand-names/kaggle.svg');
+}
+
 *[brand*='kamnik'] {
   background-image: url('../../assets/brand-names/kamnik.svg');
+}
+
+*[brand*='kenjo'] {
+  background-image: url('../../assets/brand-names/kenjo.svg');
+}
+
+*[brand*='kicker'] {
+  background-image: url('../../assets/brand-names/kicker.svg');
 }
 
 *[brand*='kirby'] {
@@ -277,6 +381,10 @@
 
 *[brand*='kleinanzeigen'] {
   background-image: url('../../assets/brand-names/kleinanzeigen.svg');
+}
+
+*[brand*='kraftblock'] {
+  background-image: url('../../assets/brand-names/kraftblock.svg');
 }
 
 *[brand*='kuku'] {
@@ -291,8 +399,16 @@
   background-image: url('../../assets/brand-names/linkedin.svg');
 }
 
+*[brand*='liqid'] {
+  background-image: url('../../assets/brand-names/liqid.svg');
+}
+
 *[brand*='lobe'] {
   background-image: url('../../assets/brand-names/lobe.svg');
+}
+
+*[brand*='lumen'] {
+  background-image: url('../../assets/brand-names/lumen5.svg');
 }
 
 *[brand*='medium'] {
@@ -301,6 +417,10 @@
 
 *[brand*='mendeley'] {
   background-image: url('../../assets/brand-names/mendeley.svg');
+}
+
+*[brand*='mentimeter'] {
+  background-image: url('../../assets/brand-names/mentimeter.svg');
 }
 
 *[brand*='metlo'] {
@@ -343,6 +463,26 @@
   background-image: url('../../assets/brand-names/nivona.svg');
 }
 
+*[brand*='nolt'] {
+  background-image: url('../../assets/brand-names/nolt.svg');
+}
+
+*[brand*='notion'] {
+  background-image: url('../../assets/brand-names/notion.svg');
+}
+
+*[brand*='ntfy'] {
+  background-image: url('../../assets/brand-names/ntfy.svg');
+}
+
+*[brand*='ntv'] {
+  background-image: url('../../assets/brand-names/ntv.svg');
+}
+
+*[brand*='ohm'] {
+  background-image: url('../../assets/brand-names/ohm.svg');
+}
+
 *[brand*='ohmportal'] {
   background-image: url('../../assets/brand-names/ohmportal.svg');
 }
@@ -351,8 +491,16 @@
   background-image: url('../../assets/brand-names/onepiece.svg');
 }
 
+*[brand*='otto'] {
+  background-image: url('../../assets/brand-names/otto.svg');
+}
+
 *[brand*='pallyy'] {
   background-image: url('../../assets/brand-names/pallyy.svg');
+}
+
+*[brand*='paperspace'] {
+  background-image: url('../../assets/brand-names/paperspace.svg');
 }
 
 *[brand*='papierkram'] {
@@ -403,6 +551,10 @@
   background-image: url('../../assets/brand-names/profilepictureai.svg');
 }
 
+*[brand*='pwabuilder'] {
+  background-image: url('../../assets/brand-names/pwabuilder.svg');
+}
+
 *[brand*='qonto'] {
   background-image: url('../../assets/brand-names/qonto.svg');
 }
@@ -411,24 +563,68 @@
   background-image: url('../../assets/brand-names/reddit.svg');
 }
 
+*[brand*='reshot'] {
+  background-image: url('../../assets/brand-names/reshot.svg');
+}
+
 *[brand*='runcloud'] {
   background-image: url('../../assets/brand-names/runcloud.svg');
+}
+
+*[brand*='scihub'] {
+  background-image: url('../../assets/brand-names/scihub.svg');
 }
 
 *[brand*='sentry'] {
   background-image: url('../../assets/brand-names/sentry.svg');
 }
 
+*[brand*='seobility'] {
+  background-image: url('../../assets/brand-names/seobility.svg');
+}
+
 *[brand*='serverpilot'] {
   background-image: url('../../assets/brand-names/serverpilot.svg');
+}
+
+*[brand*='sevdesk'] {
+  background-image: url('../../assets/brand-names/sevdesk.svg');
+}
+
+*[brand*='shein'] {
+  background-image: url('../../assets/brand-names/shein.svg');
+}
+
+*[brand*='shippo'] {
+  background-image: url('../../assets/brand-names/shippo.svg');
 }
 
 *[brand*='shopify'] {
   background-image: url('../../assets/brand-names/shopify.svg');
 }
 
+*[brand*='similiarweb'] {
+  background-image: url('../../assets/brand-names/similiarweb.svg');
+}
+
+*[brand*='simpleanalytics'] {
+  background-image: url('../../assets/brand-names/simpleanalytics.svg');
+}
+
+*[brand*='slido'] {
+  background-image: url('../../assets/brand-names/slido.svg');
+}
+
 *[brand*='snipcart'] {
   background-image: url('../../assets/brand-names/snipcart.svg');
+}
+
+*[brand*='spiegel'] {
+  background-image: url('../../assets/brand-names/spiegel.svg');
+}
+
+*[brand*='stackoverflow'] {
+  background-image: url('../../assets/brand-names/stackoverflow.svg');
 }
 
 *[brand*='steam'] {
@@ -447,6 +643,10 @@
   background-image: url('../../assets/brand-names/tabler.svg');
 }
 
+*[brand*='tagesschau'] {
+  background-image: url('../../assets/brand-names/tagesschau.svg');
+}
+
 *[brand*='tailorstore'] {
   background-image: url('../../assets/brand-names/tailorstore.svg');
 }
@@ -457,6 +657,14 @@
 
 *[brand*='teamviewer'] {
   background-image: url('../../assets/brand-names/teamviewer.svg');
+}
+
+*[brand*='temu'] {
+  background-image: url('../../assets/brand-names/temu.svg');
+}
+
+*[brand*='testufo'] {
+  background-image: url('../../assets/brand-names/testufo.svg');
 }
 
 *[brand*='trello'] {
@@ -481,6 +689,10 @@
 
 *[brand*='typeform'] {
   background-image: url('../../assets/brand-names/typeform.svg');
+}
+
+*[brand*='unsplash'] {
+  background-image: url('../../assets/brand-names/unsplash.svg');
 }
 
 *[brand*='updown'] {
