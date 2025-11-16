@@ -1,29 +1,29 @@
 <section id="values" class="container">
-  <h2>Built With Core Values:</h2>
+  <h2>Core Principles</h2>
   <div class="grid">
     <article>
       <header>
-        <h5>Security</h5>
+    <h5>Security</h5>
       </header>
-      <p>Your data is virtually unhackable since no database is used.</p>
+  <p>Minimal attack surface: data storage is intentionally simple to reduce risk.</p>
     </article>
     <article>
       <header>
-        <h5>Privacy</h5>
+    <h5>Privacy</h5>
       </header>
-      <p>No personal activity tracking or ads! You own the data.</p>
+  <p>No tracking or ads — you retain full control of your bookmarks and data.</p>
     </article>
     <article>
       <header>
-        <h5>Open Source</h5>
+    <h5>Open source</h5>
       </header>
-      <p>Transparency creates trust. Check out the code at GitHub.</p>
+  <p>Source code available on GitHub for review and contributions.</p>
     </article>
     <article>
       <header>
-        <h5>Lean</h5>
+    <h5>Lightweight</h5>
       </header>
-      <p>No bloat. <br>Just bookmarks.</p>
+  <p>Fast and focused: core bookmarking functionality without unnecessary features.</p>
     </article>
   </div>
 </section>

@@ -1,8 +1,8 @@
 <section class="container">
-  <h2><mark>Feature #5</mark>: This And That.</h2>
+  <h2><mark>Feature #5</mark>: Offline & focused experience</h2>
   <ul>
-    <li><b>Seamless Offline Access:</b> Enjoy uninterrupted access to your bookmarks even without an internet connection, ensuring a smooth user experience wherever you go.</li>
-    <li><b>Distraction-Free Experience:</b> Enjoy a streamlined and clutter-free interface as we prioritize your bookmarking experience without the integration of social media sharing functionalities.</li>
-    <li><b>Focused Individual Experience:</b> Tailored for personal use, our bookmark app maintains a singular focus on delivering an exceptional individual experience without the complexities of collaborative features.</li>
+    <li><b>Offline access:</b> Use your bookmarks even when you’re offline — the app keeps a local copy for uninterrupted browsing.</li>
+    <li><b>Minimal interface:</b> A clean, distraction-free UI focused solely on managing your saved links.</li>
+    <li><b>Personal-first:</b> Designed for individual use — no built-in social or collaborative features to complicate the experience.</li>
   </ul>
 </section>

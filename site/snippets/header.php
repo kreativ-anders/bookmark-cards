@@ -6,9 +6,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-  <title>Bookmark.cards | bookmarket tool in its simplest form.</title>
+  <title>Bookmark.cards — Simple, Privacy-friendly Bookmark Manager</title>
   <meta name="description"
-    content="Organize and store your articles, websites or other online links privacy friendly. Search and find those again with an easy to use tagging or search feature.">
+    content="Bookmark.cards is a privacy-friendly bookmark manager to save, tag and search websites and articles. Organize bookmarks with tags, find them fast, and export your data anytime.">
 
   <link rel="dns-prefetch" href="//bookmark.cards">
   <link rel="preconnect" href="//bookmark.cards">
