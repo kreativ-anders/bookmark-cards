@@ -16,7 +16,7 @@
   
   <?php  if($kirby->user()): ?>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/instant.page/5.1.0/instantpage.min.js"></script>  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.4.0/color-thief.min.js"></script>  
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.4.0/color-thief.min.js"></script>  
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       topTags();
