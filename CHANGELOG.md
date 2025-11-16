@@ -2,6 +2,9 @@
 
 ### Changes in the last 365 days
 
+- Merge branch 'main' of https://github.com/kreativ-anders/bookmark-cards (Manuel Steinberg, 2025-11-16)
+- ⚡️ refactor and optimize main.js for performance and UX (Manuel Steinberg, 2025-11-16)
+- 📝 update CHANGELOG (github-actions[bot], 2025-11-16)
 - Allow workflow to trigger on merged pull requests (Manuel Steinberg, 2025-11-16)
 - 🎨 Regenerate and minify brands CSS (github-actions[bot], 2025-11-16)
 - 📝 update CHANGELOG (github-actions[bot], 2025-11-16)
