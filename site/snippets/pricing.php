@@ -12,7 +12,7 @@
       </header>  
       <h4>0€ <small>/ month</small></h4>
       <p>Check if Bookmark.cards <br />is the right tool for you <br/>with <?= option('noPremiumLimit'); ?> bookmarks.</p>
-      <button id="register" class="primary" data-target="registerModal" onclick="toggleModal(event)" data-pirsch-event="Open Register Modal"><strong>Register</strong></button>
+  <button type="button" id="register" class="primary" data-target="registerModal" onclick="toggleModal(event)" data-pirsch-event="Open Register Modal"><strong>Register</strong></button>
     </article>
     <article>
       <header>
