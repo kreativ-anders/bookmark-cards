@@ -47,8 +47,16 @@
   background-image: url('../../assets/brand-names/awork.svg');
 }
 
+*[brand*='bachelorprint'] {
+  background-image: url('../../assets/brand-names/bachelorprint.svg');
+}
+
 *[brand*='baqend'] {
   background-image: url('../../assets/brand-names/baqend.svg');
+}
+
+*[brand*='baramundi'] {
+  background-image: url('../../assets/brand-names/baramundi.svg');
 }
 
 *[brand*='basecamp'] {
@@ -79,12 +87,20 @@
   background-image: url('../../assets/brand-names/buffer.svg');
 }
 
+*[brand*='bunch'] {
+  background-image: url('../../assets/brand-names/bunch.svg');
+}
+
 *[brand*='bundesliga'] {
   background-image: url('../../assets/brand-names/bundesliga.svg');
 }
 
 *[brand*='buymeacoffee'] {
   background-image: url('../../assets/brand-names/buymeacoffee.svg');
+}
+
+*[brand*='canny'] {
+  background-image: url('../../assets/brand-names/canny.svg');
 }
 
 *[brand*='canva'] {
@@ -115,6 +131,14 @@
   background-image: url('../../assets/brand-names/chip.svg');
 }
 
+*[brand*='chocolatey'] {
+  background-image: url('../../assets/brand-names/chocolatey.svg');
+}
+
+*[brand*='circle'] {
+  background-image: url('../../assets/brand-names/circle.svg');
+}
+
 *[brand*='cloudways'] {
   background-image: url('../../assets/brand-names/cloudways.svg');
 }
@@ -139,8 +163,12 @@
   background-image: url('../../assets/brand-names/contentin.svg');
 }
 
-*[brand*='coolers'] {
-  background-image: url('../../assets/brand-names/coolers.svg');
+*[brand*='cookieserve'] {
+  background-image: url('../../assets/brand-names/cookieserve.svg');
+}
+
+*[brand*='coolors'] {
+  background-image: url('../../assets/brand-names/coolors.svg');
 }
 
 *[brand*='copy'] {
@@ -187,8 +215,16 @@
   background-image: url('../../assets/brand-names/digitalocean.svg');
 }
 
+*[brand*='discourse'] {
+  background-image: url('../../assets/brand-names/discourse.svg');
+}
+
 *[brand*='dmca'] {
   background-image: url('../../assets/brand-names/dmca.svg');
+}
+
+*[brand*='drinkking'] {
+  background-image: url('../../assets/brand-names/drinkking.svg');
 }
 
 *[brand*='duckduckgo'] {
@@ -227,6 +263,10 @@
   background-image: url('../../assets/brand-names/evernote.svg');
 }
 
+*[brand*='excalidraw'] {
+  background-image: url('../../assets/brand-names/excalidraw.svg');
+}
+
 *[brand*='facebook'] {
   background-image: url('../../assets/brand-names/facebook.svg');
 }
@@ -257,6 +297,10 @@
 
 *[brand*='fresenius'] {
   background-image: url('../../assets/brand-names/fresenius.svg');
+}
+
+*[brand*='gamma'] {
+  background-image: url('../../assets/brand-names/gamma.svg');
 }
 
 *[brand*='garmin'] {
@@ -291,6 +335,10 @@
   background-image: url('../../assets/brand-names/gitmoji.svg');
 }
 
+*[brand*='glassdollar'] {
+  background-image: url('../../assets/brand-names/glassdollar.svg');
+}
+
 *[brand*='gliffy'] {
   background-image: url('../../assets/brand-names/gliffy.svg');
 }
@@ -301,6 +349,14 @@
 
 *[brand*='gumroad'] {
   background-image: url('../../assets/brand-names/gumroad.svg');
+}
+
+*[brand*='headspace'] {
+  background-image: url('../../assets/brand-names/headspace.svg');
+}
+
+*[brand*='heap'] {
+  background-image: url('../../assets/brand-names/heap.svg');
 }
 
 *[brand*='heavenhr'] {
@@ -351,6 +407,10 @@
   background-image: url('../../assets/brand-names/ivanti.svg');
 }
 
+*[brand*='jackery'] {
+  background-image: url('../../assets/brand-names/jackery.svg');
+}
+
 *[brand*='jquery'] {
   background-image: url('../../assets/brand-names/jquery.svg');
 }
@@ -391,6 +451,10 @@
   background-image: url('../../assets/brand-names/kuku.svg');
 }
 
+*[brand*='legalhead'] {
+  background-image: url('../../assets/brand-names/legalhead.svg');
+}
+
 *[brand*='liner'] {
   background-image: url('../../assets/brand-names/liner.svg');
 }
@@ -403,8 +467,16 @@
   background-image: url('../../assets/brand-names/liqid.svg');
 }
 
+*[brand*='loaded'] {
+  background-image: url('../../assets/brand-names/loaded.svg');
+}
+
 *[brand*='lobe'] {
   background-image: url('../../assets/brand-names/lobe.svg');
+}
+
+*[brand*='lulu'] {
+  background-image: url('../../assets/brand-names/lulu.svg');
 }
 
 *[brand*='lumen'] {
@@ -443,8 +515,16 @@
   background-image: url('../../assets/brand-names/mozilla.svg');
 }
 
+*[brand*='napkin'] {
+  background-image: url('../../assets/brand-names/napkin.svg');
+}
+
 *[brand*='netflix'] {
   background-image: url('../../assets/brand-names/netflix.svg');
+}
+
+*[brand*='netjets'] {
+  background-image: url('../../assets/brand-names/netjets.svg');
 }
 
 *[brand*='newstroll'] {
@@ -465,6 +545,10 @@
 
 *[brand*='nolt'] {
   background-image: url('../../assets/brand-names/nolt.svg');
+}
+
+*[brand*='notebooklm'] {
+  background-image: url('../../assets/brand-names/notebooklm.svg');
 }
 
 *[brand*='notion'] {
@@ -495,8 +579,16 @@
   background-image: url('../../assets/brand-names/otto.svg');
 }
 
+*[brand*='paddle'] {
+  background-image: url('../../assets/brand-names/paddle.svg');
+}
+
 *[brand*='pallyy'] {
   background-image: url('../../assets/brand-names/pallyy.svg');
+}
+
+*[brand*='papacks'] {
+  background-image: url('../../assets/brand-names/papacks.svg');
 }
 
 *[brand*='paperspace'] {
@@ -507,8 +599,20 @@
   background-image: url('../../assets/brand-names/papierkram.svg');
 }
 
+*[brand*='parcelab'] {
+  background-image: url('../../assets/brand-names/parcelab.svg');
+}
+
 *[brand*='paypal'] {
   background-image: url('../../assets/brand-names/paypal.svg');
+}
+
+*[brand*='personio'] {
+  background-image: url('../../assets/brand-names/personio.svg');
+}
+
+*[brand*='pexels'] {
+  background-image: url('../../assets/brand-names/pexels.svg');
 }
 
 *[brand*='phind'] {
@@ -521,6 +625,10 @@
 
 *[brand*='pirsch'] {
   background-image: url('../../assets/brand-names/pirsch.svg');
+}
+
+*[brand*='ploi'] {
+  background-image: url('../../assets/brand-names/ploi.svg');
 }
 
 *[brand*='pocket'] {
@@ -561,6 +669,10 @@
 
 *[brand*='reddit'] {
   background-image: url('../../assets/brand-names/reddit.svg');
+}
+
+*[brand*='replit'] {
+  background-image: url('../../assets/brand-names/replit.svg');
 }
 
 *[brand*='reshot'] {
@@ -667,6 +779,14 @@
   background-image: url('../../assets/brand-names/testufo.svg');
 }
 
+*[brand*='thinkific'] {
+  background-image: url('../../assets/brand-names/thinkific.svg');
+}
+
+*[brand*='timebutler'] {
+  background-image: url('../../assets/brand-names/timebutler.svg');
+}
+
 *[brand*='trello'] {
   background-image: url('../../assets/brand-names/trello.svg');
 }
@@ -699,6 +819,10 @@
   background-image: url('../../assets/brand-names/updown.svg');
 }
 
+*[brand*='uppbeat'] {
+  background-image: url('../../assets/brand-names/uppbeat.svg');
+}
+
 *[brand*='usercentrics'] {
   background-image: url('../../assets/brand-names/usercentrics.svg');
 }
@@ -707,12 +831,20 @@
   background-image: url('../../assets/brand-names/userlike.svg');
 }
 
+*[brand*='versacommerce'] {
+  background-image: url('../../assets/brand-names/versacommerce.svg');
+}
+
 *[brand*='wc'] {
   background-image: url('../../assets/brand-names/w3c.svg');
 }
 
 *[brand*='wave'] {
   background-image: url('../../assets/brand-names/wave.svg');
+}
+
+*[brand*='wbs'] {
+  background-image: url('../../assets/brand-names/wbs.svg');
 }
 
 *[brand*='web'] {
@@ -737,6 +869,14 @@
 
 *[brand*='wistia'] {
   background-image: url('../../assets/brand-names/wistia.svg');
+}
+
+*[brand*='wlw'] {
+  background-image: url('../../assets/brand-names/wlw.svg');
+}
+
+*[brand*='workadventure'] {
+  background-image: url('../../assets/brand-names/workadventure.svg');
 }
 
 *[brand*='xing'] {
