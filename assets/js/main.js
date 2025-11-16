@@ -8,19 +8,49 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // Search Title-Link-Tags
-  document.querySelectorAll("#s_title, #s_link, #s_tags").forEach(input => {
-    input.addEventListener("keyup", function() {
-      var value = input.value.toLowerCase();
-      Array.from(document.getElementById("bookmarks").children).filter(function(card) {
-        var indexOf = card.getAttribute("data-search").toLowerCase().indexOf(value);
-        if (indexOf > -1) {
-          card.style.display = "block";
-        } else {
-          card.style.display = "none";
-        }
-      });
+  // Optimize: cache card search strings and debounce input to avoid layout thrashing on each keystroke
+  (function() {
+    var bookmarksEl = document.getElementById('bookmarks');
+    if (!bookmarksEl) return;
+
+    var cards = Array.from(bookmarksEl.children || []);
+
+    // cache normalized search text for each card to avoid repeated DOM reads
+    var cardSearchCache = cards.map(function(card) {
+      return {
+        card: card,
+        text: (card.getAttribute('data-search') || '').toLowerCase()
+      };
     });
-  });
+
+    // simple debounce helper
+    function debounce(fn, wait) {
+      var t = null;
+      return function() {
+        var args = arguments;
+        clearTimeout(t);
+        t = setTimeout(function() { fn.apply(null, args); }, wait);
+      };
+    }
+
+    function performSearch(value) {
+      var v = String(value || '').toLowerCase();
+      if (!v) {
+        cardSearchCache.forEach(function(entry) { entry.card.style.display = 'block'; });
+        return;
+      }
+      cardSearchCache.forEach(function(entry) {
+        entry.card.style.display = entry.text.indexOf(v) > -1 ? 'block' : 'none';
+      });
+    }
+
+    var handler = debounce(function(e) { performSearch(e && e.target ? e.target.value : ''); }, 120);
+
+    Array.from(document.querySelectorAll('#s_title, #s_link, #s_tags')).forEach(function(input) {
+      if (!input) return;
+      input.addEventListener('input', handler, { passive: true });
+    });
+  })();
 }, false);
 
 // Lazy Load Bg-Images
@@ -33,6 +63,11 @@ document.addEventListener("DOMContentLoaded", function() {
       entries.forEach(function(entry) {
         if (entry.isIntersecting) {
           var image = entry.target;
+          // If data-src is set, swap it in. For background-image lazy loading, class removal
+          // can trigger CSS to reveal background via CSS variables or rules.
+          if (image.dataset && image.dataset.src) {
+            image.src = image.dataset.src;
+          }
           image.classList.remove("lazy");
           imageObserver.unobserve(image);
         }
@@ -44,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   } else {
     var lazyloadThrottleTimeout;
-    lazyloadImages = document.querySelectorAll(".lazy");
+    lazyloadImages = Array.from(document.querySelectorAll('.lazy'));
 
     function lazyload() {
       if (lazyloadThrottleTimeout) {
@@ -52,24 +87,30 @@ document.addEventListener("DOMContentLoaded", function() {
       }
 
       lazyloadThrottleTimeout = setTimeout(function() {
-        var scrollTop = window.pageYOffset;
-        lazyloadImages.forEach(function(img) {
-          if (img.offsetTop < (window.innerHeight + scrollTop)) {
-            img.src = img.dataset.src;
+        var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        lazyloadImages = lazyloadImages.filter(function(img) {
+          // skip if already loaded/removed
+          if (!img || img.classList.indexOf && img.classList.indexOf('lazy') === -1) return false;
+          var top = img.getBoundingClientRect().top + scrollTop;
+          if (top < (window.innerHeight + scrollTop)) {
+            if (img.dataset && img.dataset.src) img.src = img.dataset.src;
             img.classList.remove('lazy');
+            return false; // remove from list
           }
+          return true; // keep
         });
-        if (lazyloadImages.length == 0) {
-          document.removeEventListener("scroll", lazyload);
-          window.removeEventListener("resize", lazyload);
-          window.removeEventListener("orientationChange", lazyload);
+
+        if (lazyloadImages.length === 0) {
+          document.removeEventListener('scroll', lazyload);
+          window.removeEventListener('resize', lazyload);
+          window.removeEventListener('orientationchange', lazyload);
         }
-      }, 20);
+      }, 100);
     }
 
-    document.addEventListener("scroll", lazyload);
-    window.addEventListener("resize", lazyload);
-    window.addEventListener("orientationChange", lazyload);
+    document.addEventListener('scroll', lazyload, { passive: true });
+    window.addEventListener('resize', lazyload, { passive: true });
+    window.addEventListener('orientationchange', lazyload, { passive: true });
   }
 })
 
@@ -80,12 +121,15 @@ document.addEventListener("DOMContentLoaded", function() {
  * @returns 
  */
 function checkURL(url) {
-  var s = url.value;
-  if (!~s.indexOf("://")) {
-    s = "https://" + s;
+  // Accept either an input element or a string. Return normalized string for compatibility.
+  if (!url) return url;
+  var isElement = typeof url === 'object' && 'value' in url;
+  var s = isElement ? String(url.value || '') : String(url);
+  if (s && s.indexOf('://') === -1) {
+    s = 'https://' + s;
   }
-  url.value = s;
-  return url
+  if (isElement) url.value = s;
+  return isElement ? url : s;
 }
 
 /**
@@ -97,10 +141,12 @@ function checkURL(url) {
  * @param {*} tags 
  */
 function changeData(id, title, link, tags) {
-  document.getElementById("id").value = id;
-  document.getElementById("title").value = title;
-  document.getElementById("link").value = link;
-  document.getElementById("tags").value = tags;
+  // Defensive: only set values if elements exist
+  var el;
+  el = document.getElementById('id'); if (el) el.value = id || '';
+  el = document.getElementById('title'); if (el) el.value = title || '';
+  el = document.getElementById('link'); if (el) el.value = link || '';
+  el = document.getElementById('tags'); if (el) el.value = tags || '';
 }
 
 /**
@@ -125,44 +171,43 @@ function randomBgColor() {
  * @param {*} tag 
  */
 function toggleTag(tag) {
+  var t = String(tag || '');
+  var allTags = Array.from(document.querySelectorAll('span.tag'));
+  allTags.forEach(function(span) {
+    span.style.opacity = '0.7';
+    span.style.border = 'none';
+    span.style.color = 'unset';
+    span.setAttribute('aria-selected', 'false');
+  });
 
-  var t = String(tag);
+  var bookmarksEl = document.getElementById('bookmarks');
+  if (!bookmarksEl) return;
 
-  document.querySelectorAll("span.tag").forEach(span => {
-    span.style.opacity = 0.7;
-    span.style.border = "none";
-    span.style.color = "unset";
-    span.setAttribute("aria-selected", false)
-  })
-
-  if (localStorage.getItem("tag") == t) {
-
-    Array.from(document.getElementById("bookmarks").children).map(function(card) {
-      card.style.display = "block";
-    });
-    localStorage.removeItem("tag");
-
-  } else {
-
-    Array.from(document.getElementById("bookmarks").children).map(function(card) {
-      card.style.display = "none";
-
-      var s = String(card.getAttribute("data-tags"));
-
-      if (s.includes(t)) {
-        card.style.display = "block";
-
-        var s = "span[data-tag*='" + t + "']";
-        document.querySelectorAll(s).forEach(tag => {
-          tag.style.color = "var(--pico-primary)";
-          tag.style.opacity = 1;
-          tag.setAttribute("aria-selected", true)
-        });
-      }
-    });
-
-    localStorage.setItem("tag", t);
+  var current = localStorage.getItem('tag');
+  if (current === t) {
+    Array.from(bookmarksEl.children).forEach(function(card) { card.style.display = 'block'; });
+    localStorage.removeItem('tag');
+    return;
   }
+
+  Array.from(bookmarksEl.children).forEach(function(card) {
+    card.style.display = 'none';
+    var s = String(card.getAttribute('data-tags') || '');
+    if (s.indexOf(t) > -1) {
+      card.style.display = 'block';
+      var selector = "span[data-tag*='" + CSS.escape ? CSS.escape(t) : t + "']";
+      try {
+        document.querySelectorAll("span[data-tag*='" + t + "']").forEach(function(tagEl) {
+          tagEl.style.color = 'var(--pico-primary)';
+          tagEl.style.opacity = '1';
+          tagEl.setAttribute('aria-selected', 'true');
+        });
+      } catch (e) {
+        // fallback: ignore selectors that may throw
+      }
+    }
+  });
+  localStorage.setItem('tag', t);
 }
 
 /**
@@ -171,9 +216,7 @@ function toggleTag(tag) {
  */
 function topTags() {
   // identify top x tags
-  var arr = Array.from(document.querySelectorAll('span.tag'), span => span.textContent).map(function(e) {
-    return e;
-  });
+  var arr = Array.from(document.querySelectorAll('span.tag')).map(function(span) { return span.textContent || ''; });
 
   var hist = {};
   arr.map(function(a) {
@@ -187,21 +230,21 @@ function topTags() {
   var topTags = sort.slice(Math.max(sort.length - n, 1));
   topTags = topTags.reverse();
 
-  const ttp = document.getElementById('top-tags-placeholder');
+  var ttp = document.getElementById('top-tags-placeholder');
+  if (!ttp) return;
 
   // create topTags next to user settings button
-  topTags.forEach(tag => {
-    let li = document.createElement("li");
-    let span = document.createElement("span");
-    span.classList.add("tag");
-    li.classList.add("top-tag");
+  topTags.forEach(function(tag) {
+    var li = document.createElement('li');
+    var span = document.createElement('span');
+    span.classList.add('tag');
+    li.classList.add('top-tag');
     span.dataset.tag = tag;
-    span.setAttribute("aria-controls", tag)
-    span.setAttribute("aria-selected", false)
-    span.setAttribute("tabindex", 0)
-    span.addEventListener('click', function() {
-      toggleTag(tag)
-    });
+    span.setAttribute('aria-controls', tag);
+    span.setAttribute('aria-selected', 'false');
+    span.setAttribute('tabindex', '0');
+    span.addEventListener('click', function() { toggleTag(tag); });
+    span.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleTag(tag); } });
     span.innerText = tag;
     li.appendChild(span);
     ttp.before(li);
@@ -214,33 +257,69 @@ function topTags() {
  */
 function generateBackgroundColors() {
   // Initialize ColorThief instance
-  const colorThief = new ColorThief();
+  // defensive: ColorThief is optional; bail out if not present
+  if (typeof ColorThief !== 'function') return;
+  var colorThief = new ColorThief();
 
   // Select all bookmarks with background images
-  var bookmarks = document.querySelectorAll('div#bookmarks article');
+  var bookmarks = Array.from(document.querySelectorAll('div#bookmarks article'));
 
-  // Iterate over each div element
   bookmarks.forEach(function(bookmark) {
-      // Get the computed style for the bookmark
+    try {
       var style = window.getComputedStyle(bookmark);
-      
-      // Extract the background image property
-      var backgroundImage = style.backgroundImage;
+      var backgroundImage = style && style.backgroundImage ? style.backgroundImage : 'none';
 
-      // Dyn background (without background-image)
-      if (backgroundImage === 'none') {
-        bookmark.style.background = 'linear-gradient(to bottom, white 0%,' + randomBgColor() + '  100%)';
+      // If no background-image, set gradient
+      if (backgroundImage === 'none' || !backgroundImage || backgroundImage === '') {
+        bookmark.style.background = 'linear-gradient(to bottom, white 0%,' + randomBgColor() + ' 100%)';
+        return;
       }
 
-      const image2 = document.createElement("img");
-      var bg_image2 = backgroundImage.slice(4, -1).replace(/"/g, "");
-      image2.src = bg_image2;
-      image2.crossOrigin = "anonymous";
+      // Extract URL from background-image: url("...")
+      var match = backgroundImage.match(/url\((?:\")?(.*?)(?:\")?\)/);
+      var src = match && match[1] ? match[1] : null;
+      if (!src) return;
 
-      image2.onload = () => {
-        //const colorRGB2 = colorThief.getColor(image2);
-        const colorRGB2 = colorThief.getPalette(image2,2)[1];
-        bookmark.style.backgroundColor = `rgb(${colorRGB2[0]},${colorRGB2[1]},${colorRGB2[2]},0.33)`;
+      var img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = src;
+
+      img.onload = function() {
+        try {
+          var palette = colorThief.getPalette(img, 2) || [];
+          var color = palette[1] || palette[0] || [200,200,200];
+          bookmark.style.backgroundColor = 'rgba(' + color[0] + ',' + color[1] + ',' + color[2] + ',0.33)';
+        } catch (e) {
+          // ignore palette extraction errors
+        }
       };
+    } catch (e) {
+      // keep page robust if any unexpected error occurs
+    }
   });
 }
+
+// remember scroll position across reloads
+/**
+ * Preserve scroll position across a single reload/navigation.
+ * Stores Y on beforeunload and restores once on next load. Uses sessionStorage.
+ */
+(function () {
+  const KEY = 'bookmark.cards.scrollY';
+
+  // before leaving the page (form submit, reload, navigation, ...)
+  window.addEventListener('beforeunload', function () {
+    try { sessionStorage.setItem(KEY, String(window.scrollY || 0)); } catch (e) { /* noop */ }
+  });
+
+  // when you come back (after POST/redirect)
+  window.addEventListener('load', function () {
+    try {
+      const y = sessionStorage.getItem(KEY);
+      if (y !== null) {
+        window.scrollTo(0, parseInt(y, 10) || 0);
+        sessionStorage.removeItem(KEY); // only restore once
+      }
+    } catch (e) { /* noop */ }
+  });
+})();
