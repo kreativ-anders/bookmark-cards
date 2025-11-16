@@ -2,6 +2,9 @@
 
 ### Changes in the last 365 days
 
+- Allow workflow to trigger on merged pull requests (Manuel Steinberg, 2025-11-16)
+- 🎨 Regenerate and minify brands CSS (github-actions[bot], 2025-11-16)
+- 📝 update CHANGELOG (github-actions[bot], 2025-11-16)
 - Update brand-names submodule to latest version (#38) (github-actions[bot], 2025-11-16)
 - 🎨 Regenerate and minify brands CSS (github-actions[bot], 2025-11-14)
 - 📝 update CHANGELOG (github-actions[bot], 2025-11-14)
