@@ -2,6 +2,8 @@
 
 ### Changes in the last 365 days
 
+- Update kirby-memberkit submodule to latest commit (Manuel Steinberg, 2025-11-16)
+- 📝 update CHANGELOG (github-actions[bot], 2025-11-16)
 - Merge branch 'main' of https://github.com/kreativ-anders/bookmark-cards (Manuel Steinberg, 2025-11-16)
 - ⚡️ defer loading of color-thief script in footer (Manuel Steinberg, 2025-11-16)
 - 🏗️ enhance manifest with metadata and description (Manuel Steinberg, 2025-11-16)
