@@ -2,6 +2,9 @@
 
 ### Changes in the last 365 days
 
+- Update brand-names submodule to latest version (#38) (github-actions[bot], 2025-11-16)
+- 🎨 Regenerate and minify brands CSS (github-actions[bot], 2025-11-14)
+- 📝 update CHANGELOG (github-actions[bot], 2025-11-14)
 - Run workflow on merged PRs instead of during PR lifecycle (#37) (Copilot, 2025-11-14)
 - 📝 update CHANGELOG (github-actions[bot], 2025-11-14)
 - Update brand-names submodule to latest version (#36) (github-actions[bot], 2025-11-14)
