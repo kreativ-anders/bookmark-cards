@@ -3,6 +3,17 @@
 ### Changes in the last 365 days
 
 - Merge branch 'main' of https://github.com/kreativ-anders/bookmark-cards (Manuel Steinberg, 2025-11-16)
+- ⚡️ defer loading of color-thief script in footer (Manuel Steinberg, 2025-11-16)
+- 🏗️ enhance manifest with metadata and description (Manuel Steinberg, 2025-11-16)
+- 🔥 remove unused Steinberg logo images (Manuel Steinberg, 2025-11-16)
+- ✈️ improve offline bookmark loading and error handling (Manuel Steinberg, 2025-11-16)
+- 🔍️ revise feature, header, and pricing copy for clarity (Manuel Steinberg, 2025-11-16)
+- ♿️ add explicit type="button" to modal trigger buttons (Manuel Steinberg, 2025-11-16)
+- ⚡️ optimize bookmarks snippet for performance and safety (Manuel Steinberg, 2025-11-16)
+- ⚡️ improve modal accessibility and robustness (Manuel Steinberg, 2025-11-16)
+- ⚡️ refactor home controller for clarity and safety (Manuel Steinberg, 2025-11-16)
+- 📝 update CHANGELOG (github-actions[bot], 2025-11-16)
+- Merge branch 'main' of https://github.com/kreativ-anders/bookmark-cards (Manuel Steinberg, 2025-11-16)
 - ⚡️ refactor and optimize main.js for performance and UX (Manuel Steinberg, 2025-11-16)
 - 📝 update CHANGELOG (github-actions[bot], 2025-11-16)
 - Allow workflow to trigger on merged pull requests (Manuel Steinberg, 2025-11-16)
