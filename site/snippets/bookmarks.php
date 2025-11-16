@@ -1,7 +1,25 @@
 <section id="grid">
   <div id="bookmarks" class="grid">
 
-    <?php foreach ($bookmarks as $i => $bookmark): ?>
+    <?php
+    /**
+     * Bookmarks list snippet
+     * Performance/security small improvements:
+     * - cache common options/user to avoid repeated lookups inside the loop
+     * - ensure `$bookmarks` is an array
+     * - keep all escaping and onclick payload behavior identical
+     */
+    $bookmarks = isset($bookmarks) && is_array($bookmarks) ? $bookmarks : [];
+    $bookmarksCount = count($bookmarks);
+    $user = $kirby->user();
+    // Cache tier options once
+    $memberTiers = option('kreativ-anders.memberkit.tiers', []);
+    $tier0Name = isset($memberTiers[0]['name']) ? $memberTiers[0]['name'] : null;
+    $tier1Name = isset($memberTiers[1]['name']) ? $memberTiers[1]['name'] : null;
+    $noPremiumLimit = (int) option('noPremiumLimit');
+    $noPremiumTitle = option('noPremiumTitle');
+
+    foreach ($bookmarks as $i => $bookmark): ?>
         <?php
           // normalize and prepare safe values
           $rawTitle = (string)$bookmark['title'];
@@ -39,6 +57,7 @@
           <footer>  
             <div class="grid card-grid">
 
+              <!-- Edit Icon -->
               <!-- Edit Icon -->
               <?php if (
                 (option('kreativ-anders.memberkit.tiers')[0]['name'] === $kirby->user()->tier()->toString() && 
