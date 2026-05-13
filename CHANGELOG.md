@@ -2,6 +2,9 @@
 
 ### Changes in the last 365 days
 
+- Bump tmp from 0.2.3 to 0.2.5 (#43) (dependabot[bot], 2026-05-13)
+- Bump svgo from 4.0.0 to 4.0.1 (#41) (dependabot[bot], 2026-05-13)
+- 📝 update CHANGELOG (github-actions[bot], 2026-05-13)
 - Bump picomatch (#42) (dependabot[bot], 2026-05-13)
 - Bump lodash from 4.17.21 to 4.18.1 (#40) (dependabot[bot], 2026-05-13)
 - 📝 update CHANGELOG (github-actions[bot], 2026-05-13)
