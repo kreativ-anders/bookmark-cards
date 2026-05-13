@@ -2,6 +2,9 @@
 
 ### Changes in the last 365 days
 
+- Bump picomatch (#42) (dependabot[bot], 2026-05-13)
+- Bump lodash from 4.17.21 to 4.18.1 (#40) (dependabot[bot], 2026-05-13)
+- 📝 update CHANGELOG (github-actions[bot], 2026-05-13)
 - Bump form-data and @cypress/request (#39) (dependabot[bot], 2026-05-13)
 - 📝 update CHANGELOG (github-actions[bot], 2025-11-16)
 - Update kirby-memberkit submodule to latest commit (Manuel Steinberg, 2025-11-16)
