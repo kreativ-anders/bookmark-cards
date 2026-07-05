@@ -1,0 +1,42 @@
+# Bookmark.cards
+
+> A self-hostable, open-source bookmark manager built with PHP and Kirby CMS. Users can save, tag, search, and export URLs. A free tier allows up to 12 bookmarks; a paid Premium tier removes that limit.
+
+## What it does
+
+- Stores bookmarks (URL + title + tags) per registered user
+- Filters bookmarks by tag or searches by title, URL, or tag
+- Detects duplicate URLs when adding a new bookmark
+- Displays bookmarks as cards; if the title contains a known brand name, the card background uses that brand's visual style
+- Exports bookmarks as JSON or CSV
+- Works offline via a service worker (UpUp.js) that caches the bookmark list locally
+
+## Tech stack
+
+- **Backend**: PHP, [Kirby CMS](https://getkirby.com/) (flat-file, no database)
+- **Payments**: Stripe via the kirby-memberkit plugin
+- **Frontend**: Vanilla JS, Pico CSS (bundled), PostCSS for build
+- **Analytics**: Pirsch (privacy-friendly, no cookies)
+- **Testing**: Cypress (end-to-end: register, login, delete)
+- **CI**: GitHub Actions (submodule updates, CSS regeneration, changelog)
+
+## Repository structure
+
+- `site/` — Kirby CMS application (controllers, templates, snippets, blueprints, config, plugins)
+- `content/` — Flat-file content (home page, user accounts)
+- `assets/` — Compiled CSS (including brand CSS) and JS
+- `cypress/` — End-to-end test specs
+- `.github/workflows/` — Automation: brand-names submodule updates, CSS generation, changelog
+
+## Key design decisions
+
+- Flat-file storage: content is stored as `.txt` files by Kirby; there is no relational database
+- Brand backgrounds are CSS-only: a brand name token in the bookmark title triggers a CSS class; no server-side image processing at render time
+- No social or collaborative features by design
+- Free tier capped at 12 bookmarks (configurable via `noPremiumLimit` in `site/config/config.php`)
+
+## Links
+
+- Repository: <https://github.com/kreativ-anders/bookmark-cards>
+- Brand-names submodule: <https://github.com/kreativ-anders/brand-names>
+- Author: [kreativ-anders](https://kreativ-anders.de/)
