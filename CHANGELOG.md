@@ -2,6 +2,8 @@
 
 ### Changes in the last 365 days
 
+- Add llms.txt (#46) (Copilot, 2026-07-12)
+- 📝 update CHANGELOG (github-actions[bot], 2026-05-13)
 - Bump postcss from 8.5.6 to 8.5.14 (#44) (dependabot[bot], 2026-05-13)
 - 📝 update CHANGELOG (github-actions[bot], 2026-05-13)
 - Bump tmp from 0.2.3 to 0.2.5 (#43) (dependabot[bot], 2026-05-13)
