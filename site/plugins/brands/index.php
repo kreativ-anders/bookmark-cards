@@ -6,7 +6,7 @@ use Kirby\Filesystem\F;
 use Kirby\Toolkit\Str;
 
 /**
- * Brand logos from the assets/brand-names submodule.
+ * Brand logos from assets/brand-names.
  *
  * Single source of truth for bookmark cards, panel stats and the offline page
  * (replaces the generated brands.css). A bookmark title is normalized to a-z

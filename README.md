@@ -9,7 +9,7 @@ Built with [Kirby CMS](https://getkirby.com) 5, [Pico CSS](https://picocss.com) 
 Requirements: PHP 8.3+ (8.2+ for production), Composer, Node.js
 
 ```bash
-git clone --recurse-submodules https://github.com/kreativ-anders/bookmark-cards.git
+git clone https://github.com/kreativ-anders/bookmark-cards.git
 cd bookmark-cards
 composer install   # Kirby, Stripe (+ Pest for development)
 npm ci             # Pico, esbuild, Cypress
@@ -40,13 +40,13 @@ npm run watch   # rebuild on change
 
 ## Brand Logos
 
-Logos live in the [`brand-names`](https://github.com/kreativ-anders/brand-names) submodule (`assets/brand-names/*.svg`). The `brands` plugin (`site/plugins/brands`) matches them to bookmarks server-side — no CSS generation needed:
+Logos live in `assets/brand-names/*.svg` (see its README for the SVG guideline). The `brands` plugin (`site/plugins/brands`) matches them to bookmarks server-side — no CSS generation needed:
 
 - Bookmark title and file names are normalized to lowercase `a-z`
 - The **longest** file name contained in the title wins (`Buy me a coffee` → `buymeacoffee.svg`, not `coffee.svg`)
 - `site()->brandLogo($title)` returns the logo URL, `/brands.json` serves all logos for the offline page
 
-New SVGs in `assets/brand-names` are picked up automatically. Dependabot opens a PR when the submodule has updates (monthly).
+New SVGs in `assets/brand-names` are picked up automatically.
 
 Brand coverage (logos available, bookmarks without logo, suggested file names) is shown in the panel under **Site → Brands**.
 

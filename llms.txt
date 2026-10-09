@@ -18,13 +18,13 @@
 - **Frontend**: Vanilla JS, Pico CSS (npm), esbuild for build
 - **Analytics**: Pirsch (privacy-friendly, no cookies)
 - **Testing**: Pest (Stripe integration, brand logos, panel stats) and Cypress (end-to-end: auth, settings, bookmarks)
-- **CI**: GitHub Actions (changelog), Dependabot (Composer, npm, brand-names submodule)
+- **CI**: GitHub Actions (changelog), Dependabot (Composer, npm)
 
 ## Repository structure
 
 - `site/` — Kirby CMS application (controllers, templates, snippets, blueprints, config, plugins: memberkit, brands, panel-stats)
 - `content/` — Flat-file content (home page, user accounts)
-- `assets/` — CSS and JS sources and builds, brand logos (`assets/brand-names` submodule)
+- `assets/` — CSS and JS sources and builds, brand logos (`assets/brand-names`)
 - `tests/` — Pest tests
 - `cypress/` — End-to-end test specs
 - `.github/` — Changelog workflow, Dependabot config
@@ -39,5 +39,4 @@
 ## Links
 
 - Repository: <https://github.com/kreativ-anders/bookmark-cards>
-- Brand-names submodule: <https://github.com/kreativ-anders/brand-names>
 - Author: [kreativ-anders](https://kreativ-anders.de/)
