@@ -23,22 +23,19 @@
         <?php
           // normalize and prepare safe values
           $rawTitle = (string)$bookmark['title'];
-          $title = Str::lower($rawTitle);
-          // keep only lowercase letters a-z (remove spaces, hyphens, apostrophes, digits, punctuation, etc.)
-          $brand = preg_replace('/[^a-z]+/', '', $title);
+          // brand logo (site/plugins/brands), applied as background image
+          $logo = $site->brandLogo($rawTitle);
 
           $search = (string)($bookmark['title'] . ';' . $bookmark['link'] . ';' . $bookmark['tags']);
           $titleEsc = htmlspecialchars($rawTitle, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
           $linkEsc = htmlspecialchars((string)$bookmark['link'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
           $tagsEsc = htmlspecialchars((string)$bookmark['tags'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-          $titleAttr = htmlspecialchars($title, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-          $brandAttr = htmlspecialchars($brand, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         ?>
         <article 
           class="bookmark card-background lazy" 
           data-search="<?= htmlspecialchars($search, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>" 
           data-tags="<?= $tagsEsc ?>" 
-          brand="<?= $titleAttr ?>, <?= $brandAttr ?>"
+          <?php if ($logo): ?>style="background-image: url('<?= htmlspecialchars($logo, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>')"<?php endif ?>
           >
 
           <header>

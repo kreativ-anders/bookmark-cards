@@ -15,6 +15,40 @@ h1 {
 }
 
 /* Custom CSS */
+
+/* Login, register and settings pages */
+.account-page {
+  max-width: 36rem;
+}
+
+.account-page section {
+  margin-bottom: calc(var(--pico-spacing) * 1.5);
+}
+
+.alert {
+  padding: calc(var(--pico-spacing) * .75) var(--pico-spacing);
+  margin-bottom: var(--pico-spacing);
+  border-radius: var(--pico-border-radius);
+}
+
+.alert p {
+  margin: 0;
+}
+
+.alert-error {
+  background-color: #fdecea;
+  color: #8a1c13;
+}
+
+.alert-success {
+  background-color: #e8f5e9;
+  color: #1b5e20;
+}
+
+input[type=submit].danger {
+  --pico-background-color: #c62828;
+  --pico-border-color: #c62828;
+}
 svg {
   width: 1rem;
 }

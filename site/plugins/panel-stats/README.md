@@ -17,7 +17,7 @@ The plugin adds the following site methods that can be used in panel blueprints:
 - `site.totalTags()` - Returns the count of unique tags (case-insensitive) across all bookmarks
 
 ### Brand Coverage Statistics
-- `site.availableBrands()` - Returns array of available brand names from brands.css
+- `site.availableBrands()` - Returns array of available brand tokens (logos in `assets/brand-names`, see `site/plugins/brands`)
 - `site.totalAvailableBrands()` - Returns the count of available brand logos
 - `site.bookmarksWithoutBrands()` - Returns count of bookmarks without matching brand logos
 - `site.brandCoveragePercentage()` - Returns brand coverage percentage as formatted string (e.g., "85.5%")
@@ -74,14 +74,12 @@ The brand coverage feature helps administrators identify which bookmarks don't h
 
 ### How Brand Matching Works
 
-Bookmarks are matched against available brands using the bookmark's title:
-1. The title is converted to lowercase
-2. The system checks for an exact match with brand names in `brands.css`
-3. The system also checks the title with spaces removed
+Bookmarks are matched against available brands using the bookmark's title (`BrandLogos::find()` in `site/plugins/brands`):
+1. The title is normalized to lowercase letters a-z (spaces, digits and punctuation removed)
+2. Every logo file name is normalized the same way (its "token")
+3. The longest token contained in the normalized title wins
 
-For example, a bookmark titled "Google Drive" would match:
-- `google drive` (exact match)
-- `googledrive` (no spaces)
+For example, a bookmark titled "Buy me a coffee" (`buymeacoffee`) matches `buymeacoffee.svg` rather than `coffee.svg`.
 
 ### Viewing Brand Statistics
 
@@ -102,7 +100,7 @@ To improve brand coverage:
 1. Check the "Missing Brand Logos" section in the admin panel
 2. Create SVG logos for the most frequently used bookmarks without brands
 3. Add them to `assets/brand-names/` directory with the suggested name
-4. Run `npm run generateBrandsCSS` to update brands.css
+4. No build step needed – new SVGs are picked up automatically
 5. Refresh the admin panel to see updated statistics
 
 ## Dependencies
@@ -110,7 +108,7 @@ To improve brand coverage:
 - Requires the `kreativ-anders.memberkit` plugin for tier management
 - Requires user accounts with the `tier` field
 - Requires users to have a `bookmarks` field that returns YAML data
-- Requires `assets/css/brands.css` for brand coverage analysis
+- Requires the `brands` plugin (`site/plugins/brands`) for brand coverage analysis
 
 ## Integration with Stripe
 

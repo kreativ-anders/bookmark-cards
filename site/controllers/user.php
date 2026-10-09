@@ -3,14 +3,20 @@
 return function ($kirby, $page) {
 
   if(!$kirby->user()) {
-    go('/');
-  } 
+    go('login');
+  }
 
-  $error = null;
-  $alert = null;
+  $error   = null;
+  $alert   = null;
+  $session = $kirby->session();
+
+  // POST REQUESTS (CHANGE EMAIL / CHANGE PASSWORD / DELETE) REQUIRE A VALID CSRF TOKEN
+  if($kirby->request()->is('post') && csrf(get('csrf')) !== true) {
+
+    $alert['error'] = 'Invalid CSRF token!';
 
   // UPDATE USER
-  if($kirby->request()->is('post') && get('update')) {
+  } elseif($kirby->request()->is('post') && get('update')) {
 
     $data = [
       'email'     => get('email'),
@@ -38,20 +44,20 @@ return function ($kirby, $page) {
 
       // EMAIL
       if (V::email($data['email']) && !get('password')) {
-        
+
         try {
 
           $kirby->user()->changeEmail($data['email']);
           $success = 'Your email has been changed!';
-        
+
         } catch(Exception $e) {
-        
+
           if(option('debug')) {
 
             $alert['error'] = 'The user email could not be changed: ' . $e->getMessage();
           }
           else {
-  
+
             $alert['error'] = 'The user email could not be changed!';
           }
         }
@@ -59,43 +65,43 @@ return function ($kirby, $page) {
 
       // PASSWORD
       if ($data['password']) {
-        
+
         try {
 
           $kirby->user()->changePassword($data['password']);
           $success = 'Your password has been changed!';
-        
+
         } catch(Exception $e) {
-        
+
           if(option('debug')) {
 
             $alert['error'] = 'The user password could not be changed: ' . $e->getMessage();
           }
           else {
-  
+
             $alert['error'] = 'The user password could not be changed!';
-          } 
+          }
         }
       }
 
-      // SUCCESSFUL
-      if (empty($alert) === true) {
+      // SUCCESSFUL: POST/REDIRECT/GET (no resubmission on reload, fresh user object)
+      if (empty($alert) === true && isset($success)) {
 
-        $error = null;
+        $session->set('user.success', $success);
+        go($page->url());
       }
-    } 
-  }
+    }
 
   // DELETE USER
-  if($kirby->request()->is('post') && get('delete')) {
+  } elseif($kirby->request()->is('post') && get('delete')) {
 
     try {
 
       $kirby->user()->delete();
       go('/');
-    
+
     } catch(Exception $e) {
-    
+
       if(option('debug')) {
 
         $alert['error'] = 'The user could not be deleted: ' . $e->getMessage();
@@ -103,15 +109,15 @@ return function ($kirby, $page) {
       else {
 
         $alert['error'] = 'The user could not be deleted!';
-      }  
-      $error = true;   
+      }
+      $error = true;
     }
   }
-    
+
   return [
     'error'   => $error,
     'alert'   => $alert,
     'data'    => $data ?? false,
-    'success' => $success ?? false
+    'success' => $session->pull('user.success')
   ];
 };

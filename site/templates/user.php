@@ -1,35 +1,60 @@
 <?php
-/**
- * Templates render the content of your pages. 
- * They contain the markup together with some control structures like loops or if-statements.
- * The `$page` variable always refers to the currently active page. 
- * To fetch the content from each field we call the field name as a method on the `$page` object, e.g. `$page->title()`. * 
- * This default template must not be removed. It is used whenever Kirby cannot find a template with the name of the content file.
- * Snippets like the header, footer and intro contain markup used in multiple templates. They also help to keep templates clean.
- * More about templates: https://getkirby.com/docs/guide/templates/basics
- */
+  $user = $kirby->user();
+  $tiers = option('kreativ-anders.memberkit.tiers');
 ?>
 <?php snippet('header') ?>
-<?php snippet('modals/login') ?>
-<?php snippet('modals/register') ?>
 
-<?php  if ($kirby->user()) {
-  snippet('modals/change'); 
-  snippet('modals/user'); 
-} ?>
+<main class="container account-page">
+  <article>
+    <header>
+      <h2>Settings</h2>
+      <p><?= esc($user->email()) ?> · <strong><?= esc($user->tier()->or($tiers[0]['name'])) ?></strong></p>
+    </header>
 
-<main class="section">
-  <div class="container">
-  <?php if(isset($error) && isset($alert) && $kirby->request()->is('POST')): ?> 
-    <div class="notification is-danger">
+    <?php snippet('alert', ['alert' => $alert, 'success' => $success]) ?>
 
-      <?= isset($alert['error']) ? $alert['error'] : '' ?>
-      <?= isset($alert['email']) ? $alert['email'] : '' ?>
-      <?= isset($alert['password']) ? $alert['password'] : '' ?>
+    <section>
+      <h3>Email</h3>
+      <form action="<?= $page->url() ?>" method="POST">
+        <input type="hidden" name="csrf" value="<?= csrf() ?>">
+        <fieldset role="group">
+          <input type="email" id="email" name="email" value="<?= esc(is_array($data) && !empty($data['email']) ? $data['email'] : $user->email(), 'attr') ?>" aria-label="Email" autocomplete="email" required>
+          <input type="submit" name="update" value="Change Email" data-pirsch-event="Update User Email">
+        </fieldset>
+      </form>
+    </section>
 
-    </div>
-  <?php else: go(); endif;?> 
-  </div>
+    <section>
+      <h3>Password</h3>
+      <form action="<?= $page->url() ?>" method="POST">
+        <input type="hidden" name="csrf" value="<?= csrf() ?>">
+        <fieldset role="group">
+          <input type="password" id="password" name="password" minlength="8" placeholder="New Password" aria-label="New Password" autocomplete="new-password" required>
+          <input type="submit" name="update" value="Change Password" data-pirsch-event="Update User Password">
+        </fieldset>
+      </form>
+    </section>
+
+    <section>
+      <h3>Subscription</h3>
+      <a role="button" class="contrast" data-pirsch-event="Manage Subscription" href="<?= url($user->getStripePortalURL()) ?>">Manage Subscriptions</a>
+    </section>
+
+    <section>
+      <h3>Your Data</h3>
+      <div role="group">
+        <a role="button" class="outline" href="<?= url('user.json') ?>" target="_blank">Export JSON</a>
+        <a role="button" class="outline" href="<?= url('user.csv') ?>" target="_blank">Export CSV</a>
+      </div>
+    </section>
+
+    <footer>
+      <form action="<?= $page->url() ?>" method="POST" onsubmit="return confirm('This action cannot be revert! Are you sure?');">
+        <input type="hidden" name="csrf" value="<?= csrf() ?>">
+        <input class="danger" type="submit" name="delete" value="Delete Account" data-pirsch-event="Delete User">
+      </form>
+    </footer>
+  </article>
 </main>
 
 <?php snippet('footer') ?>

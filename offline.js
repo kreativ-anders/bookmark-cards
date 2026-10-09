@@ -2,6 +2,25 @@ console.log("You are Offline!");
 
 let user = null;
 
+// Brand logos (token => URL) from /brands.json, cached by the service worker.
+// Same rule as site/plugins/brands: the longest token contained in the normalized title wins.
+let brandLogos = {};
+const brandsLoaded = fetch('/brands.json')
+  .then(response => (response && response.ok) ? response : (typeof caches !== 'undefined' ? caches.match('/brands.json') : null))
+  .catch(() => (typeof caches !== 'undefined' ? caches.match('/brands.json') : null))
+  .then(response => response ? response.json() : {})
+  .then(json => { brandLogos = json || {}; })
+  .catch(() => {});
+
+function brandLogo(title) {
+  const haystack = title.toLowerCase().replace(/[^a-z]+/g, '');
+  let match = '';
+  for (const token in brandLogos) {
+    if (token.length > match.length && haystack.includes(token)) match = token;
+  }
+  return match ? brandLogos[match] : null;
+}
+
 // Try to load user JSON from network, fallback to Cache API or localStorage when offline.
 fetch("/user.json")
   .then(response => {
@@ -113,7 +132,12 @@ function printBookmarks(bookmarks) {
     const tags = (bookmark.tags || '').toString();
     article.dataset.search = title + ';' + link + ';' + tags;
     article.dataset.tags = tags;
-    if (title) article.setAttribute('brand', title.toLowerCase());
+    if (title) {
+      brandsLoaded.then(() => {
+        const logo = brandLogo(title);
+        if (logo) article.style.backgroundImage = "url('" + logo + "')";
+      });
+    }
 
     // Bookmark Header
     const header = document.createElement('header');

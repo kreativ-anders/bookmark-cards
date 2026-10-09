@@ -11,12 +11,9 @@
 ?>
 
 <?php snippet('header') ?>
-<?php snippet('modals/login') ?>
-<?php snippet('modals/register') ?>
 
 <?php  if ($kirby->user()) {
   snippet('modals/change'); 
-  snippet('modals/user'); 
 } ?>
 
 <hr style="margin-bottom: unset;">

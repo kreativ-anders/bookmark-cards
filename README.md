@@ -2,61 +2,69 @@
 
 Bookmark.cards is a bookmarket collection tool in its simpliest form.
 
-## Automated Brand Names Updates
+Built with [Kirby CMS](https://getkirby.com) 5, [Pico CSS](https://picocss.com) and Stripe (via the local `memberkit` plugin).
 
-This repository uses GitHub Actions workflows to automatically manage the brand-names submodule and regenerate brand CSS files:
+## Setup
 
-### 1. Monthly Submodule Update Check
-- **Workflow**: `.github/workflows/check-brand-names-update.yml`
-- **Schedule**: Runs automatically on the 1st of each month
-- **Manual Trigger**: Can be triggered manually via GitHub Actions UI
-- **Actions**:
-  - Checks for updates in the brand-names submodule
-  - Creates a PR if a newer version is available
-  - Includes labels: `dependencies`, `submodule-update`
-
-### 2. Automatic CSS Generation
-- **Workflow**: `.github/workflows/generate-brands-css.yml`
-- **Trigger**: Runs when a PR updates the `assets/brand-names` directory
-- **Actions**:
-  - Generates `brands.css` using the npm script
-  - Autoprefixes and minifies to `brands.min.css`
-  - Commits changes back to the PR branch
-
-## BrandsCSS
-
-### Manual Generation
-
-To manually generate and minify brand CSS files:
+Requirements: PHP 8.3+ (8.2+ for production), Composer, Node.js
 
 ```bash
-npm i --save-dev colorthief
-npm i --save-dev jimp
-npm i --save-dev get-image-colors
-npm run generateBrandsCSS
-npm run minifyBrandsCSS
+git clone --recurse-submodules https://github.com/kreativ-anders/bookmark-cards.git
+cd bookmark-cards
+composer install   # Kirby, Stripe (+ Pest for development)
+npm ci             # Pico, esbuild, Cypress
 ```
 
-The automated workflow handles these steps automatically when the brand-names submodule is updated.
+Local configuration (Stripe keys, tiers) goes into `site/config/config.<host>.php`, e.g. `config.bookmark-cards.localhost.php` (git-ignored).
 
-## Brand Coverage Testing
+### Deployment
 
-View brand coverage statistics in the admin panel under **Site → Brands**.
+```bash
+composer install --no-dev
+```
 
-The admin panel shows:
-- Available brand logos count
-- Brand coverage percentage
-- List of bookmarks without matching brand logos
+`kirby/` and `vendor/` are not committed. Built assets (`assets/css/main.min.css`, `assets/js/main.min.js`, `offline.min.js`) are committed, so no Node.js is needed on the server.
+
+## Assets
+
+CSS and JS are built with esbuild (`build.mjs`):
+
+```bash
+npm run build   # one-off
+npm run watch   # rebuild on change
+```
+
+- `assets/css/main.css` → `main.min.css` (includes Pico's prebuilt *pumpkin* theme from npm, overrides below the import)
+- `assets/js/pico-modal.js` + `assets/js/main.js` → `main.min.js`
+- `offline.js` → `offline.min.js`
+
+## Brand Logos
+
+Logos live in the [`brand-names`](https://github.com/kreativ-anders/brand-names) submodule (`assets/brand-names/*.svg`). The `brands` plugin (`site/plugins/brands`) matches them to bookmarks server-side — no CSS generation needed:
+
+- Bookmark title and file names are normalized to lowercase `a-z`
+- The **longest** file name contained in the title wins (`Buy me a coffee` → `buymeacoffee.svg`, not `coffee.svg`)
+- `site()->brandLogo($title)` returns the logo URL, `/brands.json` serves all logos for the offline page
+
+New SVGs in `assets/brand-names` are picked up automatically. Dependabot opens a PR when the submodule has updates (monthly).
+
+Brand coverage (logos available, bookmarks without logo, suggested file names) is shown in the panel under **Site → Brands**.
 
 ## Test
 
 ```bash
-cd /your/project/path
-npm install cypress --save-dev
-npm init
-npm run cy:open
-npm run cy:test
+composer test     # Pest: Stripe integration (offline, fake Stripe client), brand logos, panel stats
+npm run cy:test   # Cypress e2e against a running site (Stripe test mode)
 ```
+
+Cypress uses `http://bookmark-cards.localhost` by default. Override it with `CYPRESS_BASE_URL`, e.g. for PHP's built-in server:
+
+```bash
+php -S bookmark-cards.localhost:8000 kirby/router.php
+CYPRESS_BASE_URL=http://bookmark-cards.localhost:8000 npm run cy:test
+```
+
+In VS Code's integrated terminal run `env -u ELECTRON_RUN_AS_NODE npm run cy:test` (VS Code sets `ELECTRON_RUN_AS_NODE=1`, which prevents Cypress from starting). Kirby blocks an IP after 10 failed logins per hour — when running the suite often, raise `'auth' => ['trials' => 100]` in your local config.
 
 ## Support
 

@@ -52,6 +52,16 @@ describe('Bookmarks', () => {
       .and('contain', 'Foo & Bär;https://example.org/?a=1&b=2;test;');
   });
 
+  it('shows the matching brand logo on the card', () => {
+    cy.addBookmark('Buy me a coffee', 'https://buymeacoffee.com');
+    cy.addBookmark('Xyzzy Tool', 'https://example.org');
+
+    cy.card('Buy me a coffee')
+      .should('have.css', 'background-image')
+      .and('contain', '/assets/brand-names/buymeacoffee.svg');
+    cy.card('Xyzzy Tool').should('not.have.attr', 'style');
+  });
+
   it('filters bookmarks by tag', () => {
     cy.addBookmark('GitHub', 'https://github.com', 'dev');
     cy.addBookmark('Apple', 'https://apple.com', 'tech');

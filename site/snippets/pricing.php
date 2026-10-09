@@ -12,7 +12,7 @@
       </header>  
     <h4>0€ <small>/ month</small></h4>
     <p>Try Bookmark.cards for free — store up to <?= option('noPremiumLimit'); ?> bookmarks and explore core features.</p>
-    <button type="button" id="register" class="primary" data-target="registerModal" onclick="toggleModal(event)" data-pirsch-event="Open Register Modal"><strong>Get started (Free)</strong></button>
+    <a id="pricing-register" href="<?= url('register') ?>" role="button" class="primary" data-pirsch-event="Open Register Modal"><strong>Get started (Free)</strong></a>
     </article>
     <article>
       <header>

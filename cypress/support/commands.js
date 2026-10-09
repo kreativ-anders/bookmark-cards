@@ -13,9 +13,8 @@ Cypress.Commands.add('blockAnalytics', () => {
 
 Cypress.Commands.add('register', (email, password) => {
   cy.blockAnalytics();
-  cy.visit('/');
-  cy.get('header #register').click();
-  cy.get('#registerModal').should('be.visible').within(() => {
+  cy.visit('/register');
+  cy.get('main form').within(() => {
     cy.get('input[name="email"]').type(email);
     cy.get('input[name="password"]').type(password, { log: false });
     cy.get('input[name="tos"]').check();
@@ -26,9 +25,8 @@ Cypress.Commands.add('register', (email, password) => {
 
 Cypress.Commands.add('login', (email, password) => {
   cy.blockAnalytics();
-  cy.visit('/');
-  cy.get('#login').click();
-  cy.get('#loginModal').should('be.visible').within(() => {
+  cy.visit('/login');
+  cy.get('main form').within(() => {
     cy.get('input[name="email"]').type(email);
     cy.get('input[name="password"]').type(password, { log: false });
     cy.get('input[name="login"]').click();
@@ -43,9 +41,8 @@ Cypress.Commands.add('logout', () => {
 // Deletes the logged-in account (also deletes the Stripe test customer via hook)
 Cypress.Commands.add('deleteAccount', () => {
   cy.on('window:confirm', () => true);
-  cy.visit('/');
-  cy.get('#user').click();
-  cy.get('#userModal input[name="delete"]').click();
+  cy.visit('/user');
+  cy.get('input[name="delete"]').click();
   cy.get('#login').should('be.visible');
 });
 

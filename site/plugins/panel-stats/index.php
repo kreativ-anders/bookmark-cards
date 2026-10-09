@@ -78,50 +78,23 @@ Kirby::plugin('kreativ-anders/panel-stats', [
             return $percentage . '%';
         },
         'availableBrands' => function () {
-            // Parse brands.css to get list of available brand names
-            $brandsFile = kirby()->root('assets') . '/css/brands.css';
-            $brands = [];
-            
-            if (file_exists($brandsFile)) {
-                $content = file_get_contents($brandsFile);
-                // Match patterns like *[brand~='brandname']
-                preg_match_all("/\*\[brand~='([^']+)'\]/", $content, $matches);
-                if (!empty($matches[1])) {
-                    $brands = $matches[1];
-                }
-            }
-            
-            return $brands;
+            // Tokens of all logos in assets/brand-names (see site/plugins/brands)
+            return array_keys(BrandLogos::all());
         },
         'bookmarksWithoutBrands' => function () {
-            $availableBrands = site()->availableBrands();
             $withoutBrands = 0;
-            
+
             foreach (kirby()->users() as $user) {
                 $bookmarks = $user->bookmarks()->yaml();
                 if (is_array($bookmarks)) {
                     foreach ($bookmarks as $bookmark) {
-                        if (!empty($bookmark['title'])) {
-                            $title = strtolower($bookmark['title']);
-                            $titleNoSpaces = str_replace(' ', '', $title);
-                            
-                            // Check if brand exists for this bookmark
-                            $hasBrand = false;
-                            foreach ($availableBrands as $brand) {
-                                if ($brand === $title || $brand === $titleNoSpaces) {
-                                    $hasBrand = true;
-                                    break;
-                                }
-                            }
-                            
-                            if (!$hasBrand) {
-                                $withoutBrands++;
-                            }
+                        if (!empty($bookmark['title']) && BrandLogos::find($bookmark['title']) === null) {
+                            $withoutBrands++;
                         }
                     }
                 }
             }
-            
+
             return $withoutBrands;
         },
         'brandCoveragePercentage' => function () {
@@ -140,42 +113,30 @@ Kirby::plugin('kreativ-anders/panel-stats', [
             return count(site()->availableBrands());
         },
         'missingBrandsList' => function () {
-            $availableBrands = site()->availableBrands();
             $missingBrands = [];
-            
+
             foreach (kirby()->users() as $user) {
                 $bookmarks = $user->bookmarks()->yaml();
                 if (is_array($bookmarks)) {
                     foreach ($bookmarks as $bookmark) {
-                        if (!empty($bookmark['title'])) {
-                            $title = strtolower($bookmark['title']);
-                            $titleNoSpaces = str_replace(' ', '', $title);
-                            
-                            // Check if brand exists for this bookmark
-                            $hasBrand = false;
-                            foreach ($availableBrands as $brand) {
-                                if ($brand === $title || $brand === $titleNoSpaces) {
-                                    $hasBrand = true;
-                                    break;
-                                }
-                            }
-                            
-                            if (!$hasBrand) {
-                                // Track unique bookmark titles without brands
-                                if (!isset($missingBrands[$bookmark['title']])) {
-                                    $missingBrands[$bookmark['title']] = [
-                                        'title' => $bookmark['title'],
-                                        'count' => 0,
-                                        'suggested' => $titleNoSpaces
-                                    ];
-                                }
-                                $missingBrands[$bookmark['title']]['count']++;
-                            }
+                        if (empty($bookmark['title']) || BrandLogos::find($bookmark['title']) !== null) {
+                            continue;
                         }
+
+                        // Track unique bookmark titles without brands
+                        if (!isset($missingBrands[$bookmark['title']])) {
+                            $missingBrands[$bookmark['title']] = [
+                                'title' => $bookmark['title'],
+                                'count' => 0,
+                                // file name that would match: assets/brand-names/<suggested>.svg
+                                'suggested' => BrandLogos::token($bookmark['title'])
+                            ];
+                        }
+                        $missingBrands[$bookmark['title']]['count']++;
                     }
                 }
             }
-            
+
             // Sort by count (most used first)
             usort($missingBrands, function($a, $b) {
                 return $b['count'] - $a['count'];

@@ -60,13 +60,13 @@ return function ($kirby) {
   
           // LOGIN USER
           if($user && $user->login($data['password'])) {
-            go('/#welcome', 204);
+            go('/#welcome');
           } 
   
         } catch(Exception $e) {
         
           if(option('debug')) {
-            $alert['error'] = 'Register failed: <strong>' . $e->getMessage() . '</strong>';
+            $alert['error'] = 'Register failed: ' . $e->getMessage();
           }
           else {
             $alert['error'] = 'Could not register user!';
