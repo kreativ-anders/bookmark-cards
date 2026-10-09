@@ -25,6 +25,10 @@ h1 {
   margin-bottom: calc(var(--pico-spacing) * 1.5);
 }
 
+.account-page label:has(input[type=checkbox]) {
+  margin-bottom: calc(var(--pico-spacing) * 1.5);
+}
+
 .alert {
   padding: calc(var(--pico-spacing) * .75) var(--pico-spacing);
   margin-bottom: var(--pico-spacing);

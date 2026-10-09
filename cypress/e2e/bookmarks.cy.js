@@ -59,7 +59,10 @@ describe('Bookmarks', () => {
     cy.card('Buy me a coffee')
       .should('have.css', 'background-image')
       .and('contain', '/assets/brand-names/buymeacoffee.svg');
-    cy.card('Xyzzy Tool').should('not.have.attr', 'style');
+    // no logo: main.js paints a random gradient instead
+    cy.card('Xyzzy Tool')
+      .should('have.css', 'background-image')
+      .and('not.contain', '/assets/brand-names/');
   });
 
   it('filters bookmarks by tag', () => {
