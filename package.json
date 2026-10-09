@@ -5,14 +5,14 @@
     "author": "kreativ-anders | Manuel Steinberg",
     "devDependencies": {
         "@picocss/pico": "^2.0.6",
-        "cypress": "^13.14.2",
+        "cypress": "^16.1.1",
         "esbuild": "^0.28.2"
     },
     "scripts": {
         "build": "node build.mjs",
         "watch": "node build.mjs --watch",
         "cy:open": "cypress open",
-        "cy:test": "cypress run --spec 'cypress/e2e/register.cy.js,cypress/e2e/login.cy.js,cypress/e2e/delete.cy.js'",
+        "cy:test": "cypress run",
         "generateBrandsCSS": "node ./assets/css/generateBrandsCSS.js",
         "minifyBrandsCSS": "esbuild assets/css/brands.css --minify --outfile=assets/css/brands.min.css"
     }

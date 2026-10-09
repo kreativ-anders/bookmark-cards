@@ -48,3 +48,9 @@ assets/css/prepros.config
 # ---------------
 /kirby
 /vendor
+
+# Test artifacts
+# ---------------
+/cypress/screenshots
+/cypress/videos
+/.phpunit.cache

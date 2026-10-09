@@ -1,85 +1,61 @@
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
+// Custom commands for bookmark-cards
 // https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-Cypress.Commands.add('login', (username, password) => {
-  cy.visit('https://bookmark-cards.test/'); // Adjust the URL to your login page
 
-  // Intercept and block specific background requests
-  cy.intercept({
-    method: 'GET',
-    url: 'https://api.pirsch.io/hit?**', // Modify this to the specific request you want to block
-  }, {
-    statusCode: 400,
-    body: {}, // Provide an appropriate response body if necessary
-  }).as('blockedRequest');
+// Unique e-mail per test run, so tests never collide with existing accounts
+Cypress.Commands.add('uniqueEmail', (prefix = 'cypress') => {
+  return cy.wrap(`${prefix}-${Date.now()}-${Cypress._.random(1e6)}@example.com`);
+});
 
-  // Open the website
-  cy.visit('https://bookmark-cards.test/');
+// Block analytics requests (Pirsch) during tests
+Cypress.Commands.add('blockAnalytics', () => {
+  cy.intercept({ url: 'https://api.pirsch.io/**' }, { statusCode: 204, body: '' });
+});
 
-  // Click the login button to open the modal
-  cy.get('#login').click();
-
-  // Fill in the email and password in the modal
-  cy.get('#loginModal input[type=email]').type(username);
-  cy.get('#loginModal input[name="password"]').type(password);
-
-  // Click the login button in the modal
-  cy.get('#loginModal input[name="login"]').click();
-
-  // Click the user setting button to open the modal
+Cypress.Commands.add('register', (email, password) => {
+  cy.blockAnalytics();
+  cy.visit('/');
+  cy.get('header #register').click();
+  cy.get('#registerModal').should('be.visible').within(() => {
+    cy.get('input[name="email"]').type(email);
+    cy.get('input[name="password"]').type(password, { log: false });
+    cy.get('input[name="tos"]').check();
+    cy.get('input[name="register"]').click();
+  });
   cy.get('#user').should('be.visible');
 });
 
-Cypress.Commands.add('register', (username, password) => {
-  cy.visit('https://bookmark-cards.test/'); // Adjust the URL to your login page
-
-  // Intercept and block specific background requests
-  cy.intercept({
-    method: 'GET',
-    url: 'https://api.pirsch.io/hit?**', // Modify this to the specific request you want to block
-  }, {
-    statusCode: 400,
-    body: {}, // Provide an appropriate response body if necessary
-  }).as('blockedRequest');
-
-  // Open the website
-  cy.visit('https://bookmark-cards.test/');
-
-  // Click the register button to open the modal
-  cy.get('#register').click();
-
-  // Fill in the email and password in the modal
-  cy.get('#registerModal input[type=email]').type('test@example.com');
-  cy.get('#registerModal input[name="password"]').type('Password123');
-
-  // Check AGB
-  cy.get('#registerModal input[name="tos"]').check();
-
-  // Click the register button in the modal
-  cy.get('#registerModal input[name="register"]').click();
-
-  cy.get('#logout').click();
+Cypress.Commands.add('login', (email, password) => {
+  cy.blockAnalytics();
+  cy.visit('/');
+  cy.get('#login').click();
+  cy.get('#loginModal').should('be.visible').within(() => {
+    cy.get('input[name="email"]').type(email);
+    cy.get('input[name="password"]').type(password, { log: false });
+    cy.get('input[name="login"]').click();
+  });
 });
 
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+Cypress.Commands.add('logout', () => {
+  cy.get('#logout').click();
+  cy.get('#login').should('be.visible');
+});
+
+// Deletes the logged-in account (also deletes the Stripe test customer via hook)
+Cypress.Commands.add('deleteAccount', () => {
+  cy.on('window:confirm', () => true);
+  cy.visit('/');
+  cy.get('#user').click();
+  cy.get('#userModal input[name="delete"]').click();
+  cy.get('#login').should('be.visible');
+});
+
+Cypress.Commands.add('addBookmark', (title, link, tags = '') => {
+  cy.get('#s_title').type(title);
+  cy.get('#s_link').type(link);
+  if (tags) cy.get('#s_tags').type(tags);
+  cy.get('#jumbotron button[type="submit"]').click();
+});
+
+Cypress.Commands.add('card', (title) => {
+  return cy.contains('#bookmarks article .card-title', title).parents('article');
+});
