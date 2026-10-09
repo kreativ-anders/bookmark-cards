@@ -1,9 +1,12 @@
-<section class="container">
-  <h2><mark>Feature #2</mark>: Fast, intuitive search</h2>
-  <ul>
-    <li><b>Duplicate detection:</b> When you add a link, the app checks for existing bookmarks so you avoid duplicates.</li>
-    <li><b>Flexible filters:</b> Search by title, URL, or tag to quickly locate the link you need.</li>
-    <li><b>Free and instant:</b> Fast searching built into the app — no extra fees or delays.</li>
-  </ul>
-  <img src="/assets/images/feature-search.png" alt="Screenshot of search results and filters">
+<section class="container feature">
+  <h2><mark>Feature #2</mark> Fast, intuitive bookmark search</h2>
+  <dl>
+    <dt>Search while you type</dt>
+    <dd>The same bar adds and searches links: start typing a title, URL or tag and the cards filter instantly.</dd>
+    <dt>Duplicate detection</dt>
+    <dd>Before you save a link twice, you see the bookmark you already have.</dd>
+    <dt>Free and instant</dt>
+    <dd>Search runs right in your browser, without extra fees or waiting.</dd>
+  </dl>
+  <img src="/assets/images/feature-search.png" width="1280" height="720" loading="lazy" alt="Typing into the search bar filters the bookmark cards instantly">
 </section>

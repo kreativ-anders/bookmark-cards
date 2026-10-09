@@ -10,13 +10,29 @@
  */
 ?>
 
+<?php
+  // Premium prices for pricing + structured data, page still renders without Stripe
+  // monthly (tier 1) is what the checkout buttons book, Stripe Checkout offers yearly (tier 2) as upsell
+  $premiumPrice = null;
+  $monthlyPrice = null;
+  if (!$kirby->user()) {
+    try {
+      $stripe = new \Stripe\StripeClient(option('kreativ-anders.memberkit.secretKey'));
+      $monthlyPrice = $stripe->prices->retrieve(option('kreativ-anders.memberkit.tiers')[1]['price'], [])->unit_amount / 100;
+      $premiumPrice = $stripe->prices->retrieve(option('kreativ-anders.memberkit.tiers')[2]['price'], [])->unit_amount / 100;
+    } catch (\Throwable $e) {
+      // keep whatever was resolved, the pricing snippet shows '—' for the rest
+    }
+  }
+?>
 <?php snippet('header') ?>
 
+<main>
+
 <?php  if ($kirby->user()) {
+  echo '<h1 class="visually-hidden">My bookmarks</h1>';
   snippet('modals/change'); 
 } ?>
-
-<hr style="margin-bottom: unset;">
 
 <?php if (!$kirby->user()) {
   snippet('hero'); 
@@ -43,16 +59,13 @@
 
 <?php if (!$kirby->user()) {
   snippet('values');  
-  snippet('pricing');
+  snippet('pricing', ['price' => $premiumPrice, 'monthly' => $monthlyPrice]);
+  snippet('faq');
   snippet('techstack');
+  snippet('seo-jsonld', ['price' => $premiumPrice]);
 } ?>
 
 <?php snippet('bookmarks') ?>
-
-
-
-
-</body>
 
 </main>
 

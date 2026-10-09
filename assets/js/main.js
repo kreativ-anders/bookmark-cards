@@ -1,4 +1,4 @@
-// pico-modal.js is prepended to this file by `npm run build:js`
+// pico-modal.js is prepended to this file by `npm run build` (build.mjs)
 
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -36,11 +36,11 @@ document.addEventListener('DOMContentLoaded', function() {
     function performSearch(value) {
       var v = String(value || '').toLowerCase();
       if (!v) {
-        cardSearchCache.forEach(function(entry) { entry.card.style.display = 'block'; });
+        cardSearchCache.forEach(function(entry) { entry.card.style.display = ''; });
         return;
       }
       cardSearchCache.forEach(function(entry) {
-        entry.card.style.display = entry.text.indexOf(v) > -1 ? 'block' : 'none';
+        entry.card.style.display = entry.text.indexOf(v) > -1 ? '' : 'none';
       });
     }
 
@@ -51,6 +51,16 @@ document.addEventListener('DOMContentLoaded', function() {
       input.addEventListener('input', handler, { passive: true });
     });
   })();
+
+  // Keyboard access for clickable card tags (WCAG 2.1.1)
+  Array.from(document.querySelectorAll('#bookmarks span.tag[onclick]')).forEach(function(span) {
+    span.setAttribute('role', 'button');
+    span.setAttribute('tabindex', '0');
+    span.setAttribute('aria-pressed', 'false');
+    span.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); span.click(); }
+    });
+  });
 }, false);
 
 // Lazy Load Bg-Images
@@ -155,12 +165,8 @@ function changeData(id, title, link, tags) {
  * @returns colors
  */
 function randomBgColor() {
-  // Light colors
-  var colors = ['#ADD8E6', '#F08080', '#E0FFFF', '#FAFAD2', '#D3D3D3', '#90EE90', '#FFB6C1', '#FFA07A', '#20B2AA', '#87CEFA', '#778899', '#B0C4DE', '#FFFFE0'];
-
-  /*if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches && document.documentElement.getAttribute("data-theme") != "light") {
-    var colors = ['#235e71', '#650c0c', '#00e0e0', '#b9b915', '#545454', '#116e11', '#b6001b', '#7a2300', '#0d4643', '#054f7d', '#07090a', '#2a4465', '#e0e000'];
-  }*/
+  // Soft tints (rgb), painted at low opacity over the light card surface
+  var colors = ['100, 210, 255', '255, 159, 10', '48, 209, 88', '191, 90, 242', '255, 55, 95', '255, 214, 10', '94, 92, 230', '102, 212, 207', '172, 142, 104'];
 
   return colors[Math.floor(Math.random() * colors.length)];
 }
@@ -174,10 +180,7 @@ function toggleTag(tag) {
   var t = String(tag || '');
   var allTags = Array.from(document.querySelectorAll('span.tag'));
   allTags.forEach(function(span) {
-    span.style.opacity = '0.7';
-    span.style.border = 'none';
-    span.style.color = 'unset';
-    span.setAttribute('aria-selected', 'false');
+    span.setAttribute('aria-pressed', 'false');
   });
 
   var bookmarksEl = document.getElementById('bookmarks');
@@ -185,27 +188,17 @@ function toggleTag(tag) {
 
   var current = localStorage.getItem('tag');
   if (current === t) {
-    Array.from(bookmarksEl.children).forEach(function(card) { card.style.display = 'block'; });
+    Array.from(bookmarksEl.children).forEach(function(card) { card.style.display = ''; });
     localStorage.removeItem('tag');
     return;
   }
 
   Array.from(bookmarksEl.children).forEach(function(card) {
-    card.style.display = 'none';
     var s = String(card.getAttribute('data-tags') || '');
-    if (s.indexOf(t) > -1) {
-      card.style.display = 'block';
-      var selector = "span[data-tag*='" + CSS.escape ? CSS.escape(t) : t + "']";
-      try {
-        document.querySelectorAll("span[data-tag*='" + t + "']").forEach(function(tagEl) {
-          tagEl.style.color = 'var(--pico-primary)';
-          tagEl.style.opacity = '1';
-          tagEl.setAttribute('aria-selected', 'true');
-        });
-      } catch (e) {
-        // fallback: ignore selectors that may throw
-      }
-    }
+    card.style.display = s.indexOf(t) > -1 ? '' : 'none';
+  });
+  allTags.forEach(function(span) {
+    if ((span.getAttribute('data-tag') || '').indexOf(t) > -1) span.setAttribute('aria-pressed', 'true');
   });
   localStorage.setItem('tag', t);
 }
@@ -240,8 +233,8 @@ function topTags() {
     span.classList.add('tag');
     li.classList.add('top-tag');
     span.dataset.tag = tag;
-    span.setAttribute('aria-controls', tag);
-    span.setAttribute('aria-selected', 'false');
+    span.setAttribute('role', 'button');
+    span.setAttribute('aria-pressed', 'false');
     span.setAttribute('tabindex', '0');
     span.addEventListener('click', function() { toggleTag(tag); });
     span.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleTag(tag); } });
@@ -271,7 +264,10 @@ function generateBackgroundColors() {
 
       // If no background-image, set gradient
       if (backgroundImage === 'none' || !backgroundImage || backgroundImage === '') {
-        bookmark.style.background = 'linear-gradient(to bottom, white 0%,' + randomBgColor() + ' 100%)';
+        var tint = randomBgColor();
+        bookmark.style.setProperty('--glow', tint.replace(/,/g, ''));
+        bookmark.style.backgroundImage = 'linear-gradient(to bottom, rgba(' + tint + ', 0) 0%, rgba(' + tint + ', .4) 100%)';
+        bookmark.style.backgroundSize = '100% 100%';
         return;
       }
 
@@ -288,7 +284,20 @@ function generateBackgroundColors() {
         try {
           var palette = colorThief.getPalette(img, 2) || [];
           var color = palette[1] || palette[0] || [200,200,200];
-          bookmark.style.backgroundColor = 'rgba(' + color[0] + ',' + color[1] + ',' + color[2] + ',0.33)';
+          // neutral brand colors (black/grey logos) keep the plain card surface
+          var max = Math.max.apply(null, color), min = Math.min.apply(null, color);
+          // hover glow: the most saturated palette color (grey for black/neutral logos, visible in both themes)
+          var glow = (colorThief.getPalette(img, 5) || []).concat([color]).reduce(function(best, c) {
+            var chroma = Math.max.apply(null, c) - Math.min.apply(null, c);
+            return chroma > best.chroma ? { c: c, chroma: chroma } : best;
+          }, { c: null, chroma: 47 }).c;
+          bookmark.style.setProperty('--glow', glow ? glow.join(' ') : '142 142 147');
+          if (max - min < 48) return;
+          // opaque mix (20 % brand color over the light card surface): cards stay light in dark mode
+          // and card text keeps >= 4.5:1 contrast (WCAG AA)
+          var base = String(window.getComputedStyle(bookmark).getPropertyValue('--card-rgb') || '255 255 255').trim().split(/\s+/).map(Number);
+          var mix = color.map(function(c, i) { return Math.round((base[i] || 255) + (c - (base[i] || 255)) * 0.2); });
+          bookmark.style.backgroundColor = 'rgb(' + mix.join(',') + ')';
         } catch (e) {
           // ignore palette extraction errors
         }
@@ -322,4 +331,68 @@ function generateBackgroundColors() {
       }
     } catch (e) { /* noop */ }
   });
+})();
+/**
+ * FEATURE
+ * Color theme toggle (system -> light -> dark), stored per device.
+ * header.php applies the stored theme before the CSS loads; this wires the button.
+ * Runs on DOMContentLoaded or immediately (offline.html loads main.js late).
+ */
+(function () {
+  const KEY = 'bookmark.cards.theme';
+  const MODES = ['system', 'light', 'dark'];
+  const COLORS = { light: '#f5f5f7', dark: '#101012' };
+
+  function stored() {
+    try {
+      const t = localStorage.getItem(KEY);
+      return MODES.indexOf(t) > -1 ? t : 'system';
+    } catch (e) { return 'system'; }
+  }
+
+  function apply(mode, button) {
+    const root = document.documentElement;
+    if (mode === 'system') root.removeAttribute('data-theme');
+    else root.setAttribute('data-theme', mode);
+
+    // browser UI color follows an explicit choice, otherwise the media queries
+    document.querySelectorAll('meta[name="theme-color"]').forEach(function (meta) {
+      if (!meta.dataset.media) meta.dataset.media = meta.getAttribute('media') || '';
+      if (mode === 'system') {
+        meta.setAttribute('media', meta.dataset.media);
+        meta.setAttribute('content', meta.dataset.media.indexOf('dark') > -1 ? COLORS.dark : COLORS.light);
+      } else {
+        meta.removeAttribute('media');
+        meta.setAttribute('content', COLORS[mode]);
+      }
+    });
+
+    if (button) {
+      const next = MODES[(MODES.indexOf(mode) + 1) % MODES.length];
+      const label = 'Color theme: ' + mode + ' (switch to ' + next + ')';
+      button.dataset.themeMode = mode;
+      button.setAttribute('aria-label', label);
+      button.setAttribute('title', label);
+    }
+  }
+
+  function init() {
+    const button = document.getElementById('theme-toggle');
+    let current = stored();
+    apply(current, button);
+    if (!button || button.dataset.wired) return;
+    button.dataset.wired = '1';
+    button.hidden = false;
+    button.addEventListener('click', function () {
+      current = MODES[(MODES.indexOf(current) + 1) % MODES.length];
+      try {
+        if (current === 'system') localStorage.removeItem(KEY);
+        else localStorage.setItem(KEY, current);
+      } catch (e) { /* storage blocked: still switch for this page view */ }
+      apply(current, button);
+    });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
 })();

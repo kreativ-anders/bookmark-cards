@@ -19,8 +19,8 @@ return function ($kirby, $page) {
   } elseif($kirby->request()->is('post') && get('update')) {
 
     $data = [
-      'email'     => get('email'),
-      'password'  => get('password')
+      'email'     => is_string(get('email')) ? trim(get('email')) : '',
+      'password'  => is_string(get('password')) ? get('password') : ''
     ];
 
     $rules = [
@@ -42,8 +42,19 @@ return function ($kirby, $page) {
     // VALID DATA
     } else {
 
+      try {
+
+        // RE-AUTHENTICATE: A HIJACKED SESSION ALONE MUST NOT TAKE OVER THE ACCOUNT
+        $kirby->auth()->validatePassword($kirby->user()->email(), (is_string(get('current_password')) ? get('current_password') : ''));
+
+      } catch(Exception $e) {
+
+        $alert['error'] = 'Wrong current password, nothing was changed!';
+        $error = true;
+      }
+
       // EMAIL
-      if (V::email($data['email']) && !get('password')) {
+      if (empty($alert) === true && $data['email'] !== '') {
 
         try {
 
@@ -64,7 +75,7 @@ return function ($kirby, $page) {
       }
 
       // PASSWORD
-      if ($data['password']) {
+      if (empty($alert) === true && $data['password'] !== '') {
 
         try {
 
@@ -97,21 +108,38 @@ return function ($kirby, $page) {
 
     try {
 
-      $kirby->user()->delete();
-      go('/');
+      // RE-AUTHENTICATE: A HIJACKED SESSION ALONE MUST NOT DELETE THE ACCOUNT
+      // (AUTH TRACKS FAILED ATTEMPTS AND BLOCKS BRUTE FORCE LIKE THE LOGIN DOES)
+      $kirby->auth()->validatePassword($kirby->user()->email(), (is_string(get('current_password')) ? get('current_password') : ''));
+
+      try {
+
+        $kirby->user()->delete();
+        go('/');
+
+      } catch(Exception $e) {
+
+        if(option('debug')) {
+
+          $alert['error'] = 'The user could not be deleted: ' . $e->getMessage();
+        }
+        else {
+
+          $alert['error'] = 'The user could not be deleted!';
+        }
+        $error = true;
+      }
 
     } catch(Exception $e) {
 
-      if(option('debug')) {
-
-        $alert['error'] = 'The user could not be deleted: ' . $e->getMessage();
-      }
-      else {
-
-        $alert['error'] = 'The user could not be deleted!';
-      }
+      $alert['error'] = 'Wrong password, the account was not deleted!';
       $error = true;
     }
+  }
+
+  // never hand the password back to the template
+  if (isset($data['password'])) {
+    unset($data['password']);
   }
 
   return [

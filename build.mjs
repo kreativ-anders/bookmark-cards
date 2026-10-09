@@ -1,5 +1,5 @@
 // Asset build (replaces Prepros): `npm run build` or `npm run watch`
-// - CSS: assets/css/main.css (+ @import of Pico from node_modules) -> assets/css/main.min.css
+// - CSS: assets/css/main.css -> assets/css/main.min.css, self-hosted fonts (node_modules/@fontsource*) -> assets/css/fonts/
 // - JS:  assets/js/pico-modal.js + assets/js/main.js -> assets/js/main.min.js
 //        offline.js -> offline.min.js (offline page)
 //        Plain concatenation (no bundling), so top-level functions stay global for inline handlers.
@@ -14,7 +14,10 @@ const scripts = [
 ];
 
 async function buildCSS() {
-  await build({ entryPoints: [css.entry], outfile: css.out, bundle: true, minify: true, logLevel: 'warning' });
+  await build({
+    entryPoints: [css.entry], outfile: css.out, bundle: true, minify: true, logLevel: 'warning',
+    loader: { '.woff2': 'file' }, assetNames: 'fonts/[name]', // stable names, cached offline by UpUp (header.php)
+  });
   console.log(`✔ ${css.out}`);
 }
 

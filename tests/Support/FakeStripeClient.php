@@ -14,7 +14,7 @@ use Stripe\HttpClient\ClientInterface;
  */
 class FakeStripeClient implements ClientInterface
 {
-    /** @var array<int, array{method: string, path: string, params: array}> */
+    /** @var array<int, array{method: string, path: string, params: array, headers: array}> */
     public array $requests = [];
 
     /** @var array<string, array<int, array{0: int, 1: array}>> */
@@ -40,7 +40,7 @@ class FakeStripeClient implements ClientInterface
         $query  = [];
         parse_str((string)parse_url($absUrl, PHP_URL_QUERY), $query);
 
-        $this->requests[] = ['method' => $method, 'path' => $path, 'params' => $params + $query];
+        $this->requests[] = ['method' => $method, 'path' => $path, 'params' => $params + $query, 'headers' => $headers];
 
         $key = $method . ' ' . $path;
         if (!empty($this->queue[$key])) {

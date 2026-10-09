@@ -2,7 +2,7 @@
 
 Bookmark.cards is a bookmarket collection tool in its simpliest form.
 
-Built with [Kirby CMS](https://getkirby.com) 5, [Pico CSS](https://picocss.com) and Stripe (via the local `memberkit` plugin).
+Built with [Kirby CMS](https://getkirby.com) 5, a small custom stylesheet (no CSS framework) and Stripe (via the local `memberkit` plugin).
 
 ## Setup
 
@@ -12,7 +12,7 @@ Requirements: PHP 8.3+ (8.2+ for production), Composer, Node.js
 git clone https://github.com/kreativ-anders/bookmark-cards.git
 cd bookmark-cards
 composer install   # Kirby, Stripe (+ Pest for development)
-npm ci             # Pico, esbuild, Cypress
+npm ci             # esbuild, fonts (@fontsource), Cypress
 ```
 
 Local configuration (Stripe keys, tiers) goes into `site/config/config.<host>.php`, e.g. `config.bookmark-cards.localhost.php` (git-ignored).
@@ -34,7 +34,8 @@ npm run build   # one-off
 npm run watch   # rebuild on change
 ```
 
-- `assets/css/main.css` → `main.min.css` (includes Pico's prebuilt *pumpkin* theme from npm, overrides below the import)
+- `assets/css/main.css` → `main.min.css` (custom design tokens, light + dark mode, WCAG 2.2 AA contrast); fonts Geist + Instrument Serif are self-hosted from npm → `assets/css/fonts/`
+- The CSS targets existing IDs/classes used by `main.js`, `offline.js` and Cypress (e.g. `#bookmarks`, `#s_title`, `.card-title`, `span.tag`, `button.edit`, `#changeModal`) – keep them stable
 - `assets/js/pico-modal.js` + `assets/js/main.js` → `main.min.js`
 - `offline.js` → `offline.min.js`
 

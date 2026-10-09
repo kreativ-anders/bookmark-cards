@@ -6,7 +6,7 @@ describe('Bookmarks', () => {
   });
 
   afterEach(() => {
-    cy.deleteAccount();
+    cy.deleteAccount(password);
   });
 
   it('adds, edits and deletes a bookmark', () => {
@@ -78,6 +78,69 @@ describe('Bookmarks', () => {
     cy.visit('/');
     cy.get('#bookmarks article').should('have.length', 1);
     cy.card('GitHub').should('exist');
+  });
+
+  // POST to the home controller with the page's CSRF token
+  const post = (body) => cy.get('#jumbotron input[name="csrf"]').invoke('val').then((csrf) =>
+    cy.request({ method: 'POST', url: '/', form: true, body: { csrf, ...body } }));
+
+  it('rejects script links and keeps other links unchanged', () => {
+    cy.visit('/');
+    post({ c_title: 'Evil', c_link: 'javascript:alert(1)' })
+      .its('body').should('contain', 'Please enter a title and a valid web link!');
+    post({ c_title: 'Mail', c_link: 'mailto:jane@example.com' });
+
+    cy.visit('/');
+    cy.get('#bookmarks article').should('have.length', 1);
+    cy.card('Mail').find('a.card-title').should('have.attr', 'href', 'mailto:jane@example.com');
+  });
+
+  it('does not add a bookmark twice on reload (POST/REDIRECT/GET)', () => {
+    cy.addBookmark('GitHub', 'https://github.com');
+    cy.location('pathname').should('eq', '/');
+    cy.reload();
+    cy.get('#bookmarks article').should('have.length', 1);
+  });
+
+  it('ignores updates of bookmarks that do not exist', () => {
+    cy.addBookmark('GitHub', 'https://github.com');
+    post({ u_id: '5', u_title: 'Ghost', u_link: 'https://ghost.example' })
+      .its('body').should('contain', 'This bookmark has changed in the meantime.');
+
+    cy.visit('/');
+    cy.get('#bookmarks article').should('have.length', 1);
+  });
+
+  it('deletes the right bookmark although the index is stale', () => {
+    cy.addBookmark('First', 'https://first.example');
+    cy.addBookmark('Second', 'https://second.example');
+
+    // a 2nd tab still shows "Second" at index 1, then "First" gets deleted
+    cy.card('Second').find('input[name="d_hash"]').invoke('val').then((hash) => {
+      cy.card('First').find('button.delete').click();
+      post({ d_bookmark: '1', d_hash: hash });
+    });
+
+    cy.visit('/');
+    cy.get('#bookmarks article').should('have.length', 0);
+  });
+
+  it('enforces the free plan limit', () => {
+    cy.visit('/');
+    cy.get('#jumbotron input[name="csrf"]').invoke('val').then((csrf) => {
+      // noPremiumLimit of the local config
+      Cypress._.times(24, (i) =>
+        cy.request({ method: 'POST', url: '/', form: true, body: { csrf, c_title: `Bookmark ${i}`, c_link: `https://example.org/${i}` } }));
+    });
+
+    cy.addBookmark('One too many', 'https://example.org/too-many');
+    cy.get('#bookmarks article').should('have.length', 25);
+    cy.card('BECOME PREMIUM').should('exist');
+
+    // as before the refactoring: every further add becomes another "become premium" card
+    cy.addBookmark('Another one', 'https://example.org/another');
+    cy.get('#bookmarks article').should('have.length', 26);
+    cy.contains('#bookmarks article .card-title', 'Another one').should('not.exist');
   });
 
   it('filters bookmarks by tag', () => {

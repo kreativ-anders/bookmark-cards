@@ -23,8 +23,12 @@
       </label>
       <label for="tos">
         <input type="checkbox" id="tos" name="tos" required>
-        I agree that my email address is stored for authentification and shared with <a href="https://stripe.com/">Stripe</a>.
+        I accept the <a href="<?= url('terms') ?>" target="_blank">Terms</a> and have read the <a href="<?= url('privacy') ?>" target="_blank">Privacy policy</a>.
       </label>
+      <!-- honeypot: hidden from humans, bots fill it in -->
+      <div aria-hidden="true" style="position: absolute; left: -10000px;">
+        <label for="bc_hp">Leave this field empty <input type="text" id="bc_hp" name="bc_hp" tabindex="-1" autocomplete="off"></label>
+      </div>
       <input type="submit" name="register" value="Register" data-pirsch-event="Register">
     </form>
 

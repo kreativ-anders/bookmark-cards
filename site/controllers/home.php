@@ -3,12 +3,13 @@
 /**
  * Home controller
  *
- * Responsible for serving bookmarks and handling simple CRUD via POST requests.
- * This controller keeps backward compatible behavior but applies defensive checks
- * and clearer logic for maintainability.
+ * Serves the bookmarks and handles add/update/delete via POST.
+ * Exactly one action per request; validation and storage helpers live in
+ * site/plugins/bookmarks. Successful POSTs redirect (POST/REDIRECT/GET),
+ * so a reload never submits the form twice.
  *
- * @param \\Kirby\Cms\App $kirby
- * @param \\Kirby\Cms\Page $page
+ * @param \Kirby\Cms\App $kirby
+ * @param \Kirby\Cms\Page $page
  * @return array
  */
 return function ($kirby, $page) {
@@ -18,115 +19,129 @@ return function ($kirby, $page) {
   // current user (if logged in)
   $user = $kirby->user();
 
+  // POST actions (add/update/delete) for authenticated users, require a valid CSRF token
+  if ($user && $kirby->request()->is('POST')) {
+
+    if (csrf(get('csrf')) !== true) {
+
+      $error = 'Invalid CSRF token! Please reload the page and try again.';
+
+    } else {
+
+      $tiers       = option('kreativ-anders.memberkit.tiers', []);
+      $isFree      = isset($tiers[0]['name']) && $tiers[0]['name'] === $user->tier()->toString();
+      $freeLimit   = (int)option('noPremiumLimit');
+      $placeholder = option('noPremiumTitle');
+
+      // validated entry from the create (c_*) or update (u_*) form
+      $entry = function (string $prefix) use (&$error): array|null {
+        $title = Bookmarks::input($prefix . '_title') ?? '';
+        $link  = is_string(get($prefix . '_link')) ? get($prefix . '_link') : '';
+        $tags  = Bookmarks::input($prefix . '_tags') ?? '';
+
+        if (mb_strlen($title) > Bookmarks::MAX_TITLE || mb_strlen($link) > Bookmarks::MAX_LINK || mb_strlen($tags) > Bookmarks::MAX_TAGS) {
+          $error = 'Title, link or tags are too long!';
+          return null;
+        }
+
+        $link = Bookmarks::link($link);
+
+        if ($title === '' || $link === null) {
+          $error = 'Please enter a title and a valid web link!';
+          return null;
+        }
+
+        return [
+          'title' => $title,
+          'link'  => $link,
+          'tags'  => Bookmarks::tags($tags)
+        ];
+      };
+
+      try {
+
+        $user = Bookmarks::modify($user, function (array $bookmarks) use ($entry, $isFree, $freeLimit, $placeholder, &$error) {
+
+          // UpdateBookmark: expects u_id (index), optional u_hash (fingerprint), u_title and u_link
+          if (get('u_id') !== null) {
+
+            $index = Bookmarks::find($bookmarks, Bookmarks::input('u_id'), Bookmarks::input('u_hash'));
+
+            if ($index === null) {
+              $error = 'This bookmark has changed in the meantime. Please reload the page and try again.';
+              return null;
+            }
+
+            // same rule as the edit button in snippets/bookmarks.php
+            if ($isFree && (count($bookmarks) > $freeLimit || ($bookmarks[$index]['title'] ?? null) === $placeholder)) {
+              $error = 'Please become premium to edit your bookmarks.';
+              return null;
+            }
+
+            if (($data = $entry('u')) === null) {
+              return null;
+            }
+
+            $bookmarks[$index] = $data;
+            return $bookmarks;
+          }
+
+          // AddBookmark: expects c_title and c_link
+          if (get('c_title') !== null || get('c_link') !== null) {
+
+            if (($data = $entry('c')) === null) {
+              return null;
+            }
+
+            if (count($bookmarks) >= (int)option('bookmarkLimit', 10000)) {
+              $error = 'You have reached the maximum number of bookmarks.';
+              return null;
+            }
+
+            // free tier: past the limit the "become premium" card is added instead
+            if ($isFree && count($bookmarks) >= $freeLimit) {
+              $data = [
+                'title' => $placeholder,
+                'link'  => option('noPremiumLink'),
+                'tags'  => option('noPremiumTags')
+              ];
+            }
+
+            $bookmarks[] = $data;
+            return $bookmarks;
+          }
+
+          // DeleteBookmark: expects d_bookmark (index) and optional d_hash (fingerprint)
+          if (get('d_bookmark') !== null) {
+
+            $index = Bookmarks::find($bookmarks, Bookmarks::input('d_bookmark'), Bookmarks::input('d_hash'));
+
+            if ($index === null) {
+              $error = 'This bookmark has changed in the meantime. Please reload the page and try again.';
+              return null;
+            }
+
+            array_splice($bookmarks, $index, 1);
+            return $bookmarks;
+          }
+
+          return null;
+        });
+
+      } catch (\Exception $e) {
+        $error = option('debug') ? 'Your bookmarks could not be saved: ' . $e->getMessage() : 'Your bookmarks could not be saved!';
+      }
+
+      // SUCCESSFUL: POST/REDIRECT/GET (no duplicate bookmark on reload)
+      if ($error === null) {
+        go($page->url());
+      }
+    }
+  }
+
   // choose bookmarks from user (if exists) otherwise from page
   $bookmarks = $user ? $user->bookmarks()->yaml() : $page->bookmarks()->yaml();
-  $bookmarks = is_array($bookmarks) ? $bookmarks : [];
-
-  // collect tags (from update or create inputs). Keep behavior but make it clearer
-  $uTags = get('u_tags', '');
-  $cTags = get('c_tags', '');
-
-  if ($uTags !== '' || $cTags !== '') {
-    $raw = Str::split($uTags . $cTags, ',');
-    $raw = is_array($raw) ? $raw : [];
-
-    // normalize, trim and dedupe case-insensitively while preserving first-seen case
-    $seen = [];
-    $unique = [];
-    foreach ($raw as $t) {
-      $t = trim((string)$t);
-      if ($t === '') continue;
-      $lk = mb_strtolower($t);
-      if (!isset($seen[$lk])) {
-        $seen[$lk] = true;
-        $unique[] = $t;
-      }
-    }
-    $tags = A::join($unique);
-  } else {
-    $tags = '';
-  }
-
-  // POST actions (add/update/delete) require a valid CSRF token
-  if ($user && $kirby->request()->is('POST') && csrf(get('csrf')) !== true) {
-    $error = 'Invalid CSRF token! Please reload the page and try again.';
-  }
-
-  // handle POST actions only for authenticated users
-  if ($user && $kirby->request()->is('POST') && $error === null) {
-
-    // UpdateBookmark: expects u_id (index), u_title and u_link
-    $uId = get('u_id');
-    $uTitle = get('u_title');
-    $uLink = get('u_link');
-
-    if ($uId !== null && $uTitle && $uLink) {
-      $bookmarks = $user->bookmarks()->yaml() ?: [];
-      $index = (int)$uId;
-      // build replacement entry
-      $replacement = [
-        $index => [
-          'title' => (string)$uTitle,
-          'link'  => (string)$uLink,
-          'tags'  => $tags
-        ]
-      ];
-      $bookmarks = array_replace($bookmarks, $replacement);
-      try {
-        $user->update(['Bookmarks' => Yaml::encode($bookmarks)]);
-      } catch (\Exception $e) {
-        $error = $e->getMessage();
-      }
-    }
-
-    // AddBookmark: expects c_title and c_link
-    $cTitle = get('c_title');
-    $cLink = get('c_link');
-    if ($cTitle && $cLink) {
-      $bookmarks = $user->bookmarks()->yaml() ?: [];
-
-      // check premium limit safely
-      $tiers = option('kreativ-anders.memberkit.tiers', []);
-      $firstTierName = $tiers[0]['name'] ?? null;
-      $userTier = method_exists($user, 'tier') ? (string)$user->tier() : null;
-
-      if ($firstTierName !== null && $firstTierName === $userTier && count($bookmarks) >= (int)option('noPremiumLimit')) {
-        $entry = [
-          'title' => option('noPremiumTitle'),
-          'link'  => option('noPremiumLink'),
-          'tags'  => option('noPremiumTags')
-        ];
-      } else {
-        $entry = [
-          'title' => (string)$cTitle,
-          'link'  => (string)$cLink,
-          'tags'  => $tags
-        ];
-      }
-
-      $bookmarks[] = $entry;
-      try {
-        $user->update(['Bookmarks' => Yaml::encode($bookmarks)]);
-      } catch (\Exception $e) {
-        $error = $e->getMessage();
-      }
-    }
-
-    // DeleteBookmark: expects d_bookmark to be a numeric index
-    $dIndex = get('d_bookmark');
-    if (is_numeric($dIndex)) {
-      $bookmarks = $user->bookmarks()->yaml() ?: [];
-      $idx = (int)$dIndex;
-      if ($idx >= 0 && isset($bookmarks[$idx])) {
-        array_splice($bookmarks, $idx, 1);
-        try {
-          $user->update(['Bookmarks' => Yaml::encode($bookmarks)]);
-        } catch (\Exception $e) {
-          $error = $e->getMessage();
-        }
-      }
-    }
-  }
+  $bookmarks = is_array($bookmarks) ? array_values($bookmarks) : [];
 
   return [
     'error' => $error,

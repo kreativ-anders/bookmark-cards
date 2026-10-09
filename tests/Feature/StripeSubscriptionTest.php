@@ -31,11 +31,29 @@ describe('webhook: customer.subscription.updated', function () {
         expect(freshUser('jane@example.com')->stripe_status()->value())->toBe('past_due');
     });
 
-    it('fails when the customer cannot be retrieved', function () {
-        $this->stripe->fail('GET', "/v1/customers/{$this->customer}", 404);
+    it('fails when no Kirby user belongs to the customer', function () {
+        expect(fn () => site()->updateStripeSubscriptionWebhook(stripeSubscription('cus_unknown', 'price_basic')))
+            ->toThrow(Exception::class, 'Could not find kirby user for stripe customer!');
+    });
 
-        expect(fn () => site()->updateStripeSubscriptionWebhook(stripeSubscription($this->customer, 'price_basic')))
-            ->toThrow(Exception::class, 'Could not retrieve stripe customer!');
+    it('matches the user by customer id, not by the (customer-editable) Stripe email', function () {
+        registerUser('mallory@example.com');
+        $mallory = freshUser('mallory@example.com')->stripe_customer()->value();
+
+        // Mallory set the victim's email in the Stripe portal
+        $this->stripe->respond('GET', "/v1/customers/$mallory", ['id' => $mallory, 'object' => 'customer', 'email' => 'jane@example.com']);
+
+        site()->updateStripeSubscriptionWebhook(stripeSubscription($mallory, 'price_premium', 'active', 'sub_mallory'));
+
+        expect(freshUser('jane@example.com')->stripe_subscription()->isEmpty())->toBeTrue()
+            ->and(freshUser('mallory@example.com')->stripe_subscription()->value())->toBe('sub_mallory');
+    });
+
+    it('rejects unknown prices', function () {
+        expect(fn () => site()->updateStripeSubscriptionWebhook(stripeSubscription($this->customer, 'price_other')))
+            ->toThrow(Exception::class, 'Unknown stripe price!');
+
+        expect(freshUser('jane@example.com')->tier()->value())->toBe('Free');
     });
 });
 
@@ -53,6 +71,15 @@ describe('webhook: customer.subscription.deleted', function () {
         expect($user->tier()->value())->toBe('Free')
             ->and($user->stripe_status()->isEmpty())->toBeTrue()
             ->and($user->stripe_subscription()->isEmpty())->toBeTrue();
+    });
+
+    it('keeps the current subscription when another one ends', function () {
+        site()->updateStripeSubscriptionWebhook(stripeSubscription($this->customer, 'price_premium', 'active', 'sub_new'));
+        site()->cancelStripeSubscriptionWebhook(stripeSubscription($this->customer, 'price_basic', 'canceled', 'sub_old'));
+
+        $user = freshUser('jane@example.com');
+        expect($user->tier()->value())->toBe('Premium')
+            ->and($user->stripe_subscription()->value())->toBe('sub_new');
     });
 });
 

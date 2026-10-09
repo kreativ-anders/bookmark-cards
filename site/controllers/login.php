@@ -16,8 +16,8 @@ return function ($kirby) {
 
       // GET FORM DATA
       $data = [
-        'email'     => get('email'),
-        'password'  => get('password')
+        'email'     => is_string(get('email')) ? trim(get('email')) : '',
+        'password'  => is_string(get('password')) ? get('password') : ''
       ];
 
       $rules = [
@@ -51,16 +51,15 @@ return function ($kirby) {
             // LEGACY: accounts registered before the fix stored esc()'d passwords.
             // Accept the escaped variant once, re-save the raw password and log in.
             // (password_verify instead of a 2nd login() so it doesn't count as another failed trial)
+            // Never while rate-limited, otherwise this path would allow unlimited guesses.
             $escaped = esc($data['password']);
             $legacy  = $kirby->user($data['email']);
 
-            if ($escaped === $data['password'] || !$legacy || !password_verify($escaped, (string)$legacy->password())) {
+            if ($escaped === $data['password'] || !$legacy || $kirby->auth()->isBlocked($data['email']) || !password_verify($escaped, (string)$legacy->password())) {
               throw $e;
             }
 
-            $kirby->impersonate('kirby');
-            $legacy->changePassword($data['password']);
-            $kirby->impersonate();
+            $kirby->impersonate('kirby', fn () => $legacy->changePassword($data['password']));
 
             $kirby->auth()->login($data['email'], $data['password']);
           }
@@ -89,6 +88,11 @@ return function ($kirby) {
 
       $alert['error'] = 'Invalid CSRF token!';
     }
+  }
+
+  // never hand the password back to the template
+  if (isset($data['password'])) {
+    unset($data['password']);
   }
 
   return [

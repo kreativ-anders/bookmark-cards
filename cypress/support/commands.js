@@ -39,9 +39,10 @@ Cypress.Commands.add('logout', () => {
 });
 
 // Deletes the logged-in account (also deletes the Stripe test customer via hook)
-Cypress.Commands.add('deleteAccount', () => {
+Cypress.Commands.add('deleteAccount', (password) => {
   cy.on('window:confirm', () => true);
   cy.visit('/user');
+  cy.get('#delete-current-password').type(password, { log: false });
   cy.get('input[name="delete"]').click();
   cy.get('#login').should('be.visible');
 });

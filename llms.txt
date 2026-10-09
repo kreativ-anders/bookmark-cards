@@ -1,6 +1,6 @@
 # Bookmark.cards
 
-> A self-hostable, open-source bookmark manager built with PHP and Kirby CMS. Users can save, tag, search, and export URLs. A free tier allows up to 12 bookmarks; a paid Premium tier removes that limit.
+> A self-hostable, open-source bookmark manager built with PHP and Kirby CMS. Users can save, tag, search, and export URLs. A free tier has a bookmark limit; a paid Premium tier removes it.
 
 ## What it does
 
@@ -15,7 +15,7 @@
 
 - **Backend**: PHP 8.2+, [Kirby CMS](https://getkirby.com/) 5 (flat-file, no database), dependencies via Composer
 - **Payments**: Stripe via the local memberkit plugin (`site/plugins/memberkit`)
-- **Frontend**: Vanilla JS, Pico CSS (npm), esbuild for build
+- **Frontend**: Vanilla JS, custom CSS (no framework, light/dark, WCAG AA), self-hosted Geist + Instrument Serif fonts, esbuild for build
 - **Analytics**: Pirsch (privacy-friendly, no cookies)
 - **Testing**: Pest (Stripe integration, brand logos, panel stats) and Cypress (end-to-end: auth, settings, bookmarks)
 - **CI**: GitHub Actions (changelog), Dependabot (Composer, npm)
@@ -34,7 +34,7 @@
 - Flat-file storage: content is stored as `.txt` files by Kirby; there is no relational database
 - Brand logos are matched server-side by the `brands` plugin: the longest logo file name contained in the normalized title wins; no image processing at render time
 - No social or collaborative features by design
-- Free tier capped at 12 bookmarks (configurable via `noPremiumLimit` in `site/config/config.php`)
+- Free tier bookmark limit is configurable via `noPremiumLimit` in `site/config/config.php`
 
 ## Links
 

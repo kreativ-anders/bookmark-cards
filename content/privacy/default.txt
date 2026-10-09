@@ -1,0 +1,49 @@
+Title: Privacy
+
+----
+
+Text:
+
+## Your bookmarks are yours. No ads, no tracking cookies.
+
+### What we store
+
+Your email address, your password (only as a hash, never readable) and your bookmarks. Nothing else. We need them to run your account (Art. 6(1)(b) GDPR).
+
+### Delete it yourself
+
+Settings → *Delete Account* removes everything at once. Before that, *Export JSON* or *Export CSV* gives you a copy.
+
+### Payments through Stripe
+
+When you register, your email address is shared with Stripe (Stripe Payments Europe, Ltd., 1 Grand Canal Street Lower, Dublin, Ireland), so Premium can be paid. Payment details such as card numbers go to Stripe only and never reach us. (link: https://stripe.com/privacy text: Stripe's privacy policy target: _blank) applies. The legal basis is carrying out your contract (Art. 6(1)(b) GDPR).
+
+### On your device
+
+One cookie keeps you logged in. For offline use, your browser keeps a copy of your bookmarks. To remove it, log out and clear the site data in your browser.
+
+### Two scripts from cdnjs
+
+When you are logged in, two small scripts (instant.page, Color Thief) load from cdnjs, run by Cloudflare, Inc. Like any download, Cloudflare sees your IP address. Cloudflare may process data in the USA; it is certified under the EU–U.S. Data Privacy Framework. The legal basis is our legitimate interest in a fast site (Art. 6(1)(f) GDPR).
+
+### Visits counted by Pirsch Analytics
+
+To see which pages are found and read, this site loads Pirsch Analytics, a cookie-free counter. From your IP address, browser, the date and a salt it computes a hash as a visitor ID; your IP address is never stored, and you cannot be recognised after 24 hours or across other websites. It also records the page, where you came from, and a rough location (country, city) looked up locally.
+
+The provider is Emvi Software GmbH, Nickelstraße 1b, 33378 Rheda-Wiedenbrück, Germany; the data stays on servers in Germany. The legal basis is our legitimate interest in knowing which content is read (Art. 6(1)(f) GDPR). No cookies are set and nothing beyond what is technically necessary is read from your device, so no consent under § 25 TDDDG is needed. More: (link: https://pirsch.io/privacy text: privacy at Pirsch target: _blank).
+
+### Hosted by Hetzner
+
+Hetzner Online GmbH, Industriestr. 25, 91710 Gunzenhausen, Germany, runs the server. To deliver the site and keep it secure, it logs your IP address and the page you asked for. The data stays in Germany. The legal basis is our legitimate interest in running this site reliably (Art. 6(1)(f) GDPR).
+
+### Links to GitHub
+
+The source code of Bookmark.cards is on GitHub. Following a link there means GitHub's privacy statement applies.
+
+### Your rights
+
+Responsible for this website is Manuel Steinberg — see the (link: imprint text: imprint) for the address. Ask about your data at any time through the (link: https://kreativ-anders.de/kontakt text: contact form target: _blank).
+
+Under the GDPR you have the right to access your data, to have it corrected or deleted, to restrict or object to its processing, and to receive it in a portable form. You may also complain to a data protection authority — for us, the Bavarian State Office for Data Protection Supervision (BayLDA).
+
+Last updated: 9 October 2026.

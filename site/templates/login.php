@@ -3,7 +3,7 @@
 <main class="container account-page">
   <article>
     <header>
-      <h2>Login</h2>
+      <h1>Login</h1>
       <p><?= $page->text()->escape() ?></p>
     </header>
 

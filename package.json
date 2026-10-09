@@ -4,7 +4,8 @@
     "description": "Bookmark.cards is a bookmarket collection tool in its simpliest form.",
     "author": "kreativ-anders | Manuel Steinberg",
     "devDependencies": {
-        "@picocss/pico": "^2.0.6",
+        "@fontsource-variable/geist": "^5.3.0",
+        "@fontsource/instrument-serif": "^5.3.0",
         "cypress": "^16.1.1",
         "esbuild": "^0.28.2"
     },

@@ -31,6 +31,32 @@ return [
 
     return $url;
   },
+  // RETURN A VALID STRIPE CUSTOMER ID - RECREATES A CUSTOMER THAT WAS DELETED OR IS UNKNOWN IN STRIPE (E.G. TEST MODE RESET) ---
+  'ensureStripeCustomer' => function (\Stripe\StripeClient $stripe) {
+
+    $id = $this->stripe_customer()->toString();
+
+    if ($id !== '') {
+      try {
+        $customer = $stripe->customers->retrieve($id);
+        if (!($customer->deleted ?? false)) {
+          return $id;
+        }
+      } catch (\Stripe\Exception\InvalidRequestException $e) {
+        // UNKNOWN CUSTOMER => RECREATE BELOW
+      }
+    }
+
+    $customer = $stripe->customers->create([
+      'email'    => $this->email(),
+      'metadata' => ['kirby_user' => $this->id()]
+    ]);
+
+    $user = $this;
+    kirby()->impersonate('kirby', fn () => $user->update(['stripe_customer' => $customer->id]));
+
+    return $customer->id;
+  },
   // RETURN STRIPE SUBSCRIPTION CHECKOUT URL FOR TIER X (NAME AS PARAMETER) -----------------------------------------------------
   'getStripeCheckoutURL' => function ($tier) {
 

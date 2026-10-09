@@ -12,6 +12,7 @@
     <form action="" method="POST" autocomplete="off">
       <input type="hidden" name="csrf" value="<?= csrf() ?>">
       <input type="hidden" id="id" name="u_id" value="" placeholder="ID" readonly required>
+      <input type="hidden" id="u_hash" name="u_hash" value="">
       <fieldset>
         <legend>
           <label for="title">Title</label>

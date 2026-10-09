@@ -1,25 +1,32 @@
-<?php 
-  $stripe = new \Stripe\StripeClient(option('kreativ-anders.memberkit.secretKey'))
+<?php
+/**
+ * @var float|null $price   yearly Premium price in EUR (resolved once in home.php), null if Stripe is unreachable
+ * @var float|null $monthly monthly Premium price in EUR (what the checkout buttons book), null if Stripe is unreachable
+ */
+$price   = $price ?? null;
+$monthly = $monthly ?? null;
 ?>
-
 <section class="container" id="pricing" style="text-align: center;">
-  <h2>Simple Pricing</h2>
-  <p><em>Choose a plan that fits your bookmarking needs.</em></p>
+  <h2>Simple pricing</h2>
+  <p><em>Start free, upgrade when your bookmark collection grows.</em></p>
   <div class="grid">
     <article>
       <header>
         <h3>Basic</h3>
-      </header>  
-    <h4>0€ <small>/ month</small></h4>
-    <p>Try Bookmark.cards for free — store up to <?= option('noPremiumLimit'); ?> bookmarks and explore core features.</p>
-    <a id="pricing-register" href="<?= url('register') ?>" role="button" class="primary" data-pirsch-event="Open Register Modal"><strong>Get started (Free)</strong></a>
+      </header>
+      <p class="price">0€ <small>/ month</small></p>
+      <p>Try Bookmark.cards for free — store up to <?= option('noPremiumLimit'); ?> bookmarks and use all core features.</p>
+      <a id="pricing-register" href="<?= url('register') ?>" role="button" class="primary" data-pirsch-event="Open Register Modal">Get started (Free)</a>
     </article>
     <article>
       <header>
         <h3>Premium</h3>
-      </header>  
-  <h4><?= $stripe->prices->retrieve(option('kreativ-anders.memberkit.tiers')[2]['price'], [])->unit_amount/100 ?>€ <small>/ year</small></h4>
-  <p>Upgrade for additional features and priority support. You can change billing intervals later if needed.</p>
+      </header>
+      <p class="price"><?= $monthly !== null ? esc((string)$monthly) . '€' : '—' ?> <small>/ month</small></p>
+      <?php if ($price !== null): ?>
+      <p><small>or <?= esc((string)$price) ?>€ / year</small></p>
+      <?php endif ?>
+      <p>Unlimited bookmarks and no banners. Pay monthly or yearly, cancel anytime in your settings.</p>
     </article>
   </div>
 </section>

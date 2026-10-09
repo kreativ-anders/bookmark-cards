@@ -25,10 +25,11 @@ return function ($kirby) {
         $successURL .= Str::lower(option('kreativ-anders.memberkit.stripeURLSlug'));
         $successURL .= '/success';
 
-        $customer = kirby()->user()->stripe_customer();
         $stripe = new \Stripe\StripeClient(option('kreativ-anders.memberkit.secretKey'));
 
         try {
+
+          $customer = kirby()->user()->ensureStripeCustomer($stripe);
 
           // CREATE STRIPE CHECKOUT SESSION
           $checkout = $stripe->checkout->sessions->create([
@@ -42,13 +43,14 @@ return function ($kirby) {
               ],
             ],
             'mode' => 'subscription',
-            'customer' => kirby()->user()->stripe_customer(),
+            'customer' => $customer,
           ]);
       
         } catch(Exception $e) {
         
-          // LOG ERROR SOMEWHERE !!!
-          throw new Exception('Could not create stripe checkout session!');
+          // JSON ERROR FOR THE CHECKOUT BUTTON (FETCH) INSTEAD OF AN HTML ERROR PAGE
+          error_log('memberkit: could not create stripe checkout session: ' . $e->getMessage());
+          return Kirby\Http\Response::json(['error' => 'Could not create stripe checkout session!'], 500);
         }     
 
         return [
@@ -65,10 +67,11 @@ return function ($kirby) {
         // BUILD MAN-IN-THE-MIDDLE/RETURN URL => SITE URL
         $returnURL  = kirby()->site()->url() . '/';
         
-        $customer = kirby()->user()->stripe_customer();
         $stripe = new \Stripe\StripeClient(option('kreativ-anders.memberkit.secretKey'));
 
         try {
+
+          $customer = kirby()->user()->ensureStripeCustomer($stripe);
 
           // CREATE STRIPE PORTAL SESSION
           $session = $stripe->billingPortal->sessions->create([
@@ -153,97 +156,19 @@ return function ($kirby) {
     ],
     // LISTEN TO STRIPE NOTIFICATIONS AKA STRIPE WEBHOOK ----------------------------------------------------------------------------
     // https://stripe.com/docs/webhooks/integration-builder
-    // --> NOT SECURED!!!
+    // SIGNED EVENTS ONLY - SEE SITE METHOD handleStripeWebhook
     [
       // PATTERN => STRIPE SLUG / ACTION NAME (WEBHOOK)
       'pattern' => Str::lower(option('kreativ-anders.memberkit.stripeURLSlug')) . '/webhook',
       'action' => function () {
 
-        \Stripe\Stripe::setApiKey(option('kreativ-anders.memberkit.secretKey'));
+        // RAW BODY IS REQUIRED FOR THE SIGNATURE CHECK
+        $status = kirby()->site()->handleStripeWebhook(
+          (string)@file_get_contents('php://input'),
+          (string)kirby()->request()->header('Stripe-Signature', '')
+        );
 
-        $endpoint_secret = option('kreativ-anders.memberkit.webhookSecret');
-
-        $payload = @file_get_contents('php://input');
-        $event = null;
-        
-        try {
-
-          $event = \Stripe\Event::constructFrom(
-            json_decode($payload, true)
-          );
-
-        } catch(\UnexpectedValueException $e) {
-
-          http_response_code(400);
-          exit();
-        }  
-        
-        // VERIFY ENPOINT INTEGRITY
-        if ($endpoint_secret) {
-
-          // MISSING HEADER --> EMPTY STRING --> SignatureVerificationException --> 400
-          $sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'] ?? '';
-
-          try {
-
-            $event = \Stripe\Webhook::constructEvent(
-              $payload, $sig_header, $endpoint_secret
-            );
-
-          } catch(\Stripe\Exception\SignatureVerificationException $e) {
-
-            http_response_code(400);
-            exit();
-          }
-        }
-
-        // HANDLE THE EVENT
-        // https://stripe.com/docs/api/events/types
-        switch ($event->type) {
-
-          case 'customer.subscription.updated':
-            $subscription = $event->data->object;
-
-            // UPDATE STRIPE SUBSCRIPTION FOR USER X 
-            kirby()->site()->updateStripeSubscriptionWebhook($subscription);  
-
-            break;
-
-          case 'customer.subscription.deleted':
-            $subscription = $event->data->object;
-
-            // RESET KIRBY USER SUBSCRIPTION INFO
-            kirby()->site()->cancelStripeSubscriptionWebhook($subscription); 
-
-            break;
-
-          case 'customer.updated':
-            $customer = $event->data->object;
-
-            // UPDATE KIRBY USER EMAIL
-            kirby()->site()->updateStripeEmailWebhook($customer); 
-
-            break;
-
-          case 'invoice.payment_failed':
-            $subscription = $event->data->object;
-
-            // DURING CHECKOUT PROCEDURE:
-            // NOTHING TO DO SINCE NOTHING WILL BE CHANGED REGARDING THE CUSTOMER STATUS
-
-            // AFTER SUCCESSFUL CHECHOUT PROCEDURE:     
-            // UPDATE STRIPE SUBSCRIPTION FOR USER X (STATUS BECOMES 'past_due')
-            kirby()->site()->updateStripeSubscriptionWebhook($subscription);  
-
-            break;
-
-          default:
-
-            throw new Exception('Received unknown stripe event type!');
-        }
-
-        http_response_code(200);
-        return '<html><body>✔️ Success!</body></html>';
+        return new \Kirby\Cms\Response($status === 200 ? 'OK' : 'Error', 'text/plain', $status);
       },
       // ENSURE ONLY POST REQUESTS ARE CAPTURED
       'method' => 'POST'

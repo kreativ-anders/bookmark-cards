@@ -1,4 +1,4 @@
-<section class="container" id="pricing" style="text-align: center;">
+<section class="container" id="techstack" style="text-align: center;">
   <h2>Built with ❤ </h2>
-  <p><b>using</b></p> 
+  <p>using</p> 
 </section>
