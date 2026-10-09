@@ -23,6 +23,15 @@ Local configuration (Stripe keys, tiers) goes into `site/config/config.<host>.ph
 composer install --no-dev
 ```
 
+Production settings go into the git-ignored `site/config/config.<domain>.php` on the server. Keep `debug` off there (default) and set long random secrets for `content.salt` (media and preview URLs) and `cookie.key` (cookie signatures):
+
+```php
+'content' => ['salt' => '…'],  // e.g. php -r 'echo bin2hex(random_bytes(32));'
+'cookie'  => ['key'  => '…'],
+```
+
+Changing `cookie.key` invalidates existing login cookies once. The Panel runs without the Vue template compiler (`panel.vue.compiler => false`), so Panel plugins must ship precompiled.
+
 `kirby/` and `vendor/` are not committed. Built assets (`assets/css/main.min.css`, `assets/js/main.min.js`, `offline.min.js`) are committed, so no Node.js is needed on the server.
 
 ## Assets

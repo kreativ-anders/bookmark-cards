@@ -22,6 +22,8 @@ server {
     root /home/ploi/bookmark.cards;
     index index.php index.html;
     charset utf-8;
+    # unknown file types are served as plain text (hardens against malicious uploads)
+    default_type text/plain;
 
     # Ploi Configuration, do not remove!
     include /etc/nginx/ploi/bookmark.cards/server/*;

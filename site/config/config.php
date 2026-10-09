@@ -8,11 +8,17 @@
  * All config options: https://getkirby.com/docs/reference/system/options
  */
 return [
-  'debug' => true,
+  // Never enable debug mode in production; turn it on in the git-ignored config.<host>.php for local development
+  'debug' => false,
   'panel' =>[
       'install' => false,
-      'slug' => 'dashboard'
+      'slug' => 'dashboard',
+      // Vue 2 runtime without the template compiler: none of the plugins ship uncompiled Panel components
+      'vue' => [
+        'compiler' => false
+      ]
   ],
+  // content.salt and cookie.key must be long random secrets – set them in the git-ignored config.<host>.php
   'content' => [
     'uuid' => false
   ],

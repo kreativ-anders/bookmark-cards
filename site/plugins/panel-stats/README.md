@@ -33,6 +33,22 @@ The plugin adds the following site methods that can be used in panel blueprints:
 - `site.brandCoverageInfo()` / `brandCoverageTheme()` / `bookmarksWithoutBrandsTheme()` - Details and color (positive ≥ 90 %, notice ≥ 75 %, negative below) for the brand tiles
 - `site.partialBrandMatches()` / `partialBrandMatchesReports()` - Bookmarks whose logo matches only a part of the title (possibly a wrong logo, or room for a more specific one)
 
+### Charts
+A custom `chart` section (`index.js`, `index.css`) draws a bar list (`layout: bars`, default) or one stacked bar with legend (`layout: stack`). `data` is a site method returning items with `label`, `value` and optional `info`, `color` (`series-1`…`series-3`, `good`, `warning`, `critical`) and `image`:
+- `site.userMixChart()` - Paid / free active / free inactive
+- `site.activationChart()` - Registered → saved bookmarks → uses tags → paid
+- `site.activityChart()` - Users by last activity
+- `site.topTagsChart()` / `site.topBrandsChart()` - Most used tags and logos
+- `site.brandCoverageChart()` - Bookmarks with exact logo / partial match / no logo
+
+```yaml
+UserMix:
+  type: chart
+  headline: User Mix
+  layout: stack
+  data: site.userMixChart
+```
+
 ## Usage
 
 These methods are used in the `site.yml` blueprint to display dynamic statistics on the panel dashboard (simplified example, see `site/blueprints/site.yml` for the full dashboard with icons, themes and info lines):

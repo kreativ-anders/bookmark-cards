@@ -160,3 +160,71 @@ describe('panel user and bookmark stats', function () {
             ->and(site()->inactiveUsersInfo())->toBe('Free, no activity for ' . AccountActivity::months() . '+ months');
     });
 });
+
+describe('panel charts', function () {
+
+    beforeEach(function () {
+        registerUser('jane@example.com');
+        registerUser('john@example.com');
+        $this->kirby->impersonate('kirby');
+        freshUser('jane@example.com')->update(['bookmarks' => Kirby\Data\Yaml::encode([
+            ['title' => 'GitHub', 'link' => 'https://github.com', 'tags' => 'Dev, code'],
+            ['title' => 'My GitHub account', 'link' => 'https://github.com/jane', 'tags' => 'dev'],
+            ['title' => 'Xyzzy Tool', 'link' => 'https://example.org', 'tags' => ''],
+        ])]);
+    });
+
+    it('splits users into paid, active and inactive free accounts', function () {
+        expect(array_column(site()->userMixChart(), 'value', 'label'))->toBe([
+            'Paid'           => 0,
+            'Free, active'   => 2,
+            'Free, inactive' => 0,
+        ]);
+    });
+
+    it('shows the activation steps relative to all users', function () {
+        expect(array_column(site()->activationChart(), 'info', 'label'))->toBe([
+            'Registered'      => '100%',
+            'Saved bookmarks' => '50%',
+            'Uses tags'       => '50%',
+            'Paid'            => '0%',
+        ]);
+    });
+
+    it('puts every user into exactly one activity bucket', function () {
+        $chart = array_column(site()->activityChart(), 'value', 'label');
+
+        expect(array_sum($chart))->toBe(2)
+            ->and($chart['Last 7 days'])->toBe(2);
+    });
+
+    it('ranks tags case-insensitively', function () {
+        expect(array_column(site()->topTagsChart(), 'value', 'label'))->toBe(['dev' => 2, 'code' => 1]);
+    });
+
+    it('ranks used logos with their image', function () {
+        expect(site()->topBrandsChart())->toBe([
+            ['label' => 'github', 'value' => 2, 'info' => null, 'color' => 'series-1', 'image' => url('assets/brand-names/github.svg')],
+        ]);
+    });
+
+    it('splits the brand coverage into exact, partial and missing', function () {
+        expect(array_column(site()->brandCoverageChart(), 'value', 'label'))->toBe([
+            'Exact logo'    => 1,
+            'Partial match' => 1,
+            'No logo'       => 1,
+        ]);
+    });
+
+    it('resolves the chart section data from a site method', function () {
+        $section = new Kirby\Cms\Section('chart', [
+            'model'  => site(),
+            'name'   => 'test',
+            'layout' => 'stack',
+            'data'   => 'site.brandCoverageChart',
+        ]);
+
+        expect($section->toArray()['layout'])->toBe('stack')
+            ->and($section->toArray()['data'])->toBe(site()->brandCoverageChart());
+    });
+});

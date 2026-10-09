@@ -1,0 +1,108 @@
+/* Chart section (index.js): validated categorical + status palette, light and dark */
+.k-chart {
+  --chart-series-1: light-dark(#2a78d6, #3987e5);
+  --chart-series-2: light-dark(#eb6834, #d95926);
+  --chart-series-3: light-dark(#1baf7a, #199e70);
+  --chart-good: #0ca30c;
+  --chart-warning: #fab219;
+  --chart-critical: #d03b3b;
+  --chart-track: light-dark(#e1e0d9, #3a3a38);
+
+  padding: var(--spacing-4) var(--spacing-6);
+  background: var(--item-color-back);
+  border-radius: var(--rounded);
+  box-shadow: var(--shadow);
+  font-size: var(--text-sm);
+}
+
+.k-chart-empty {
+  color: var(--color-text-dimmed);
+}
+
+/* bar list */
+.k-chart-bars {
+  display: grid;
+  grid-template-columns: minmax(6rem, max-content) 1fr auto;
+  gap: var(--spacing-3) var(--spacing-4);
+  align-items: center;
+}
+.k-chart-bars li {
+  display: contents;
+}
+.k-chart-label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  min-width: 0;
+}
+.k-chart-label > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-chart-logo {
+  width: 1.25rem;
+  height: 1.25rem;
+  padding: 2px;
+  object-fit: contain;
+  background: #fff;
+  border-radius: var(--rounded-sm);
+  flex-shrink: 0;
+}
+.k-chart-track {
+  height: .5rem;
+  background: var(--chart-track);
+  border-radius: 4px;
+}
+.k-chart-bar {
+  display: block;
+  height: 100%;
+  min-width: 4px;
+  background: var(--chart-color);
+  border-radius: 4px;
+}
+.k-chart-value {
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+  white-space: nowrap;
+}
+.k-chart-value small {
+  margin-inline-start: var(--spacing-1);
+  color: var(--color-text-dimmed);
+  font-size: var(--text-xs);
+}
+
+/* stacked bar + legend */
+.k-chart-stack {
+  display: flex;
+  gap: 2px;
+  height: .75rem;
+  margin-bottom: var(--spacing-4);
+}
+.k-chart-segment {
+  min-width: 4px;
+  background: var(--chart-color);
+}
+.k-chart-segment:first-child {
+  border-start-start-radius: 4px;
+  border-end-start-radius: 4px;
+}
+.k-chart-segment:last-child {
+  border-start-end-radius: 4px;
+  border-end-end-radius: 4px;
+}
+.k-chart-legend {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: var(--spacing-2) var(--spacing-3);
+  align-items: center;
+}
+.k-chart-legend li {
+  display: contents;
+}
+.k-chart-swatch {
+  width: .75rem;
+  height: .75rem;
+  background: var(--chart-color);
+  border-radius: 3px;
+}

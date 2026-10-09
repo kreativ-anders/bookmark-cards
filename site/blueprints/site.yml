@@ -3,74 +3,132 @@ buttons:
   - open
   - preview
   - inactive-accounts
-sections:
-  Users:
-    type: stats
-    # Available size options: small, medium, large, huge. Default is large
-    size: huge
-    reports:
-      - label: Total Users
-        value: "{{ site.totalUsers }}"
-        icon: users
-      - label: Free Users
-        value: "{{ site.freeUsers }}"
-        info: "{{ site.freeUsersPercentage }}"
-        icon: user
-      - label: Paid Users
-        value: "{{ site.paidUsers }}"
-        info: "{{ site.paidUsersPercentage }}"
-        icon: money
-        theme: positive
-      - label: Inactive Users
-        value: "{{ site.inactiveUsers }}"
-        info: "{{ site.inactiveUsersInfo }}"
-        icon: clock
-        theme: "{{ site.inactiveUsersTheme }}"
-        # same dialog as the "Inactive accounts" button
-        dialog: inactive-accounts
-  Bookmarks:
-    type: stats
-    # Available size options: small, medium, large, huge. Default is large
-    size: large
-    reports:
-      - label: Total Bookmarks
-        value: "{{ site.totalBookmarks }}"
-        info: "{{ site.bookmarksPerUser }}"
-        icon: bookmark
-      - label: Users With Bookmarks
-        value: "{{ site.usersWithBookmarks }}"
-        info: "{{ site.usersWithBookmarksInfo }}"
-        icon: account
-      - label: Total Tags
-        value: "{{ site.totalTags }}"
-        info: "{{ site.taggedBookmarksInfo }}"
-        icon: tag
-  Brands:
-    type: stats
-    # Available size options: small, medium, large, huge. Default is large
-    size: large
-    reports:
-      - label: Brand Coverage
-        value: "{{ site.brandCoveragePercentage }}"
-        info: "{{ site.brandCoverageInfo }}"
-        icon: chart
-        theme: "{{ site.brandCoverageTheme }}"
-      - label: Bookmarks Without Brands
-        value: "{{ site.bookmarksWithoutBrands }}"
-        info: Listed below
-        icon: alert
-        theme: "{{ site.bookmarksWithoutBrandsTheme }}"
-      - label: Available Brands
-        value: "{{ site.totalAvailableBrands }}"
-        info: "{{ site.brandsInUseInfo }}"
-        icon: image
-  MissingBrands:
-    headline: Missing Brand Logos
-    type: stats
-    size: small
-    reports: site.missingBrandsReports
-  PartialBrandMatches:
-    headline: Partial Brand Matches
-    type: stats
-    size: small
-    reports: site.partialBrandMatchesReports
+columns:
+  # ---------- Users ----------
+  users:
+    width: 1/1
+    sections:
+      Users:
+        type: stats
+        # Available size options: small, medium, large, huge. Default is large
+        size: huge
+        reports:
+          - label: Total Users
+            value: "{{ site.totalUsers }}"
+            icon: users
+          - label: Free Users
+            value: "{{ site.freeUsers }}"
+            info: "{{ site.freeUsersPercentage }}"
+            icon: user
+          - label: Paid Users
+            value: "{{ site.paidUsers }}"
+            info: "{{ site.paidUsersPercentage }}"
+            icon: money
+            theme: positive
+          - label: Inactive Users
+            value: "{{ site.inactiveUsers }}"
+            info: "{{ site.inactiveUsersInfo }}"
+            icon: clock
+            theme: "{{ site.inactiveUsersTheme }}"
+            # same dialog as the "Inactive accounts" button
+            dialog: inactive-accounts
+  usersLeft:
+    width: 1/2
+    sections:
+      UserMix:
+        type: chart
+        headline: User Mix
+        layout: stack
+        data: site.userMixChart
+      Activation:
+        type: chart
+        headline: Activation
+        data: site.activationChart
+  usersRight:
+    width: 1/2
+    sections:
+      Activity:
+        type: chart
+        headline: Last Activity
+        data: site.activityChart
+
+  # ---------- Bookmarks ----------
+  bookmarks:
+    width: 1/1
+    sections:
+      Bookmarks:
+        type: stats
+        size: large
+        reports:
+          - label: Total Bookmarks
+            value: "{{ site.totalBookmarks }}"
+            info: "{{ site.bookmarksPerUser }}"
+            icon: bookmark
+          - label: Users With Bookmarks
+            value: "{{ site.usersWithBookmarks }}"
+            info: "{{ site.usersWithBookmarksInfo }}"
+            icon: account
+          - label: Total Tags
+            value: "{{ site.totalTags }}"
+            info: "{{ site.taggedBookmarksInfo }}"
+            icon: tag
+  bookmarksLeft:
+    width: 1/2
+    sections:
+      TopTags:
+        type: chart
+        headline: Top Tags
+        data: site.topTagsChart
+        empty: No tags yet
+  bookmarksRight:
+    width: 1/2
+    sections:
+      TopBrands:
+        type: chart
+        headline: Most Used Logos
+        data: site.topBrandsChart
+        empty: No logos in use yet
+
+  # ---------- Brands ----------
+  brands:
+    width: 1/1
+    sections:
+      Brands:
+        type: stats
+        size: large
+        reports:
+          - label: Brand Coverage
+            value: "{{ site.brandCoveragePercentage }}"
+            info: "{{ site.brandCoverageInfo }}"
+            icon: chart
+            theme: "{{ site.brandCoverageTheme }}"
+          - label: Bookmarks Without Brands
+            value: "{{ site.bookmarksWithoutBrands }}"
+            info: Listed below
+            icon: alert
+            theme: "{{ site.bookmarksWithoutBrandsTheme }}"
+          - label: Available Brands
+            value: "{{ site.totalAvailableBrands }}"
+            info: "{{ site.brandsInUseInfo }}"
+            icon: image
+  brandsLeft:
+    width: 1/2
+    sections:
+      BrandCoverage:
+        type: chart
+        headline: Brand Coverage
+        layout: stack
+        data: site.brandCoverageChart
+      MissingBrands:
+        headline: Missing Brand Logos
+        type: stats
+        size: small
+        reports: site.missingBrandsReports
+  brandsRight:
+    width: 1/2
+    sections:
+      PartialBrandMatches:
+        headline: Partial Brand Matches
+        type: stats
+        size: small
+        reports: site.partialBrandMatchesReports

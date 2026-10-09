@@ -33,7 +33,44 @@ function panelStatsPercentage(int|float $part, int|float $total, string $empty =
     return $total > 0 ? round(($part / $total) * 100, 1) . '%' : $empty;
 }
 
+/**
+ * Chart item for the `chart` section (index.js)
+ * color: series-1…3 (categorical) or good/warning/critical (status)
+ */
+function panelStatsBar(string $label, int $value, string|null $info = null, string $color = 'series-1', string|null $image = null): array
+{
+    return compact('label', 'value', 'info', 'color', 'image');
+}
+
+/**
+ * [name => count] of the most frequent values, ties alphabetical
+ */
+function panelStatsTop(array $counts, int $limit = 8): array
+{
+    uksort($counts, fn ($a, $b) => [$counts[$b], $a] <=> [$counts[$a], $b]);
+
+    return array_slice($counts, 0, $limit, true);
+}
+
 Kirby::plugin('kreativ-anders/panel-stats', [
+    'sections' => [
+        // bar list or single stacked bar, data from a site method (see site.yml)
+        'chart' => [
+            'props' => [
+                'headline' => fn ($headline = null) => $headline,
+                'layout'   => fn (string $layout = 'bars') => $layout === 'stack' ? 'stack' : 'bars',
+                'data'     => fn ($data = []) => $data,
+                'empty'    => fn (string $empty = 'No data yet') => $empty,
+            ],
+            'computed' => [
+                'data' => function () {
+                    $data = is_string($this->data) ? $this->model()->query($this->data) : $this->data;
+
+                    return is_array($data) ? array_values($data) : [];
+                },
+            ],
+        ],
+    ],
     'siteMethods' => [
         'totalUsers' => function () {
             return kirby()->users()->count();
@@ -295,6 +332,110 @@ Kirby::plugin('kreativ-anders/panel-stats', [
                 'info'  => $item['count'] . '×',
                 'icon'  => 'search',
             ], site()->partialBrandMatches());
+        },
+        'userMixChart' => function () {
+            $paid     = site()->paidUsers();
+            $inactive = site()->inactiveUsers();
+
+            return [
+                panelStatsBar('Paid', $paid, null, 'series-1'),
+                panelStatsBar('Free, active', max(0, site()->freeUsers() - $inactive), null, 'series-3'),
+                panelStatsBar('Free, inactive', $inactive, null, 'series-2'),
+            ];
+        },
+        'activityChart' => function () {
+            $buckets = ['Last 7 days' => 7, '8–30 days' => 30, '1–3 months' => 91, '3–12 months' => 365, 'Over 12 months' => PHP_INT_MAX];
+            $counts  = array_fill_keys(array_keys($buckets), 0);
+
+            foreach (kirby()->users() as $user) {
+                $last = class_exists('AccountActivity') ? AccountActivity::last($user) : (int)$user->modified();
+                $days = (time() - $last) / 86400;
+
+                foreach ($buckets as $label => $limit) {
+                    if ($days <= $limit) {
+                        $counts[$label]++;
+                        break;
+                    }
+                }
+            }
+
+            $total = site()->totalUsers();
+
+            return array_map(
+                fn ($label) => panelStatsBar($label, $counts[$label], panelStatsPercentage($counts[$label], $total)),
+                array_keys($counts)
+            );
+        },
+        'activationChart' => function () {
+            $total = site()->totalUsers();
+            $tagging = 0;
+
+            foreach (panelStatsBookmarks() as $bookmarks) {
+                foreach ($bookmarks as $bookmark) {
+                    if (trim((string)($bookmark['tags'] ?? ''), ' ,') !== '') {
+                        $tagging++;
+                        break;
+                    }
+                }
+            }
+
+            $steps = [
+                'Registered'      => $total,
+                'Saved bookmarks' => site()->usersWithBookmarks(),
+                'Uses tags'       => $tagging,
+                'Paid'            => site()->paidUsers(),
+            ];
+
+            return array_map(
+                fn ($label) => panelStatsBar($label, $steps[$label], panelStatsPercentage($steps[$label], $total)),
+                array_keys($steps)
+            );
+        },
+        'topTagsChart' => function () {
+            $counts = [];
+
+            foreach (panelStatsBookmarks() as $bookmarks) {
+                foreach ($bookmarks as $bookmark) {
+                    $tags = array_map(fn ($tag) => Kirby\Toolkit\Str::lower(trim($tag)), explode(',', (string)($bookmark['tags'] ?? '')));
+
+                    foreach (array_unique(array_filter($tags, 'strlen')) as $tag) {
+                        $counts[$tag] = ($counts[$tag] ?? 0) + 1;
+                    }
+                }
+            }
+
+            $top = panelStatsTop($counts);
+
+            return array_map(fn ($tag) => panelStatsBar($tag, $top[$tag]), array_map('strval', array_keys($top)));
+        },
+        'topBrandsChart' => function () {
+            $counts = [];
+
+            foreach (panelStatsBookmarks() as $bookmarks) {
+                foreach ($bookmarks as $bookmark) {
+                    if (($token = BrandLogos::find((string)($bookmark['title'] ?? ''))) !== null) {
+                        $counts[$token] = ($counts[$token] ?? 0) + 1;
+                    }
+                }
+            }
+
+            $top = panelStatsTop($counts);
+
+            return array_map(
+                fn ($token) => panelStatsBar($token, $top[$token], null, 'series-1', BrandLogos::fileUrl(BrandLogos::all()[$token])),
+                array_map('strval', array_keys($top))
+            );
+        },
+        'brandCoverageChart' => function () {
+            $partial = array_sum(array_column(site()->partialBrandMatches(), 'count'));
+            $missing = site()->bookmarksWithoutBrands();
+            $exact   = max(0, site()->totalBookmarks() - $missing - $partial);
+
+            return [
+                panelStatsBar('Exact logo', $exact, null, 'good'),
+                panelStatsBar('Partial match', $partial, null, 'warning'),
+                panelStatsBar('No logo', $missing, null, 'critical'),
+            ];
         },
         'missingBrandsText' => function () {
             $missing = site()->missingBrandsList();

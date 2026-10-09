@@ -1,5 +1,8 @@
 # Kirby .htaccess
 
+# prevent directory listings
+Options -Indexes
+
 # rewrite rules
 <IfModule mod_rewrite.c>
 
@@ -25,8 +28,8 @@ RewriteEngine on
 # except for the .well-known folder, which is used for Let's Encrypt and security.txt
 RewriteRule (^|/)\.(?!well-known\/) index.php [L]
 
-# block text files in the content folder from being accessed directly
-RewriteRule ^content/(.*)\.(txt|md|mdown)$ index.php [L]
+# block all files in the content folder from being accessed directly
+RewriteRule ^content/(.*) index.php [L]
 
 # block all files in the site folder from being accessed directly
 # except for requests to plugin assets files
@@ -85,7 +88,12 @@ AddOutputFilterByType DEFLATE application/x-javascript
 </IfModule>
 
 # BROWSER CACHING USING CACHE-CONTROL HEADERS
-<IfModule mod_headers.c> 
+<IfModule mod_headers.c>
+    # serve files as plain text if the actual content type is not known
+    # (hardens against attacks from malicious file uploads)
+    Header set Content-Type "text/plain" "expr=-z %{CONTENT_TYPE}"
+    Header set X-Content-Type-Options "nosniff"
+
     # One year for image, video, and font files
     <FilesMatch ".(flv|gif|ico|jpg|jpeg|mp4|mpeg|png|svg|swf|webp|woff2)$">
         Header set Cache-Control "max-age=31536000, public"

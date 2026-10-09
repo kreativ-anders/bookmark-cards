@@ -1,6 +1,6 @@
 # Brand Names
 
-Brand logos shown on bookmark cards (257 SVGs). Formerly the standalone repo [kreativ-anders/brand-names](https://github.com/kreativ-anders/brand-names), now maintained here.
+Brand logos shown on bookmark cards (258 SVGs). Formerly the standalone repo [kreativ-anders/brand-names](https://github.com/kreativ-anders/brand-names), now maintained here.
 
 ## Adding a logo
 
