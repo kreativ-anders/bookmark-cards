@@ -47,17 +47,19 @@ return function ($kirby) {
         try {
   
           // CREATE USER
+          // Raw values: Kirby validates the email and hashes the password.
+          // esc() is for HTML output only — escaping here broke logins with &, <, > or quotes.
           $user = $kirby->users()->create([
-            'email'     => esc(get('email')),
+            'email'     => $data['email'],
             'role'      => 'user',
             'language'  => 'en',
-            'password'  => esc(get('password'))
+            'password'  => $data['password']
           ]);
   
           $kirby->impersonate();
   
           // LOGIN USER
-          if($user && $user->login(get('password'))) {
+          if($user && $user->login($data['password'])) {
             go('/#welcome', 204);
           } 
   

@@ -42,7 +42,28 @@ return function ($kirby) {
         // LOGIN USER
         try {
 
-          $kirby->auth()->login($data['email'], $data['password']);
+          try {
+
+            $kirby->auth()->login($data['email'], $data['password']);
+
+          } catch (Exception $e) {
+
+            // LEGACY: accounts registered before the fix stored esc()'d passwords.
+            // Accept the escaped variant once, re-save the raw password and log in.
+            // (password_verify instead of a 2nd login() so it doesn't count as another failed trial)
+            $escaped = esc($data['password']);
+            $legacy  = $kirby->user($data['email']);
+
+            if ($escaped === $data['password'] || !$legacy || !password_verify($escaped, (string)$legacy->password())) {
+              throw $e;
+            }
+
+            $kirby->impersonate('kirby');
+            $legacy->changePassword($data['password']);
+            $kirby->impersonate();
+
+            $kirby->auth()->login($data['email'], $data['password']);
+          }
 
         } catch (Exception $e) {
 

@@ -22,6 +22,18 @@ describe('Authentication', () => {
     cy.get('#user').should('not.exist');
   });
 
+  it('logs in with special characters in the password', () => {
+    const special = `Pa&ss<wo>rd"'123`;
+
+    cy.register(email, special);
+    cy.logout();
+
+    cy.login(email, special);
+    cy.get('#user').should('be.visible');
+
+    cy.deleteAccount();
+  });
+
   it('rejects a wrong password', () => {
     cy.register(email, password);
     cy.logout();
