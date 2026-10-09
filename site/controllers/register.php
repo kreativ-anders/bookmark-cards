@@ -98,6 +98,7 @@ return function ($kirby) {
             go('login');
           }
 
+          Analytics::track('Registration Completed');
           go('/#welcome');
         }
       }

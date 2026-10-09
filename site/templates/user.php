@@ -45,13 +45,23 @@
     <section>
       <h3>Your Data</h3>
       <div role="group">
-        <a role="button" class="outline" href="<?= url('user.json') ?>" target="_blank">Export JSON</a>
-        <a role="button" class="outline" href="<?= url('user.csv') ?>" target="_blank">Export CSV</a>
+        <a role="button" class="outline" href="<?= url('user.json') ?>" target="_blank" data-pirsch-event="Export Data" data-pirsch-meta-format="JSON">Export JSON</a>
+        <a role="button" class="outline" href="<?= url('user.csv') ?>" target="_blank" data-pirsch-event="Export Data" data-pirsch-meta-format="CSV">Export CSV</a>
       </div>
     </section>
 
+    <?php
+      // paying users learn that deleting the account ends the subscription (Stripe customer is deleted, see memberkit hooks)
+      $premium = $user->isAllowed($tiers[1]['name']);
+      $confirm = $premium
+        ? 'Delete your account? Your bookmarks are deleted and your subscription ends immediately, without refund. This cannot be undone.'
+        : 'Delete your account? Your bookmarks are deleted. This cannot be undone.';
+    ?>
     <footer>
-      <form action="<?= $page->url() ?>" method="POST" onsubmit="return confirm('This action cannot be revert! Are you sure?');">
+      <?php if ($premium): ?>
+      <p><small>Deleting your account also ends your subscription immediately.</small></p>
+      <?php endif ?>
+      <form action="<?= $page->url() ?>" method="POST" onsubmit="<?= esc('return confirm(' . json_encode($confirm) . ');', 'attr') ?>">
         <input type="hidden" name="csrf" value="<?= csrf() ?>">
         <fieldset role="group">
           <input type="password" id="delete-current-password" name="current_password" placeholder="Current Password" aria-label="Current Password" autocomplete="current-password" required>

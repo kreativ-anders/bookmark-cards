@@ -11,10 +11,15 @@ The plugin adds the following site methods that can be used in panel blueprints:
 - `site.freeUsers()` - Returns the count of free users (users with no tier or "Free" tier)
 - `site.paidUsers()` - Returns the count of paid users (Basic, Premium, or other paid tiers)
 - `site.paidUsersPercentage()` - Returns the percentage of paid users as a formatted string (e.g., "50%")
+- `site.freeUsersPercentage()` - Returns the percentage of free users
+- `site.inactiveUsers()` / `inactiveUsersInfo()` / `inactiveUsersTheme()` - Inactive free accounts, same rules as the "Inactive accounts" dialog (`site/plugins/account-cleanup`); the tile opens that dialog
 
 ### Bookmark Statistics
 - `site.totalBookmarks()` - Returns the total number of bookmarks across all users
 - `site.totalTags()` - Returns the count of unique tags (case-insensitive) across all bookmarks
+- `site.bookmarksPerUser()` - Average bookmarks per user (e.g. "Ø 2.5 per user")
+- `site.usersWithBookmarks()` / `usersWithBookmarksInfo()` - Users with at least one bookmark and their share
+- `site.taggedBookmarksInfo()` - Share of bookmarks with at least one tag
 
 ### Brand Coverage Statistics
 - `site.availableBrands()` - Returns array of available brand tokens (logos in `assets/brand-names`, see `site/plugins/brands`)
@@ -23,10 +28,14 @@ The plugin adds the following site methods that can be used in panel blueprints:
 - `site.brandCoveragePercentage()` - Returns brand coverage percentage as formatted string (e.g., "85.5%")
 - `site.missingBrandsList()` - Returns detailed array of bookmarks without brands
 - `site.missingBrandsText()` - Returns formatted text list of all missing brands for display
+- `site.missingBrandsReports()` - Missing brands as stat reports (grouped by suggested file name, most users first)
+- `site.brandsInUse()` / `brandsInUseInfo()` - Number of different logos used by bookmarks
+- `site.brandCoverageInfo()` / `brandCoverageTheme()` / `bookmarksWithoutBrandsTheme()` - Details and color (positive ≥ 90 %, notice ≥ 75 %, negative below) for the brand tiles
+- `site.partialBrandMatches()` / `partialBrandMatchesReports()` - Bookmarks whose logo matches only a part of the title (possibly a wrong logo, or room for a more specific one)
 
 ## Usage
 
-These methods are used in the `site.yml` blueprint to display dynamic statistics on the panel dashboard:
+These methods are used in the `site.yml` blueprint to display dynamic statistics on the panel dashboard (simplified example, see `site/blueprints/site.yml` for the full dashboard with icons, themes and info lines):
 
 ```yaml
 sections:

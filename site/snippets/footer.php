@@ -31,6 +31,7 @@
     <a href="<?= url('terms') ?>">Terms</a> ·
     <a href="https://github.com/kreativ-anders/bookmark-cards" target="_blank" rel="noopener">GitHub</a>
   </p>
+  <p class="legal"><small>Brand names and logos are trademarks of their respective owners. They are shown for illustration only and do not imply any affiliation or endorsement.</small></p>
 
 
   <?php  if($kirby->user()): ?>
@@ -45,6 +46,8 @@
   </script>
   <?php endif; ?>
 
+
+  <?php snippet('analytics') ?>
 
 </footer>
 </body>

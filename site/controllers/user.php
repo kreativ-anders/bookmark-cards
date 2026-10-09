@@ -114,7 +114,9 @@ return function ($kirby, $page) {
 
       try {
 
+        $tier = $kirby->user()->tier()->toString();
         $kirby->user()->delete();
+        Analytics::track('Delete User Completed', ['plan' => $tier]);
         go('/');
 
       } catch(Exception $e) {

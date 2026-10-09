@@ -35,12 +35,15 @@
 } ?>
 
 <?php if (!$kirby->user()) {
-  snippet('hero'); 
-  snippet('features/feature-tags'); 
-  snippet('features/feature-search'); 
-  snippet('features/feature-beauty'); 
-  snippet('features/feature-export'); 
-  snippet('features/feature-extra'); 
+  snippet('hero');
+  // wrapper bounds the sticky stacking of the feature cards (main.css)
+  echo '<div class="feature-stack">';
+  snippet('features/feature-tags');
+  snippet('features/feature-search');
+  snippet('features/feature-beauty');
+  snippet('features/feature-export');
+  snippet('features/feature-extra');
+  echo '</div>';
 } ?>
 
 <?php if ($kirby->user()) {

@@ -1,6 +1,31 @@
 // pico-modal.js is prepended to this file by `npm run build` (build.mjs)
 
-document.addEventListener('DOMContentLoaded', function() {
+/**
+ * ANALYTICS
+ * Sends a Pirsch event, silently skipped when pa.js is blocked or offline.
+ * Never pass personal data (titles, links, tags, email) as meta.
+ * @param {string} name
+ * @param {Object} [meta]
+ */
+function trackEvent(name, meta) {
+  if (typeof pirsch !== 'function') return;
+  try {
+    var result = pirsch(name, meta ? { meta: meta } : {});
+    if (result && typeof result.catch === 'function') result.catch(function() {});
+  } catch (e) { /* analytics must never break the app */ }
+}
+
+/**
+ * Runs fn on DOMContentLoaded, or immediately when the DOM is already parsed
+ * (offline.html loads main.js late, after rendering the cards).
+ * @param {Function} fn
+ */
+function onReady(fn) {
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn, false);
+  else fn();
+}
+
+onReady(function() {
 
   // One-Pager! Prevent form resubmission
   if (window.history.replaceState) {
@@ -52,6 +77,15 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   })();
 
+  // FAQ: which questions visitors open
+  Array.from(document.querySelectorAll('#faq details')).forEach(function(details) {
+    details.addEventListener('toggle', function() {
+      if (!details.open) return;
+      var summary = details.querySelector('summary');
+      trackEvent('Open FAQ', { question: summary ? summary.textContent.trim() : '' });
+    });
+  });
+
   // Keyboard access for clickable card tags (WCAG 2.1.1)
   Array.from(document.querySelectorAll('#bookmarks span.tag[onclick]')).forEach(function(span) {
     span.setAttribute('role', 'button');
@@ -61,10 +95,10 @@ document.addEventListener('DOMContentLoaded', function() {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); span.click(); }
     });
   });
-}, false);
+});
 
 // Lazy Load Bg-Images
-document.addEventListener("DOMContentLoaded", function() {
+onReady(function() {
   var lazyloadImages;
 
   if ("IntersectionObserver" in window) {
@@ -197,6 +231,7 @@ function toggleTag(tag) {
     var s = String(card.getAttribute('data-tags') || '');
     card.style.display = s.indexOf(t) > -1 ? '' : 'none';
   });
+  trackEvent('Filter By Tag');
   allTags.forEach(function(span) {
     if ((span.getAttribute('data-tag') || '').indexOf(t) > -1) span.setAttribute('aria-pressed', 'true');
   });
@@ -249,10 +284,8 @@ function topTags() {
  * Create tags of the most used tags at all
  */
 function generateBackgroundColors() {
-  // Initialize ColorThief instance
-  // defensive: ColorThief is optional; bail out if not present
-  if (typeof ColorThief !== 'function') return;
-  var colorThief = new ColorThief();
+  // ColorThief is optional (CDN, unavailable offline): without it only cards without a logo get a tint
+  var colorThief = typeof ColorThief === 'function' ? new ColorThief() : null;
 
   // Select all bookmarks with background images
   var bookmarks = Array.from(document.querySelectorAll('div#bookmarks article'));
@@ -270,6 +303,8 @@ function generateBackgroundColors() {
         bookmark.style.backgroundSize = '100% 100%';
         return;
       }
+
+      if (!colorThief) return;
 
       // Extract URL from background-image: url("...")
       var match = backgroundImage.match(/url\((?:\")?(.*?)(?:\")?\)/);
@@ -390,6 +425,7 @@ function generateBackgroundColors() {
         else localStorage.setItem(KEY, current);
       } catch (e) { /* storage blocked: still switch for this page view */ }
       apply(current, button);
+      trackEvent('Change Theme', { theme: current });
     });
   }
 

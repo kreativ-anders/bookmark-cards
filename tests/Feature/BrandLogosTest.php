@@ -85,7 +85,78 @@ describe('panel brand stats', function () {
 
     it('lists missing logos with usage count and suggested file name', function () {
         expect(site()->missingBrandsList())->toBe([
-            ['title' => 'Xyzzy Tool', 'count' => 2, 'suggested' => 'xyzzytool'],
+            ['title' => 'Xyzzy Tool', 'count' => 2, 'suggested' => 'xyzzytool', 'users' => 1],
         ]);
+    });
+
+    it('groups missing logos by file name and ranks by number of users', function () {
+        registerUser('john@example.com');
+        $this->kirby->impersonate('kirby');
+        freshUser('john@example.com')->update(['bookmarks' => Kirby\Data\Yaml::encode([
+            ['title' => 'Frobnicator', 'link' => 'https://example.org', 'tags' => ''],
+            ['title' => 'xyzzy-tool', 'link' => 'https://example.org', 'tags' => ''],
+        ])]);
+
+        expect(site()->missingBrandsList())->toBe([
+            ['title' => 'Xyzzy Tool', 'count' => 3, 'suggested' => 'xyzzytool', 'users' => 2],
+            ['title' => 'Frobnicator', 'count' => 1, 'suggested' => 'frobnicator', 'users' => 1],
+        ]);
+    });
+
+    it('shows missing logos as panel stat reports without evaluating queries in titles', function () {
+        freshUser('jane@example.com')->update(['bookmarks' => Kirby\Data\Yaml::encode([
+            ['title' => 'Evil {{ site.title }}', 'link' => 'https://example.org', 'tags' => ''],
+        ])]);
+
+        expect(site()->missingBrandsReports())->toBe([
+            ['label' => 'add evilsitetitle.svg', 'value' => 'Evil { { site.title } }', 'info' => '1× · 1 user', 'icon' => 'image'],
+        ]);
+    });
+
+    it('lists logos that match only a part of the title', function () {
+        freshUser('jane@example.com')->update(['bookmarks' => Kirby\Data\Yaml::encode([
+            ['title' => 'GitHub', 'link' => 'https://github.com', 'tags' => ''],
+            ['title' => 'My GitHub account', 'link' => 'https://github.com/jane', 'tags' => ''],
+            ['title' => 'Bing webmaster', 'link' => 'https://bing.com/webmasters', 'tags' => ''],
+            ['title' => 'Bing Webmaster', 'link' => 'https://bing.com/webmasters/2', 'tags' => ''],
+        ])]);
+
+        // the full match "GitHub" is not listed
+        expect(site()->partialBrandMatches())->toBe([
+            ['title' => 'Bing webmaster', 'logo' => 'bing.svg', 'count' => 2],
+            ['title' => 'My GitHub account', 'logo' => 'github.svg', 'count' => 1],
+        ]);
+    });
+
+    it('rates the coverage and counts used logos', function () {
+        expect(site()->brandCoverageInfo())->toBe('2 of 4 bookmarks')
+            ->and(site()->brandCoverageTheme())->toBe('negative')
+            ->and(site()->bookmarksWithoutBrandsTheme())->toBe('notice')
+            ->and(site()->brandsInUse())->toBe(2);
+    });
+});
+
+describe('panel user and bookmark stats', function () {
+
+    it('reports bookmark usage and tagged share', function () {
+        registerUser('jane@example.com');
+        registerUser('john@example.com');
+        $this->kirby->impersonate('kirby');
+        freshUser('jane@example.com')->update(['bookmarks' => Kirby\Data\Yaml::encode([
+            ['title' => 'GitHub', 'link' => 'https://github.com', 'tags' => 'dev, code'],
+            ['title' => 'Notion', 'link' => 'https://notion.so', 'tags' => ''],
+        ])]);
+
+        expect(site()->bookmarksPerUser())->toBe('Ø 1 per user')
+            ->and(site()->usersWithBookmarks())->toBe(1)
+            ->and(site()->usersWithBookmarksInfo())->toBe('50% of all users')
+            ->and(site()->taggedBookmarksInfo())->toBe('50% of bookmarks tagged');
+    });
+
+    it('counts inactive users like the clean-up dialog', function () {
+        registerUser('jane@example.com');
+
+        expect(site()->inactiveUsers())->toBe(count(AccountActivity::inactive()))
+            ->and(site()->inactiveUsersInfo())->toBe('Free, no activity for ' . AccountActivity::months() . '+ months');
     });
 });

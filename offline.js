@@ -21,94 +21,87 @@ function brandLogo(title) {
   return match ? brandLogos[match] : null;
 }
 
-// Try to load user JSON from network, fallback to Cache API or localStorage when offline.
-fetch("/user.json")
-  .then(response => {
-    if (!response || !response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return response.json();
-  })
-  .then(function(json) {
-    // Print JSON
-    user = json;
-    printBookmarks(user.Bookmarks || []);
+// Same rule as Bookmarks::isSafe(): javascript:, vbscript: and data: links never become a live href
+function safeHref(link) {
+  return /^(javascript|vbscript|data):/i.test(link.replace(/[\x00-\x20]+/g, '')) ? '#' : link;
+}
 
-    // Load main.js after rendering the offline bookmark list so any dynamic behaviors can attach.
-    var script = document.createElement('script');
-    script.src = "assets/js/main.min.js";
-    document.head.appendChild(script);
-  })
-  .catch(function(err) {
-    // Network failed — try Cache API (if available) then localStorage as last resort.
-    console.warn('Unable to fetch /user.json from network:', err && err.message);
-
-    // Helper to attempt a JSON Response -> object
-    function tryFromResponse(resp) {
-      if (!resp) return Promise.reject(new Error('no response'));
-      try {
-        return resp.json();
-      } catch (e) {
-        return Promise.reject(e);
-      }
-    }
-
-    if (typeof caches !== 'undefined' && caches.match) {
-      caches.match('/user.json').then(function(cached) {
-        if (cached) {
-          return tryFromResponse(cached);
-        }
-        return Promise.reject(new Error('no cached user.json'));
-      }).then(function(json) {
-        user = json;
-        printBookmarks(user.Bookmarks || []);
-      }).catch(function() {
-        // fallback to localStorage
-        try {
-          const raw = localStorage.getItem('user');
-          if (raw) {
-            const parsed = JSON.parse(raw);
-            user = parsed;
-            printBookmarks(user.Bookmarks || []);
-            return;
-          }
-        } catch (e) {
-          console.warn('localStorage read failed', e && e.message);
-        }
-        // final fallback: show a friendly message
-        const container = document.getElementById('bookmarks');
-        if (container) {
-          const notice = document.createElement('p');
-          notice.className = 'notice';
-          notice.textContent = 'No bookmarks available offline.';
-          container.appendChild(notice);
-        }
+/**
+ * Load user JSON: network (the service worker answers from its cache when offline),
+ * then Cache API, then localStorage. Resolves null when nothing is available.
+ */
+function loadUser() {
+  return fetch('/user.json')
+    .then(response => {
+      if (!response || !response.ok) throw new Error('Network response was not ok');
+      return response.json();
+    })
+    .catch(err => {
+      console.warn('Unable to fetch /user.json from network:', err && err.message);
+      if (typeof caches === 'undefined' || !caches.match) return Promise.reject(err);
+      return caches.match('/user.json').then(cached => {
+        if (!cached) throw new Error('no cached user.json');
+        return cached.json();
       });
-    } else {
-      // caches not supported, try localStorage directly
+    })
+    .catch(() => {
       try {
         const raw = localStorage.getItem('user');
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          user = parsed;
-          printBookmarks(user.Bookmarks || []);
-          return;
-        }
+        if (raw) return JSON.parse(raw);
       } catch (e) {
         console.warn('localStorage read failed', e && e.message);
       }
-      const container = document.getElementById('bookmarks');
-      if (container) {
-        const notice = document.createElement('p');
-        notice.className = 'notice';
-        notice.textContent = 'No bookmarks available offline.';
-        container.appendChild(notice);
-      }
-    }
-  });
+      return null;
+    });
+}
 
 /**
- * 
+ * main.js (search, tag filter, theme toggle) and the same init the footer runs online.
+ * main.js is loaded after the cards exist, its search caches the cards on init.
+ */
+function loadMain() {
+  const script = document.createElement('script');
+  script.src = '/assets/js/main.min.js';
+  script.onload = function() {
+    if (typeof topTags === 'function') topTags();
+    if (typeof generateBackgroundColors === 'function') generateBackgroundColors();
+  };
+  document.head.appendChild(script);
+}
+
+function showNotice(text) {
+  const container = document.getElementById('bookmarks');
+  if (!container) return;
+  const notice = document.createElement('p');
+  notice.className = 'notice';
+  notice.textContent = text;
+  container.appendChild(notice);
+}
+
+function ready(fn) {
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+  else fn();
+}
+
+Promise.all([loadUser(), brandsLoaded]).then(function(results) {
+  ready(function() {
+    user = results[0];
+    const bookmarks = (user && Array.isArray(user.Bookmarks)) ? user.Bookmarks : [];
+
+    // Premium badge like the online header (every tier except the free one)
+    const subscription = user && user.User ? String(user.User.Subscription || '') : '';
+    const premium = document.getElementById('premium-meta');
+    if (premium && subscription && subscription !== 'Free') premium.hidden = false;
+
+    if (bookmarks.length) printBookmarks(bookmarks);
+    else showNotice('No bookmarks available offline.');
+
+    loadMain();
+  });
+});
+
+/**
+ * Renders the cards like site/snippets/bookmarks.php, without edit/delete (needs the server).
  * @param {*} bookmarks array
  */
 function printBookmarks(bookmarks) {
@@ -130,14 +123,11 @@ function printBookmarks(bookmarks) {
     const title = (bookmark.title || '').toString().trim();
     const link = (bookmark.link || '').toString();
     const tags = (bookmark.tags || '').toString();
+    const href = safeHref(link) || '#';
     article.dataset.search = title + ';' + link + ';' + tags;
     article.dataset.tags = tags;
-    if (title) {
-      brandsLoaded.then(() => {
-        const logo = brandLogo(title);
-        if (logo) article.style.backgroundImage = "url('" + logo + "')";
-      });
-    }
+    const logo = title ? brandLogo(title) : null;
+    if (logo) article.style.backgroundImage = "url('" + logo + "')";
 
     // Bookmark Header
     const header = document.createElement('header');
@@ -145,7 +135,7 @@ function printBookmarks(bookmarks) {
     header_anker.classList.add('card-title');
     header_anker.rel = 'noopener noreferrer';
     header_anker.target = '_self';
-    header_anker.href = link || '#';
+    header_anker.href = href;
     header_anker.textContent = title || link || 'Untitled';
     header.appendChild(header_anker);
 
@@ -153,13 +143,29 @@ function printBookmarks(bookmarks) {
     const middle_anker = document.createElement('a');
     middle_anker.rel = 'noopener noreferrer';
     middle_anker.target = '_self';
-    middle_anker.href = link || '#';
+    middle_anker.href = href;
+    middle_anker.setAttribute('aria-label', title || link || 'Untitled');
     const middle_anker_span = document.createElement('span');
     middle_anker_span.classList.add('card-spanner');
     middle_anker.appendChild(middle_anker_span);
 
+    // Bookmark Footer: tags (filter via main.js toggleTag, keyboard access added by main.js)
+    const footer = document.createElement('footer');
+    const grid = document.createElement('div');
+    grid.classList.add('grid', 'card-grid');
+    tags.split(',').map(t => t.trim()).filter(Boolean).forEach(function(tag) {
+      const span = document.createElement('span');
+      span.classList.add('tag');
+      span.dataset.tag = tag;
+      span.setAttribute('onclick', "toggleTag(this.getAttribute('data-tag'))");
+      span.textContent = tag;
+      grid.appendChild(span);
+    });
+    footer.appendChild(grid);
+
     article.appendChild(header);
     article.appendChild(middle_anker);
+    article.appendChild(footer);
 
     frag.appendChild(article);
   }

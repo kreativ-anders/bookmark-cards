@@ -144,6 +144,10 @@ return function ($kirby) {
           // MERGE STRIPE USER WITH KIRBY USER
           kirby()->user()->mergeStripeCustomer();
 
+          if (class_exists('Analytics')) {
+            Analytics::track('Premium Purchased');
+          }
+
         } catch(Exception $e) {
         
           // LOG ERROR SOMEWHERE !!!

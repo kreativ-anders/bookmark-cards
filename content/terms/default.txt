@@ -8,34 +8,32 @@ Text:
 
 ### Free
 
-A limited number of bookmarks, no time limit, no payment details needed.
+Free to use with a limited number of bookmarks.
 
 ### Premium
 
-Unlimited bookmarks. The price is shown under (link: /#pricing text: Pricing) and at checkout, paid in advance through Stripe. No VAT is charged (§ 19 UStG). Premium renews automatically at the end of each billing period.
+Unlimited bookmarks. Price and billing period are shown under (link: /#pricing text: Pricing) and at checkout. Payment runs through Stripe. No VAT is charged (§ 19 UStG). Premium renews automatically until you cancel.
 
 ### Cancel anytime
 
-Settings → *Manage Subscriptions*. Premium keeps running until the paid period ends, then your account becomes Free again.
+In your settings under *Manage Subscriptions*. Premium ends immediately and your account becomes Free.
 
 ### Delete your account
 
-Everything is gone immediately: your bookmarks, your account and your subscription. Time already paid is not refunded. This cannot be undone.
+Your bookmarks, your account and your subscription are deleted immediately. There is no refund. This cannot be undone.
 
 ### Changed your mind?
 
 You can withdraw within 14 days of buying Premium. Write to us through the (link: https://kreativ-anders.de/kontakt text: contact form target: _blank) and you get your money back.
 
-### Your links
+### No guarantee
 
-You are responsible for what you save. We keep Bookmark.cards running as well as we can, but cannot promise it is always available — export your bookmarks now and then.
+We keep Bookmark.cards running as well as we can, but cannot promise it is always available. Export your bookmarks now and then. You are responsible for the links you save.
 
 ### Liability
 
-We are fully liable for intent and gross negligence. Otherwise only for breaching essential duties, and only for damage that was foreseeable.
+We are fully liable for intent and gross negligence. Otherwise only for breaching essential duties, and only for foreseeable damage.
 
 ### Law
 
 German law applies. Provider: see (link: imprint text: imprint).
-
-Last updated: 9 October 2026.

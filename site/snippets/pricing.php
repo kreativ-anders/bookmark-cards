@@ -16,7 +16,7 @@ $monthly = $monthly ?? null;
       </header>
       <p class="price">0€ <small>/ month</small></p>
       <p>Try Bookmark.cards for free — store up to <?= option('noPremiumLimit'); ?> bookmarks and use all core features.</p>
-      <a id="pricing-register" href="<?= url('register') ?>" role="button" class="primary" data-pirsch-event="Open Register Modal">Get started (Free)</a>
+      <a id="pricing-register" href="<?= url('register') ?>" role="button" class="primary" data-pirsch-event="Open Register Modal" data-pirsch-meta-source="Pricing">Get started (Free)</a>
     </article>
     <article>
       <header>

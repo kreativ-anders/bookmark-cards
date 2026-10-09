@@ -49,6 +49,13 @@
   <link rel="manifest" href="manifest.json">
   <!-- UpUp.js --> 
   <script src="/upup.min.js"></script>
+  <?php
+    // brand logos of the user's own bookmarks, so offline.html shows them too (absolute URLs like brands.json)
+    $offlineLogos = [];
+    foreach ((array) $kirby->user()->bookmarks()->yaml() as $bookmark) {
+      if ($logo = $site->brandLogo((string) ($bookmark['title'] ?? ''))) $offlineLogos[$logo] = true;
+    }
+  ?>
   <script>
   UpUp.start({
     'cache-version': Date.now(),
@@ -63,7 +70,7 @@
       'assets/images/kreativ-anders.svg', 
       'offline.min.js', 
       'user.json', 
-      'assets/js/main.min.js'],
+      'assets/js/main.min.js'].concat(<?= json_encode(array_keys($offlineLogos), JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) ?>),
     'service-worker-url': '/upup.sw.min.js'
   });
   </script>
@@ -82,6 +89,7 @@
 
   <script defer src="https://api.pirsch.io/pa.js"
     id="pianjs"
+    <?php if ($kirby->user()): ?>data-disable-outbound-links<?php endif ?>
     data-code="DKo22RMuBesw3XMADDNrwe0fQ7544AG1"></script>
 
 </head>
@@ -118,7 +126,7 @@
           <a id="login" href="<?= url('login') ?>" role="button" class="contrast outline" data-pirsch-event="Open Login Modal">Login</a>
         </li>  
         <li>
-          <a id="register" href="<?= url('register') ?>" role="button" data-pirsch-event="Open Register Modal">Register</a>
+          <a id="register" href="<?= url('register') ?>" role="button" data-pirsch-event="Open Register Modal" data-pirsch-meta-source="Header">Register</a>
         </li>
         <?php endif; ?>
 
@@ -150,7 +158,7 @@
         ?>
         <li>
         <?= snippet( 'stripe-checkout-button', [ 'id'      => 'premium-checkout-button'
-                    ,'classes' => 'pirsch-event=Open+Stripe+Checkout'
+                    ,'classes' => 'pirsch-event=Open+Stripe+Checkout pirsch-meta-source=Header'
                     ,'text'    => 'Premium'
                     ,'url'     => $url]);
                   ?>

@@ -1,0 +1,90 @@
+# bookmark.cards – nginx site config for Ploi (production)
+#
+# Paste into Ploi → Site → Manage → Nginx configuration. Keep the lines Ploi generated for your site
+# where marked "from Ploi" (listen/ssl, include paths, PHP socket) – the values below are placeholders.
+#
+# Kirby runs from the repository root (Ploi "web directory": /), so the rules below keep
+# content/, site/, kirby/, dotfiles and tooling files (composer.json, README.md, …) private
+# while root-level icons, manifest.json, upup*.js and offline.* are served as files.
+
+# Ploi Webserver Configuration, do not remove!
+include /etc/nginx/ploi/bookmark.cards/before/*;
+
+server {
+    # from Ploi
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
+    ssl_certificate /etc/nginx/ssl/bookmark.cards/server.crt;
+    ssl_certificate_key /etc/nginx/ssl/bookmark.cards/server.key;
+
+    server_name bookmark.cards;
+    root /home/ploi/bookmark.cards;
+    index index.php index.html;
+    charset utf-8;
+
+    # Ploi Configuration, do not remove!
+    include /etc/nginx/ploi/bookmark.cards/server/*;
+
+    access_log off;
+    error_log /var/log/nginx/bookmark.cards-error.log error;
+
+    server_tokens off;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 512;
+    gzip_types text/plain text/css text/javascript application/javascript application/json
+               application/manifest+json image/svg+xml image/x-icon;
+
+    # Kirby: never serve content/, site/, kirby/ or dotfiles (except .well-known) – Kirby renders its 404
+    rewrite ^/(content|site|kirby)/(.*)$ /error last;
+    rewrite /\.(?!well-known/) /error last;
+    # Root-level files: only public assets are served directly, everything else goes to Kirby
+    # (composer.json, package.json, README.md, build.mjs, cypress.config.js, …)
+    rewrite ^/(?!(manifest\.json|offline\.html|llms\.txt|[^/]+\.(ico|png|svg|js)$))[^/]+$ /index.php last;
+    location ~ ^/(build\.mjs|cypress\.config\.js)$ { return 404; }
+    location ~ ^/(vendor|node_modules|cypress|tests)/ { return 404; }
+
+    location / {
+        try_files $uri $uri/ /index.php$is_args$args;
+    }
+
+    # Service worker, manifest and offline page must update promptly
+    location ~ ^/(upup\.sw\.min\.js|upup\.min\.js|manifest\.json|offline\.html|offline\.min\.js)$ {
+        expires -1;
+        try_files $uri =404;
+    }
+
+    # Static files (same lifetimes as .htaccess); missing files fall back to Kirby (media/ thumbs)
+    location ~* \.(?:ico|png|jpe?g|gif|webp|avif|svg|woff2)$ {
+        expires 1y;
+        access_log off;
+        try_files $uri /index.php$is_args$args;
+    }
+    location ~* \.js$ {
+        expires 30d;
+        try_files $uri /index.php$is_args$args;
+    }
+    location ~* \.css$ {
+        expires 7d;
+        try_files $uri /index.php$is_args$args;
+    }
+
+    location ~ \.php$ {
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass unix:/var/run/php/php8.4-fpm.sock; # from Ploi
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        include fastcgi_params;
+        fastcgi_buffers 16 16k;
+        fastcgi_buffer_size 32k;
+    }
+}
+
+# Ploi Webserver Configuration, do not remove!
+include /etc/nginx/ploi/bookmark.cards/after/*;

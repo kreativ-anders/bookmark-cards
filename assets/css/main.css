@@ -754,6 +754,21 @@ article > footer {
   color: var(--success-fg);
 }
 
+/* offline.html: status above the search bar + empty state */
+.alert-offline {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  color: var(--fg);
+  font-size: .9rem;
+}
+
+#bookmarks > p.notice {
+  grid-column: 1 / -1;
+  margin: 2rem 0;
+  text-align: center;
+  color: var(--muted);
+}
+
 input[type="submit"].danger {
   background: transparent;
   border-color: var(--danger);
@@ -789,6 +804,74 @@ input[type="submit"].danger:hover {
 
 .account-page label:has(input[type="checkbox"]) {
   margin-bottom: 1.5rem;
+}
+
+/* Error page (404) -------------------------------------------------------- */
+
+.error-page {
+  max-width: 36rem;
+  margin-block: 4rem;
+  text-align: center;
+}
+
+.error-page .eyebrow {
+  margin-inline: auto;
+}
+
+.error-page h1 {
+  font-size: clamp(2.2rem, 6vw, 3.2rem);
+  line-height: 1.05;
+  letter-spacing: -.04em;
+  margin-bottom: 1rem;
+}
+
+.error-page h1 .accent {
+  color: var(--accent-ink);
+  letter-spacing: -.01em;
+}
+
+.error-page p:not(.eyebrow) {
+  font-size: 1.1rem;
+  color: var(--muted);
+}
+
+.error-page .hero-actions {
+  justify-content: center;
+}
+
+/* three fanned cards, the last one blank with a question mark */
+.error-cards {
+  position: relative;
+  width: 11rem;
+  height: 7.5rem;
+  margin: 0 auto 2rem;
+}
+
+.error-cards span {
+  position: absolute;
+  top: .5rem;
+  left: 3rem;
+  width: 5rem;
+  height: 6.5rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+.error-cards span:nth-child(1) { transform: translateX(-2.6rem) rotate(-10deg); }
+.error-cards span:nth-child(2) { transform: translateX(2.6rem) rotate(9deg); }
+
+.error-cards span:nth-child(3) {
+  display: grid;
+  place-items: center;
+  top: 0;
+  border: 2px dashed var(--field-border);
+  font-family: var(--font-serif);
+  font-size: 3rem;
+  font-style: italic;
+  color: var(--accent-ink);
+  box-shadow: var(--shadow-hover);
 }
 
 /* Modal (dialog toggled by pico-modal.js) -------------------------------- */
@@ -992,7 +1075,7 @@ article.bookmark,
   border-radius: 14px;
   border: 1px solid var(--line);
   box-shadow: var(--shadow);
-  transition: transform .35s cubic-bezier(.2, .8, .2, 1), box-shadow .35s ease;
+  transition: box-shadow .35s ease; /* no transform transition: Safari would scale a pre-rendered layer and blur the text */
 }
 
 .card-background {
@@ -1008,7 +1091,7 @@ article.bookmark,
 .card-background:focus-within,
 div#bookmarks article.card-background:hover,
 div#bookmarks article.card-background:focus-within {
-  transform: translateY(-4px) scale(1.015);
+  transform: translateY(-4px) scale(1.048); /* 1.048: odd factor keeps the text crisp while scaled */
   box-shadow:
     0 1px 2px rgba(0, 0, 0, .06),
     0 0 0 1px rgb(var(--glow, 142 142 147) / .45),
@@ -1152,6 +1235,7 @@ span.tag:focus-visible {
 /* Premium banner ---------------------------------------------------------- */
 
 #premium-banner {
+  width: calc(100% - 2rem);
   max-width: 48rem;
   padding: 1rem 1.5rem;
   border-radius: var(--radius-l);
@@ -1247,6 +1331,11 @@ span.tag:focus-visible {
 .hero-fan .bookmark:nth-child(2) { left: 19%; top: .5rem; transform: rotate(-1deg); z-index: 1; }
 .hero-fan .bookmark:nth-child(3) { left: 38%; top: 2.5rem; transform: rotate(6deg); z-index: 2; }
 
+/* same 20 % brand mix as generateBackgroundColors() in main.js, without ColorThief on the landing page */
+.hero-fan .bookmark.card-background[style*="--tint"] {
+  background-color: color-mix(in srgb, rgb(var(--tint)) 20%, var(--card-bg));
+}
+
 /* Landing: features ------------------------------------------------------- */
 
 .feature {
@@ -1260,6 +1349,8 @@ span.tag:focus-visible {
   backdrop-filter: var(--blur);
   border: 1px solid var(--glass-border);
   box-shadow: var(--shadow);
+  /* .container is full width, keep a 1rem gutter around the card on small screens */
+  width: calc(100% - 2rem);
   max-width: 68rem;
 }
 
@@ -1320,6 +1411,35 @@ span.tag:focus-visible {
   .feature > picture {
     grid-column: 2;
     grid-row: 1 / span 4;
+  }
+}
+
+/* Stacked cards: each feature sticks a step lower than the previous one, the next
+   card slides over it. Only where a whole card fits the viewport, otherwise its lower
+   part would be covered before it was read. */
+@media (min-width: 880px) and (min-height: 760px) and (prefers-reduced-motion: no-preference) {
+  .feature-stack {
+    padding-bottom: 3rem;
+  }
+
+  .feature-stack > .feature {
+    --step: 1.25rem;
+    position: sticky;
+    top: calc(var(--header-height) + 1.5rem + var(--i, 0) * var(--step));
+    /* opaque, so the covered card does not shine through the glass */
+    background: var(--surface);
+    border-color: var(--line);
+  }
+
+  .feature-stack > .feature:nth-child(2) { --i: 1; }
+  .feature-stack > .feature:nth-child(3) { --i: 2; }
+  .feature-stack > .feature:nth-child(4) { --i: 3; }
+  .feature-stack > .feature:nth-child(5) { --i: 4; }
+  .feature-stack > .feature:nth-child(n+6) { --i: 5; }
+
+  /* keyboard focus inside a covered card brings it to the front (WCAG 2.4.11) */
+  .feature-stack > .feature:focus-within {
+    z-index: 1;
   }
 }
 

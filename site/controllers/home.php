@@ -15,9 +15,15 @@
 return function ($kirby, $page) {
 
   $error = null;
+  $event = null;
 
   // current user (if logged in)
   $user = $kirby->user();
+
+  // last visit, for the inactive accounts clean-up in the Panel (site/plugins/account-cleanup)
+  if ($user) {
+    AccountActivity::touch($user);
+  }
 
   // POST actions (add/update/delete) for authenticated users, require a valid CSRF token
   if ($user && $kirby->request()->is('POST')) {
@@ -60,7 +66,7 @@ return function ($kirby, $page) {
 
       try {
 
-        $user = Bookmarks::modify($user, function (array $bookmarks) use ($entry, $isFree, $freeLimit, $placeholder, &$error) {
+        $user = Bookmarks::modify($user, function (array $bookmarks) use ($entry, $isFree, $freeLimit, $placeholder, &$error, &$event) {
 
           // UpdateBookmark: expects u_id (index), optional u_hash (fingerprint), u_title and u_link
           if (get('u_id') !== null) {
@@ -98,8 +104,16 @@ return function ($kirby, $page) {
               return null;
             }
 
+            // analytics: no titles, links or tags, only what helps to understand usage
+            $event = ['Add Bookmark Completed', [
+              'plan'       => $isFree ? 'Free' : 'Premium',
+              'tags'       => count(Str::split($data['tags'], ',')),
+              'brand_logo' => site()->brandLogo($data['title']) ? 'yes' : 'no'
+            ]];
+
             // free tier: past the limit the "become premium" card is added instead
             if ($isFree && count($bookmarks) >= $freeLimit) {
+              $event = ['Free Limit Reached', []];
               $data = [
                 'title' => $placeholder,
                 'link'  => option('noPremiumLink'),
@@ -134,6 +148,9 @@ return function ($kirby, $page) {
 
       // SUCCESSFUL: POST/REDIRECT/GET (no duplicate bookmark on reload)
       if ($error === null) {
+        if ($event !== null) {
+          Analytics::track(...$event);
+        }
         go($page->url());
       }
     }

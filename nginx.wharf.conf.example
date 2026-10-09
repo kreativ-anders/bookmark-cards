@@ -1,0 +1,46 @@
+# bookmark.cards – Wharf (nginx) vhost for local development
+#
+# Save as ~/Wharf/config/vhosts/bookmark-cards.nginx.conf (Wharf restarts the webserver on save).
+# Keep every {{…}} placeholder: Wharf fills them in on each start.
+#
+# Same access rules as nginx.ploi.conf.example. Wharf's "kirby" template rewrites every root-level
+# file to index.php, so favicon.ico, the icons, manifest.json, upup*.js and offline.* would 404.
+# No caching headers here, so CSS/JS changes show up on reload.
+
+server {
+  {{listen}}
+  {{ssl}}
+  server_name {{server_name}};
+  root "{{root}}";
+  index index.php index.html;
+  charset utf-8;
+
+  access_log "{{log_dir}}/access.log";
+  error_log "{{log_dir}}/error.log";
+
+  default_type text/plain;
+  server_tokens off;
+  add_header X-Content-Type-Options "nosniff" always;
+  add_header X-Frame-Options "SAMEORIGIN" always;
+  add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+  # Kirby: never serve content/, site/, kirby/ or dotfiles (except .well-known) – Kirby renders its 404
+  rewrite ^/(content|site|kirby)/(.*)$ /error last;
+  rewrite /\.(?!well-known/) /error last;
+  # Root-level files: only public assets are served directly, everything else goes to Kirby
+  rewrite ^/(?!(manifest\.json|offline\.html|llms\.txt|[^/]+\.(ico|png|svg|js)$))[^/]+$ /index.php last;
+  location ~ ^/(build\.mjs|cypress\.config\.js)$ { return 404; }
+  location ~ ^/(vendor|node_modules|cypress|tests)/ { return 404; }
+
+  location / {
+    try_files $uri $uri/ /index.php$is_args$args;
+  }
+
+  location ~ \.php$ {
+    try_files $uri =404;
+    fastcgi_pass {{php}};
+    include "{{fastcgi}}";
+    fastcgi_split_path_info ^(.+\.php)(/.+)$;
+    fastcgi_param PATH_INFO $fastcgi_path_info;
+  }
+}
