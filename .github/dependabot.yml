@@ -13,3 +13,17 @@ updates:
         update-types:
           - minor
           - patch
+
+  # Pico CSS, esbuild, Cypress
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    labels:
+      - dependencies
+      - javascript
+    groups:
+      npm-minor-patch:
+        update-types:
+          - minor
+          - patch

@@ -1,4 +1,4 @@
-// @prepros-prepend pico-modal.js
+// pico-modal.js is prepended to this file by `npm run build:js`
 
 document.addEventListener('DOMContentLoaded', function() {
 

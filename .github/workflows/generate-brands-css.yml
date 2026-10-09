@@ -34,14 +34,14 @@ jobs:
 
       - name: Install dependencies
         run: |
-          # Skip Cypress binary installation since we only need PostCSS tools
+          # Skip Cypress binary installation since we only need esbuild
           CYPRESS_INSTALL_BINARY=0 npm install
 
       - name: Generate brands.css
         run: |
           npm run generateBrandsCSS
 
-      - name: Autoprefix and minify to brands.min.css
+      - name: Minify to brands.min.css
         run: |
           npm run minifyBrandsCSS
 

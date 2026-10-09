@@ -1,4 +1,20 @@
-@import "custom.pico.css";
+/* Pico (npm: @picocss/pico) – prebuilt "pumpkin" theme, bundled by esbuild (npm run build) */
+@import "@picocss/pico/css/pico.pumpkin.css";
+
+/* Pico overrides */
+:root {
+  --pico-primary: #f5a000 !important;
+}
+
+h1 {
+  margin-bottom: 0px;
+}
+
+[type=search] {
+  --pico-border-radius: unset;
+}
+
+/* Custom CSS */
 svg {
   width: 1rem;
 }

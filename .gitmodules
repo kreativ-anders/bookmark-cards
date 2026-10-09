@@ -1,6 +1,3 @@
 [submodule "assets/brand-names"]
 	path = assets/brand-names
 	url = https://github.com/kreativ-anders/brand-names.git
-[submodule "assets/css/pico"]
-	path = assets/css/pico
-	url = https://github.com/picocss/pico.git
