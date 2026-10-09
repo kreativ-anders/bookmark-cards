@@ -1,9 +1,3 @@
-[submodule "kirby"]
-	path = kirby
-	url = https://github.com/getkirby/kirby.git
-[submodule "site/plugins/kirby-memberkit"]
-	path = site/plugins/kirby-memberkit
-	url = https://github.com/kreativ-anders/kirby-memberkit.git
 [submodule "assets/brand-names"]
 	path = assets/brand-names
 	url = https://github.com/kreativ-anders/brand-names.git

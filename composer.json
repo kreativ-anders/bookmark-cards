@@ -1,0 +1,17 @@
+{
+  "name": "kreativ-anders/bookmark-cards",
+  "description": "Bookmark Cards – a Kirby CMS powered bookmark manager",
+  "type": "project",
+  "license": "MIT",
+  "require": {
+    "php": "~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0",
+    "getkirby/cms": "^5.6",
+    "stripe/stripe-php": "^22.0"
+  },
+  "config": {
+    "allow-plugins": {
+      "getkirby/composer-installer": true
+    },
+    "optimize-autoloader": true
+  }
+}

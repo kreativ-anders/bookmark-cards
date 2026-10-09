@@ -1,0 +1,15 @@
+version: 2
+updates:
+  # Kirby CMS (getkirby/cms) and Stripe (stripe/stripe-php)
+  - package-ecosystem: composer
+    directory: /
+    schedule:
+      interval: weekly
+    labels:
+      - dependencies
+    groups:
+      # Bundle minor/patch updates into one PR; major updates stay separate
+      composer-minor-patch:
+        update-types:
+          - minor
+          - patch
