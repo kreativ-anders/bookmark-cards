@@ -2,22 +2,67 @@ console.log("You are Offline!");
 
 let user = null;
 
-// Brand logos (token => URL) from /brands.json, cached by the service worker.
-// Same rule as site/plugins/brands: the longest token contained in the normalized title wins.
+// Brand logos (token => URL) and matching rules from /brands.json and /brands-rules.json,
+// cached by the service worker. Same rules as BrandLogos::find() in site/plugins/brands:
+// a domain label of the link first, then whole words of the title, the longest token wins.
 let brandLogos = {};
-const brandsLoaded = fetch('/brands.json')
-  .then(response => (response && response.ok) ? response : (typeof caches !== 'undefined' ? caches.match('/brands.json') : null))
-  .catch(() => (typeof caches !== 'undefined' ? caches.match('/brands.json') : null))
-  .then(response => response ? response.json() : {})
-  .then(json => { brandLogos = json || {}; })
-  .catch(() => {});
+let brandRules = { aliases: {}, domainOnly: [] };
+function loadJson(url) {
+  return fetch(url)
+    .then(response => (response && response.ok) ? response : (typeof caches !== 'undefined' ? caches.match(url) : null))
+    .catch(() => (typeof caches !== 'undefined' ? caches.match(url) : null))
+    .then(response => response ? response.json() : null)
+    .catch(() => null);
+}
+const brandsLoaded = Promise.all([loadJson('/brands.json'), loadJson('/brands-rules.json')])
+  .then(([logos, rules]) => {
+    brandLogos = logos || {};
+    if (rules) brandRules = { aliases: rules.aliases || {}, domainOnly: rules.domainOnly || [] };
+  });
 
-function brandLogo(title) {
-  const haystack = title.toLowerCase().replace(/[^a-z]+/g, '');
+function brandToken(value) {
+  return value.toLowerCase().replace(/[^a-z]+/g, '');
+}
+
+// longest candidate with a logo, the first one on a tie
+function longestBrand(candidates) {
   let match = '';
-  for (const token in brandLogos) {
-    if (token.length > match.length && haystack.includes(token)) match = token;
+  for (const token of candidates) {
+    if (token.length > match.length && Object.prototype.hasOwnProperty.call(brandLogos, token)) match = token;
   }
+  return match;
+}
+
+function brandFromLink(link) {
+  let host = '';
+  try {
+    host = new URL(/^[a-z][a-z0-9+.-]*:\/\//i.test(link) ? link : 'http://' + link).hostname.toLowerCase().replace(/\.$/, '');
+  } catch (e) {
+    return '';
+  }
+  if (!host) return '';
+  for (const domain in brandRules.aliases) {
+    const token = brandRules.aliases[domain];
+    if ((host === domain || host.endsWith('.' + domain)) && Object.prototype.hasOwnProperty.call(brandLogos, token)) return token;
+  }
+  return longestBrand(host.split('.').slice(0, -1).map(brandToken));
+}
+
+function brandFromTitle(title) {
+  const words = title.replace(/(\p{Ll})(?=\p{Lu})/gu, '$1 ').toLowerCase().split(/[^a-z]+/).filter(Boolean);
+  const max = Math.max(0, ...Object.keys(brandLogos).map(token => token.length));
+  const runs = [];
+  for (let i = 0; i < words.length; i++) {
+    let run = '';
+    for (let j = i; j < words.length && (run += words[j]).length <= max; j++) {
+      if (!brandRules.domainOnly.includes(run)) runs.push(run);
+    }
+  }
+  return longestBrand(runs);
+}
+
+function brandLogo(title, link) {
+  const match = brandFromLink(link || '') || brandFromTitle(title || '');
   return match ? brandLogos[match] : null;
 }
 
@@ -126,7 +171,7 @@ function printBookmarks(bookmarks) {
     const href = safeHref(link) || '#';
     article.dataset.search = title + ';' + link + ';' + tags;
     article.dataset.tags = tags;
-    const logo = title ? brandLogo(title) : null;
+    const logo = (title || link) ? brandLogo(title, link) : null;
     if (logo) article.style.backgroundImage = "url('" + logo + "')";
 
     // Bookmark Header

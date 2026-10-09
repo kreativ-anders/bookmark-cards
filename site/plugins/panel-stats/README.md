@@ -99,12 +99,11 @@ The brand coverage feature helps administrators identify which bookmarks don't h
 
 ### How Brand Matching Works
 
-Bookmarks are matched against available brands using the bookmark's title (`BrandLogos::find()` in `site/plugins/brands`):
-1. The title is normalized to lowercase letters a-z (spaces, digits and punctuation removed)
-2. Every logo file name is normalized the same way (its "token")
-3. The longest token contained in the normalized title wins
-
-For example, a bookmark titled "Buy me a coffee" (`buymeacoffee`) matches `buymeacoffee.svg` rather than `coffee.svg`.
+Bookmarks are matched against available brands using the bookmark's link and title (`BrandLogos::find()` in `site/plugins/brands`). Every logo file name is reduced to lowercase letters a-z (its "token"):
+1. **Link:** a label of the domain equals a token, e.g. `app.slack.com` matches `slack.svg`. Domains that differ from the brand name are listed in `BrandLogos::ALIASES` (`bahn.de` matches `deutschebahn.svg`)
+2. **Title:** a token equals one or more whole consecutive words, e.g. "Buy me a coffee" matches `buymeacoffee.svg`, "Otherwise" never matches `wise.svg`. Camel case counts as separate words ("DuckDuckGo")
+3. Everyday words (`BrandLogos::DOMAIN_ONLY`, e.g. `medium`, `web`, `dev`) match via the link only
+4. The longest token wins, the first one on a tie
 
 ### Viewing Brand Statistics
 

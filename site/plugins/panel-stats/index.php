@@ -191,7 +191,7 @@ Kirby::plugin('kreativ-anders/panel-stats', [
 
             foreach (panelStatsBookmarks() as $bookmarks) {
                 foreach ($bookmarks as $bookmark) {
-                    if (($token = BrandLogos::find((string)($bookmark['title'] ?? ''))) !== null) {
+                    if (($token = BrandLogos::find((string)($bookmark['title'] ?? ''), (string)($bookmark['link'] ?? ''))) !== null) {
                         $used[$token] = true;
                     }
                 }
@@ -209,7 +209,7 @@ Kirby::plugin('kreativ-anders/panel-stats', [
                 $bookmarks = $user->bookmarks()->yaml();
                 if (is_array($bookmarks)) {
                     foreach ($bookmarks as $bookmark) {
-                        if (!empty($bookmark['title']) && BrandLogos::find($bookmark['title']) === null) {
+                        if (!empty($bookmark['title']) && BrandLogos::find($bookmark['title'], (string)($bookmark['link'] ?? '')) === null) {
                             $withoutBrands++;
                         }
                     }
@@ -255,7 +255,7 @@ Kirby::plugin('kreativ-anders/panel-stats', [
 
             foreach (panelStatsBookmarks() as $userId => $bookmarks) {
                 foreach ($bookmarks as $bookmark) {
-                    if (empty($bookmark['title']) || BrandLogos::find($bookmark['title']) !== null) {
+                    if (empty($bookmark['title']) || BrandLogos::find($bookmark['title'], (string)($bookmark['link'] ?? '')) !== null) {
                         continue;
                     }
 
@@ -304,7 +304,7 @@ Kirby::plugin('kreativ-anders/panel-stats', [
             foreach (panelStatsBookmarks() as $bookmarks) {
                 foreach ($bookmarks as $bookmark) {
                     $title = (string)($bookmark['title'] ?? '');
-                    $token = BrandLogos::find($title);
+                    $token = BrandLogos::find($title, (string)($bookmark['link'] ?? ''));
 
                     if ($token === null || $token === BrandLogos::token($title)) {
                         continue;
@@ -413,7 +413,7 @@ Kirby::plugin('kreativ-anders/panel-stats', [
 
             foreach (panelStatsBookmarks() as $bookmarks) {
                 foreach ($bookmarks as $bookmark) {
-                    if (($token = BrandLogos::find((string)($bookmark['title'] ?? ''))) !== null) {
+                    if (($token = BrandLogos::find((string)($bookmark['title'] ?? ''), (string)($bookmark['link'] ?? ''))) !== null) {
                         $counts[$token] = ($counts[$token] ?? 0) + 1;
                     }
                 }

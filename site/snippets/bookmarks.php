@@ -24,7 +24,7 @@
           // normalize and prepare safe values
           $rawTitle = (string)$bookmark['title'];
           // brand logo (site/plugins/brands), applied as background image
-          $logo = $site->brandLogo($rawTitle);
+          $logo = $site->brandLogo($rawTitle, (string)$bookmark['link']);
 
           $search = (string)($bookmark['title'] . ';' . $bookmark['link'] . ';' . $bookmark['tags']);
           $titleEsc = htmlspecialchars($rawTitle, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');

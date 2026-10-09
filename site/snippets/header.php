@@ -53,7 +53,7 @@
     // brand logos of the user's own bookmarks, so offline.html shows them too (absolute URLs like brands.json)
     $offlineLogos = [];
     foreach ((array) $kirby->user()->bookmarks()->yaml() as $bookmark) {
-      if ($logo = $site->brandLogo((string) ($bookmark['title'] ?? ''))) $offlineLogos[$logo] = true;
+      if ($logo = $site->brandLogo((string) ($bookmark['title'] ?? ''), (string) ($bookmark['link'] ?? ''))) $offlineLogos[$logo] = true;
     }
   ?>
   <script>
@@ -64,6 +64,7 @@
       'favicon.ico', 
       'favicon.svg', 
       'brands.json', 
+      'brands-rules.json', 
       'assets/css/main.min.css', 
       'assets/css/fonts/geist-latin-wght-normal.woff2', 
       'assets/css/fonts/instrument-serif-latin-400-italic.woff2', 
