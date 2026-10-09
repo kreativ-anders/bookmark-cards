@@ -65,6 +65,21 @@ describe('Bookmarks', () => {
       .and('not.contain', '/assets/brand-names/');
   });
 
+  it('rejects bookmark changes without CSRF token', () => {
+    cy.addBookmark('GitHub', 'https://github.com');
+
+    cy.request({ method: 'POST', url: '/', form: true, body: { c_title: 'Evil', c_link: 'https://evil.example' } })
+      .its('body').should('contain', 'Invalid CSRF token!');
+    cy.request({ method: 'POST', url: '/', form: true, body: { d_bookmark: '0' } })
+      .its('body').should('contain', 'Invalid CSRF token!');
+    cy.request({ method: 'POST', url: '/', form: true, body: { u_id: '0', u_title: 'Hacked', u_link: 'https://evil.example' } })
+      .its('body').should('contain', 'Invalid CSRF token!');
+
+    cy.visit('/');
+    cy.get('#bookmarks article').should('have.length', 1);
+    cy.card('GitHub').should('exist');
+  });
+
   it('filters bookmarks by tag', () => {
     cy.addBookmark('GitHub', 'https://github.com', 'dev');
     cy.addBookmark('Apple', 'https://apple.com', 'tech');

@@ -10,6 +10,7 @@
       <h3>Edit Bookmark</h3>
     </header>
     <form action="" method="POST" autocomplete="off">
+      <input type="hidden" name="csrf" value="<?= csrf() ?>">
       <input type="hidden" id="id" name="u_id" value="" placeholder="ID" readonly required>
       <fieldset>
         <legend>

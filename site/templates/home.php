@@ -31,6 +31,12 @@
   snippet('jumbotron'); 
 } ?>
 
+<?php if ($kirby->user() && $error): ?>
+<section class="container">
+  <?php snippet('alert', ['alert' => $error]) ?>
+</section>
+<?php endif ?>
+
 <?php if ($kirby->user() && option('kreativ-anders.memberkit.tiers')[0]['name'] === $kirby->user()->tier()->toString() && count($bookmarks) >= option('noPremiumLimit')) {
   snippet('premiumbanner');
 } ?>

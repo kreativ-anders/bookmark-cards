@@ -47,8 +47,13 @@ return function ($kirby, $page) {
     $tags = '';
   }
 
+  // POST actions (add/update/delete) require a valid CSRF token
+  if ($user && $kirby->request()->is('POST') && csrf(get('csrf')) !== true) {
+    $error = 'Invalid CSRF token! Please reload the page and try again.';
+  }
+
   // handle POST actions only for authenticated users
-  if ($user && $kirby->request()->is('POST')) {
+  if ($user && $kirby->request()->is('POST') && $error === null) {
 
     // UpdateBookmark: expects u_id (index), u_title and u_link
     $uId = get('u_id');

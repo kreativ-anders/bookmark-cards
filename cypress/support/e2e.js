@@ -18,3 +18,15 @@ import './commands'
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+// The UpUp service worker (offline mode, loaded for logged-in users) intercepts
+// navigations and hangs Cypress' proxy. Stub it out and drop any registered worker.
+beforeEach(() => {
+  cy.intercept('GET', '/upup.min.js', { body: 'window.UpUp = { start: function () {} };', headers: { 'content-type': 'application/javascript' } });
+  cy.intercept('GET', '/upup.sw.min.js', { statusCode: 404, body: '' });
+});
+
+Cypress.on('window:before:load', (win) => {
+  if (win.navigator.serviceWorker) {
+    win.navigator.serviceWorker.getRegistrations().then((registrations) => registrations.forEach((r) => r.unregister()));
+  }
+});
