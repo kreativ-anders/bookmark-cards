@@ -1,7 +1,8 @@
 # bookmark.cards – nginx site config for Ploi (production)
 #
 # Paste into Ploi → Site → Manage → Nginx configuration. Keep the lines Ploi generated for your site
-# where marked "from Ploi" (listen/ssl, include paths, PHP socket) – the values below are placeholders.
+# where marked "from Ploi" (listen/ssl, include paths, PHP socket) – the values below are those of the current server
+# (system user kreativ-anders, PHP 8.5).
 #
 # Kirby runs from the repository root (Ploi "web directory": /), so the rules below keep
 # content/, site/, kirby/, dotfiles and tooling files (composer.json, README.md, …) private
@@ -11,15 +12,16 @@
 include /etc/nginx/ploi/bookmark.cards/before/*;
 
 server {
-    # from Ploi
-    listen 443 ssl;
-    listen [::]:443 ssl;
-    http2 on;
-    ssl_certificate /etc/nginx/ssl/bookmark.cards/server.crt;
-    ssl_certificate_key /etc/nginx/ssl/bookmark.cards/server.key;
+    # from Ploi: listen 443, certificate and key
+    include /etc/nginx/ssl/bookmark.cards;
+
+    # Mozilla "intermediate" (ECDHE only, so no ssl_dhparam needed)
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305;
+    ssl_prefer_server_ciphers off;
 
     server_name bookmark.cards;
-    root /home/ploi/bookmark.cards;
+    root /home/kreativ-anders/bookmark.cards; # from Ploi
     index index.php index.html;
     charset utf-8;
     # unknown file types are served as plain text (hardens against malicious uploads)
@@ -79,7 +81,7 @@ server {
     location ~ \.php$ {
         try_files $uri =404;
         fastcgi_split_path_info ^(.+\.php)(/.+)$;
-        fastcgi_pass unix:/var/run/php/php8.4-fpm.sock; # from Ploi
+        fastcgi_pass unix:/run/php/php8.5-fpm-kreativ-anders.sock; # from Ploi
         fastcgi_index index.php;
         fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
         include fastcgi_params;
