@@ -17,9 +17,9 @@ The plugin adds the following site methods that can be used in panel blueprints:
 ### Bookmark Statistics
 - `site.totalBookmarks()` - Returns the total number of bookmarks across all users
 - `site.totalTags()` - Returns the count of unique tags (case-insensitive) across all bookmarks
-- `site.bookmarksPerUser()` - Average bookmarks per user (e.g. "Ø 2.5 per user")
-- `site.usersWithBookmarks()` / `usersWithBookmarksInfo()` - Users with at least one bookmark and their share
-- `site.taggedBookmarksInfo()` - Share of bookmarks with at least one tag
+- `site.bookmarksPerUser()` - Average bookmarks per user with bookmarks (e.g. "Ø 10.7 per user with bookmarks")
+- `site.usersWithBookmarks()` - Users with at least one bookmark (activation chart)
+- `site.taggedBookmarks()` / `taggedBookmarksInfo()` - Bookmarks with at least one tag and their share of all bookmarks
 
 ### Brand Coverage Statistics
 - `site.availableBrands()` - Returns array of available brand tokens (logos in `assets/brand-names`, see `site/plugins/brands`)
@@ -31,15 +31,36 @@ The plugin adds the following site methods that can be used in panel blueprints:
 - `site.missingBrandsReports()` - Missing brands as stat reports (grouped by suggested file name, most users first)
 - `site.brandsInUse()` / `brandsInUseInfo()` - Number of different logos used by bookmarks
 - `site.brandCoverageInfo()` / `brandCoverageTheme()` / `bookmarksWithoutBrandsTheme()` - Details and color (positive ≥ 90 %, notice ≥ 75 %, negative below) for the brand tiles
-- `site.partialBrandMatches()` / `partialBrandMatchesReports()` - Bookmarks whose logo matches only a part of the title (possibly a wrong logo, or room for a more specific one)
+- `site.missingBrandsClipboard()` - Missing brands as plain text, one line per logo, for the "Copy list" button
+
+### Dashboard views
+The statistics live in two Panel views (admins only), each laid out by its own blueprint:
+- **Bookmarks** (own menu entry, `site/blueprints/dashboard/bookmarks.yml`) - bookmark, tag and brand statistics
+- **Users › Statistics** (`site/blueprints/dashboard/users.yml`) - user statistics, opened with the "Statistics" button in the users list; the Users menu entry stays highlighted
+
+Sections query the site as before (`site.totalBookmarks` etc.) and load from the API at `panel-stats/<dashboard>/sections/<section>`. Menu order, the "Statistics" button and the highlighting are set in `site/config/config.php` (`panel.menu`, `panel.viewButtons.users`).
+
+### Stats with buttons
+A custom `actionstats` section works like Kirby's `stats` section and adds buttons to its header. A button either copies the text of a query to the clipboard (`copy`) or opens a Panel dialog (`dialog`):
+
+```yaml
+MissingBrands:
+  type: actionstats
+  reports: site.missingBrandsReports
+  empty: Every bookmark has a logo
+  buttons:
+    - text: Copy list
+      icon: copy
+      copy: site.missingBrandsClipboard
+```
 
 ### Charts
 A custom `chart` section (`index.js`, `index.css`) draws a bar list (`layout: bars`, default) or one stacked bar with legend (`layout: stack`). `data` is a site method returning items with `label`, `value` and optional `info`, `color` (`series-1`…`series-3`, `good`, `warning`, `critical`) and `image`:
 - `site.userMixChart()` - Paid / free active / free inactive
-- `site.activationChart()` - Registered → saved bookmarks → uses tags → paid
+- `site.activationChart()` - Registered → saved bookmarks → uses tags (share of all users; paid users are a tile)
 - `site.activityChart()` - Users by last activity
-- `site.topTagsChart()` / `site.topBrandsChart()` - Most used tags and logos
-- `site.brandCoverageChart()` - Bookmarks with exact logo / partial match / no logo
+- `site.topTagsChart()` / `site.topBrandsChart()` - Top 8 tags and logos by number of users, then by number of bookmarks ("2 users · 51×")
+- `site.brandCoverageChart()` - Bookmarks with / without logo
 
 ```yaml
 UserMix:
@@ -51,7 +72,7 @@ UserMix:
 
 ## Usage
 
-These methods are used in the `site.yml` blueprint to display dynamic statistics on the panel dashboard (simplified example, see `site/blueprints/site.yml` for the full dashboard with icons, themes and info lines):
+These methods are used in the dashboard blueprints to display dynamic statistics (simplified example, see `site/blueprints/dashboard/*.yml` for the full dashboards with icons, themes and info lines):
 
 ```yaml
 sections:

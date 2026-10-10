@@ -43,17 +43,151 @@ function panelStatsBar(string $label, int $value, string|null $info = null, stri
 }
 
 /**
- * [name => count] of the most frequent values, ties alphabetical
+ * Chart bars of the most widespread values: [name => [user id => bookmark count]]
+ * ranked by number of users, then by number of bookmarks, then alphabetical.
+ * The bar shows the users, the info how often they used it ("2 users · 51×").
+ *
+ * @param callable|null $image name => image URL
  */
-function panelStatsTop(array $counts, int $limit = 8): array
+function panelStatsUsage(array $usage, callable|null $image = null, int $limit = 8): array
 {
-    uksort($counts, fn ($a, $b) => [$counts[$b], $a] <=> [$counts[$a], $b]);
+    $rows = [];
+    foreach ($usage as $name => $users) {
+        $rows[] = ['name' => (string)$name, 'users' => count($users), 'count' => array_sum($users)];
+    }
 
-    return array_slice($counts, 0, $limit, true);
+    usort($rows, fn ($a, $b) => [$b['users'], $b['count'], $a['name']] <=> [$a['users'], $a['count'], $b['name']]);
+
+    return array_map(fn ($row) => panelStatsBar(
+        $row['name'],
+        $row['users'],
+        ($row['users'] === 1 ? 'user' : 'users') . ' · ' . $row['count'] . '×',
+        'series-1',
+        $image ? $image($row['name']) : null
+    ), array_slice($rows, 0, $limit));
 }
 
+/**
+ * Blueprint of a dashboard view (site/blueprints/dashboard/<name>.yml),
+ * its sections query the site. Null for unknown dashboards.
+ */
+function panelStatsDashboard(string $name): Kirby\Cms\Blueprint|null
+{
+    if (in_array($name, ['bookmarks', 'users'], true) === false) {
+        return null;
+    }
+
+    return Kirby\Cms\Blueprint::factory('dashboard/' . $name, null, site());
+}
+
+/**
+ * Panel view of a dashboard: its sections, laid out like a site tab (admins only)
+ */
+function panelStatsView(string $name, array $buttons = []): array
+{
+    if (kirby()->user()?->isAdmin() !== true) {
+        throw new Kirby\Exception\PermissionException(message: 'Only admins can see the statistics');
+    }
+
+    $blueprint = panelStatsDashboard($name);
+
+    return [
+        'component' => 'k-dashboard-view',
+        'title'     => $blueprint->title(),
+        'props'     => [
+            'title'   => $blueprint->title(),
+            'parent'  => 'panel-stats/' . $name,
+            'tab'     => $blueprint->tab(),
+            'buttons' => $buttons,
+        ],
+    ];
+}
+
+$panelStatsAdmin = fn () => kirby()->user()?->isAdmin() === true;
+
 Kirby::plugin('kreativ-anders/panel-stats', [
+    'areas' => [
+        // own menu entry for bookmark and brand statistics
+        'bookmarks' => fn () => [
+            'label' => 'Bookmarks',
+            'icon'  => 'bookmark',
+            'menu'  => $panelStatsAdmin,
+            'link'  => 'bookmarks',
+            'views' => [
+                [
+                    'pattern' => 'bookmarks',
+                    'action'  => fn () => panelStatsView('bookmarks'),
+                ],
+            ],
+        ],
+        // user statistics, shown as "Users › Statistics" with the Users menu entry highlighted
+        'user-statistics' => fn () => [
+            'label' => 'Users',
+            'icon'  => 'users',
+            'menu'  => false,
+            'link'  => 'users',
+            'views' => [
+                [
+                    'pattern' => 'user-statistics',
+                    'action'  => fn () => [
+                        ...panelStatsView('users', [
+                            ['icon' => 'users', 'text' => 'All users', 'link' => 'users'],
+                        ]),
+                        'breadcrumb' => [
+                            ['label' => 'Statistics', 'link' => 'user-statistics'],
+                        ],
+                    ],
+                ],
+            ],
+        ],
+        // "Statistics" button in the users list (panel.viewButtons.users in config.php),
+        // the Users menu entry stays highlighted via panel.menu in config.php
+        'users' => fn () => [
+            'buttons' => [
+                'users.statistics' => fn () => [
+                    'icon' => 'chart',
+                    'text' => 'Statistics',
+                    'link' => 'user-statistics',
+                ],
+            ],
+        ],
+    ],
+    'api' => [
+        'routes' => [
+            [
+                // sections of the dashboard views (k-sections loads "<parent>/sections/<name>")
+                'pattern' => 'panel-stats/(:any)/sections/(:any)',
+                'method'  => 'GET',
+                'action'  => function (string $dashboard, string $section) {
+                    if ($this->user()?->isAdmin() !== true) {
+                        throw new Kirby\Exception\PermissionException(message: 'Only admins can see the statistics');
+                    }
+
+                    return panelStatsDashboard($dashboard)?->section($section)?->toResponse();
+                },
+            ],
+        ],
+    ],
     'sections' => [
+        // Kirby's stats section plus header buttons (see site.yml):
+        // `copy` copies the text of a query to the clipboard, `dialog` opens a Panel dialog
+        'actionstats' => [
+            'extends' => 'stats',
+            'props'   => [
+                'buttons' => fn (array $buttons = []) => $buttons,
+                'empty'   => fn (string|null $empty = null) => $empty,
+            ],
+            'computed' => [
+                'buttons' => function () {
+                    return array_values(array_map(fn (array $button) => [
+                        'text'   => $button['text'] ?? null,
+                        'icon'   => $button['icon'] ?? null,
+                        'copy'   => isset($button['copy']) ? (string)$this->model()->query($button['copy']) : null,
+                        'dialog' => $button['dialog'] ?? null,
+                    ], $this->buttons));
+                },
+            ],
+        ],
         // bar list or single stacked bar, data from a site method (see site.yml)
         'chart' => [
             'props' => [
@@ -128,17 +262,15 @@ Kirby::plugin('kreativ-anders/panel-stats', [
 
             return $totalBookmarks;
         },
+        // average over users who saved bookmarks (the share of those users is in the activation chart)
         'bookmarksPerUser' => function () {
-            $users = site()->totalUsers();
+            $users = site()->usersWithBookmarks();
             $average = $users > 0 ? round(site()->totalBookmarks() / $users, 1) : 0;
 
-            return 'Ø ' . $average . ' per user';
+            return 'Ø ' . $average . ' per user with bookmarks';
         },
         'usersWithBookmarks' => function () {
             return count(array_filter(panelStatsBookmarks()));
-        },
-        'usersWithBookmarksInfo' => function () {
-            return panelStatsPercentage(site()->usersWithBookmarks(), site()->totalUsers()) . ' of all users';
         },
         'totalTags' => function () {
             $allTags = [];
@@ -158,7 +290,7 @@ Kirby::plugin('kreativ-anders/panel-stats', [
             // Return count of unique tags (case-insensitive)
             return count(array_unique(array_map('strtolower', $allTags)));
         },
-        'taggedBookmarksInfo' => function () {
+        'taggedBookmarks' => function () {
             $tagged = 0;
 
             foreach (panelStatsBookmarks() as $bookmarks) {
@@ -169,7 +301,10 @@ Kirby::plugin('kreativ-anders/panel-stats', [
                 }
             }
 
-            return panelStatsPercentage($tagged, site()->totalBookmarks()) . ' of bookmarks tagged';
+            return $tagged;
+        },
+        'taggedBookmarksInfo' => function () {
+            return panelStatsPercentage(site()->taggedBookmarks(), site()->totalBookmarks()) . ' of all bookmarks';
         },
         'paidUsersPercentage' => function () {
             $total = site()->totalUsers();
@@ -286,6 +421,13 @@ Kirby::plugin('kreativ-anders/panel-stats', [
 
             return $missingBrands;
         },
+        // plain text for the clipboard (section "actionstats"): one line per missing logo
+        'missingBrandsClipboard' => function () {
+            return implode("\n", array_map(fn ($item) => $item['title']
+                . ($item['suggested'] !== '' ? ' -> ' . $item['suggested'] . '.svg' : '')
+                . ' (' . $item['count'] . '×, ' . $item['users'] . ($item['users'] === 1 ? ' user' : ' users') . ')',
+                site()->missingBrandsList()));
+        },
         'missingBrandsReports' => function () {
             return array_map(fn ($item) => [
                 'label' => $item['suggested'] !== '' ? 'add ' . $item['suggested'] . '.svg' : 'no letters in title',
@@ -293,45 +435,6 @@ Kirby::plugin('kreativ-anders/panel-stats', [
                 'info'  => $item['count'] . '× · ' . $item['users'] . ($item['users'] === 1 ? ' user' : ' users'),
                 'icon'  => 'image',
             ], site()->missingBrandsList());
-        },
-        /**
-         * Bookmarks whose logo matched only a part of the title:
-         * possibly a wrong logo ("Webflow" -> web.svg) or room for a more specific one
-         */
-        'partialBrandMatches' => function () {
-            $matches = [];
-
-            foreach (panelStatsBookmarks() as $bookmarks) {
-                foreach ($bookmarks as $bookmark) {
-                    $title = (string)($bookmark['title'] ?? '');
-                    $token = BrandLogos::find($title, (string)($bookmark['link'] ?? ''));
-
-                    if ($token === null || $token === BrandLogos::token($title)) {
-                        continue;
-                    }
-
-                    $key = BrandLogos::token($title);
-                    $matches[$key] ??= [
-                        'title' => $title,
-                        'logo'  => BrandLogos::all()[$token],
-                        'count' => 0,
-                    ];
-                    $matches[$key]['count']++;
-                }
-            }
-
-            $matches = array_values($matches);
-            usort($matches, fn ($a, $b) => $b['count'] <=> $a['count']);
-
-            return $matches;
-        },
-        'partialBrandMatchesReports' => function () {
-            return array_map(fn ($item) => [
-                'label' => 'shows ' . $item['logo'] . ' – correct?',
-                'value' => panelStatsLabel($item['title']),
-                'info'  => $item['count'] . '×',
-                'icon'  => 'search',
-            ], site()->partialBrandMatches());
         },
         'userMixChart' => function () {
             $paid     = site()->paidUsers();
@@ -383,7 +486,6 @@ Kirby::plugin('kreativ-anders/panel-stats', [
                 'Registered'      => $total,
                 'Saved bookmarks' => site()->usersWithBookmarks(),
                 'Uses tags'       => $tagging,
-                'Paid'            => site()->paidUsers(),
             ];
 
             return array_map(
@@ -392,48 +494,38 @@ Kirby::plugin('kreativ-anders/panel-stats', [
             );
         },
         'topTagsChart' => function () {
-            $counts = [];
+            $usage = [];
 
-            foreach (panelStatsBookmarks() as $bookmarks) {
+            foreach (panelStatsBookmarks() as $userId => $bookmarks) {
                 foreach ($bookmarks as $bookmark) {
                     $tags = array_map(fn ($tag) => Kirby\Toolkit\Str::lower(trim($tag)), explode(',', (string)($bookmark['tags'] ?? '')));
 
                     foreach (array_unique(array_filter($tags, 'strlen')) as $tag) {
-                        $counts[$tag] = ($counts[$tag] ?? 0) + 1;
+                        $usage[$tag][$userId] = ($usage[$tag][$userId] ?? 0) + 1;
                     }
                 }
             }
 
-            $top = panelStatsTop($counts);
-
-            return array_map(fn ($tag) => panelStatsBar($tag, $top[$tag]), array_map('strval', array_keys($top)));
+            return panelStatsUsage($usage);
         },
         'topBrandsChart' => function () {
-            $counts = [];
+            $usage = [];
 
-            foreach (panelStatsBookmarks() as $bookmarks) {
+            foreach (panelStatsBookmarks() as $userId => $bookmarks) {
                 foreach ($bookmarks as $bookmark) {
                     if (($token = BrandLogos::find((string)($bookmark['title'] ?? ''), (string)($bookmark['link'] ?? ''))) !== null) {
-                        $counts[$token] = ($counts[$token] ?? 0) + 1;
+                        $usage[$token][$userId] = ($usage[$token][$userId] ?? 0) + 1;
                     }
                 }
             }
 
-            $top = panelStatsTop($counts);
-
-            return array_map(
-                fn ($token) => panelStatsBar($token, $top[$token], null, 'series-1', BrandLogos::fileUrl(BrandLogos::all()[$token])),
-                array_map('strval', array_keys($top))
-            );
+            return panelStatsUsage($usage, fn ($token) => BrandLogos::fileUrl(BrandLogos::all()[$token]));
         },
         'brandCoverageChart' => function () {
-            $partial = array_sum(array_column(site()->partialBrandMatches(), 'count'));
             $missing = site()->bookmarksWithoutBrands();
-            $exact   = max(0, site()->totalBookmarks() - $missing - $partial);
 
             return [
-                panelStatsBar('Exact logo', $exact, null, 'good'),
-                panelStatsBar('Partial match', $partial, null, 'warning'),
+                panelStatsBar('Logo', max(0, site()->totalBookmarks() - $missing), null, 'good'),
                 panelStatsBar('No logo', $missing, null, 'critical'),
             ];
         },

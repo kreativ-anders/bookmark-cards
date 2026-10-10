@@ -13,7 +13,20 @@ return [
   'panel' =>[
       'install' => false,
       'slug' => 'dashboard',
-      // Vue 2 runtime without the template compiler: none of the plugins ship uncompiled Panel components
+      // "Bookmarks" (statistics) right below the site, "Users" also highlighted on Users › Statistics,
+      // see site/plugins/panel-stats
+      'menu' => [
+        'site',
+        'bookmarks',
+        'users' => [
+          'current' => fn (string|null $current = null) => in_array($current, ['users', 'user-statistics'], true)
+        ],
+        'system'
+      ],
+      'viewButtons' => [
+        'users' => ['create', 'statistics', 'stripe-sync']
+      ],
+      // Vue 2 runtime without the template compiler: Panel plugins use render functions, never `template` strings
       'vue' => [
         'compiler' => false
       ]

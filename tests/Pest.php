@@ -82,6 +82,17 @@ function registerUser(string $email = 'jane@example.com', string $password = 'Pa
     return $user;
 }
 
+/** Creates an admin (gets a Stripe customer like every user) */
+function createAdmin(string $email = 'admin@example.com'): User
+{
+    $kirby = kirby();
+    $kirby->impersonate('kirby');
+    $user = $kirby->users()->create(['email' => $email, 'role' => 'admin', 'password' => 'Password123']);
+    $kirby->impersonate();
+
+    return $user;
+}
+
 /** Fresh user instance (Kirby 5 models are immutable after changes) */
 function freshUser(string $email): ?User
 {

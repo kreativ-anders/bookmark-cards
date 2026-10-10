@@ -8,6 +8,8 @@ use Kirby\Filesystem\F;
 use Kirby\Toolkit\Escape;
 use Kirby\Toolkit\Str;
 
+require_once __DIR__ . '/StripeSync.php';
+
 /**
  * Finds inactive free accounts for a manual clean-up in the Panel
  * (site view button "Inactive accounts"). Nothing is deleted automatically.
@@ -153,12 +155,27 @@ Kirby::plugin('bookmark-cards/account-cleanup', [
     }
   ],
   'areas' => [
+    // "Stripe sync" in the users list (panel.viewButtons.users in config.php), same dialog as site.stripe-sync
+    'users' => fn () => [
+      'buttons' => [
+        'users.stripe-sync' => fn () => [
+          'icon'   => 'refresh',
+          'text'   => 'Stripe sync',
+          'dialog' => 'stripe-sync',
+        ]
+      ]
+    ],
     'site' => fn () => [
       'buttons' => [
         'site.inactive-accounts' => fn () => [
           'icon'   => 'trash',
           'text'   => 'Inactive accounts',
           'dialog' => 'inactive-accounts',
+        ],
+        'site.stripe-sync' => fn () => [
+          'icon'   => 'refresh',
+          'text'   => 'Stripe sync',
+          'dialog' => 'stripe-sync',
         ]
       ],
       'dialogs' => [
@@ -246,6 +263,157 @@ Kirby::plugin('bookmark-cards/account-cleanup', [
 
             return [
               'message' => 'Deleted ' . $deleted . ' accounts'
+            ];
+          }
+        ],
+        'stripe-sync' => [
+          'load' => function () use ($adminOnly) {
+            $adminOnly();
+
+            try {
+              $diff = StripeSync::compare();
+            } catch (Throwable $e) {
+              throw new Exception('Could not load Stripe customers: ' . $e->getMessage());
+            }
+
+            $text = 'Compares Kirby accounts with the customers in Stripe (<strong>' . StripeSync::mode() . ' mode</strong>). ' .
+                    'Nothing is changed until you select entries and confirm.';
+
+            if ($diff['stripe'] === [] && $diff['kirby'] === []) {
+              return [
+                'component' => 'k-text-dialog',
+                'props' => [
+                  'text'         => $text . '<br><br>✅ Every account has a Stripe customer and every Stripe customer has an account.',
+                  'cancelButton' => false,
+                  'submitButton' => false,
+                ]
+              ];
+            }
+
+            $stripeOptions = array_map(function ($customer) {
+              $live     = StripeSync::hasLiveSubscription($customer);
+              $kirbyId  = $customer->metadata['kirby_user'] ?? null;
+              $owner    = $kirbyId ? kirby()->users()->find($kirbyId) : null;
+              $metadata = match (true) {
+                $kirbyId === null => 'no kirby_user metadata',
+                $owner !== null   => 'duplicate of ' . Escape::html($owner->email()),
+                default           => 'account deleted',
+              };
+
+              return [
+                'value'    => $customer->id,
+                'disabled' => $live,
+                'text'     => Escape::html($customer->email ?? '(no email)') . ' · ' . Escape::html($customer->id) .
+                              ' · created ' . date('Y-m-d', $customer->created) . ' · ' . $metadata .
+                              ($live ? ' · ⚠️ has a subscription, handle in Stripe' : ''),
+              ];
+            }, $diff['stripe']);
+
+            $kirbyOptions = array_map(function (User $user) {
+              $id = $user->stripe_customer()->toString();
+
+              return [
+                'value' => $user->id(),
+                'text'  => Escape::html($user->email()) . ' · ' . Escape::html($user->tier()->or('no tier')->toString()) . ' · ' .
+                           ($id === '' ? 'no Stripe customer id' : 'unknown customer ' . Escape::html($id)),
+              ];
+            }, $diff['kirby']);
+
+            $fields = [
+              'info' => [
+                'type'  => 'info',
+                'theme' => 'notice',
+                'text'  => $text,
+              ],
+            ];
+
+            if ($stripeOptions !== []) {
+              $fields['stripe'] = [
+                'type'    => 'checkboxes',
+                'label'   => count($stripeOptions) . ' Stripe customers without account',
+                'options' => $stripeOptions,
+                'columns' => 1,
+                'help'    => 'Selected customers are deleted in Stripe. Customers with a subscription can\'t be selected. ' .
+                             'If the Stripe account is shared with other sites, their customers are listed here too.',
+              ];
+            }
+
+            if ($kirbyOptions !== []) {
+              $fields['kirby'] = [
+                'type'    => 'checkboxes',
+                'label'   => count($kirbyOptions) . ' accounts without Stripe customer',
+                'options' => $kirbyOptions,
+                'columns' => 1,
+              ];
+              $fields['kirbyAction'] = [
+                'type'    => 'toggles',
+                'label'   => 'Action for selected accounts',
+                'options' => [
+                  ['value' => 'create', 'text' => 'Create Stripe customer', 'icon' => 'add'],
+                  ['value' => 'delete', 'text' => 'Delete account', 'icon' => 'trash'],
+                ],
+                'grow'    => true,
+                'help'    => 'Deleting removes the account and its bookmarks and cannot be undone. Admin accounts are never deleted.',
+              ];
+            }
+
+            return [
+              'component' => 'k-form-dialog',
+              'props' => [
+                'size'         => 'large',
+                'fields'       => $fields,
+                'value'        => ['stripe' => [], 'kirby' => [], 'kirbyAction' => 'create'],
+                'submitButton' => [
+                  'icon'  => 'check',
+                  'text'  => 'Apply selected',
+                  'theme' => 'notice',
+                ],
+              ]
+            ];
+          },
+          'submit' => function () use ($adminOnly) {
+            $adminOnly();
+
+            $request = kirby()->request();
+            $ids     = [];
+
+            foreach (['stripe', 'kirby'] as $key) {
+              $value     = $request->get($key, []);
+              $value     = is_array($value) ? $value : Str::split((string)$value, ',');
+              $ids[$key] = array_filter($value, 'is_string');
+            }
+
+            if ($ids['stripe'] === [] && $ids['kirby'] === []) {
+              throw new Exception('Please select at least one entry');
+            }
+
+            $deleted  = StripeSync::deleteCustomers($ids['stripe']);
+            $message  = 'Deleted ' . count($deleted['deleted']) . ' Stripe customers';
+
+            if ($request->get('kirbyAction') === 'delete') {
+              $accounts = StripeSync::deleteUsers($ids['kirby']);
+              $message .= ', deleted ' . count($accounts['deleted']) . ' accounts';
+            } else {
+              $accounts = StripeSync::repairUsers($ids['kirby']) + ['skipped' => []];
+              $message .= ', created ' . count($accounts['repaired']) . ' Stripe customers';
+            }
+
+            $problems = [];
+
+            foreach ($deleted['skipped'] + $accounts['skipped'] as $key => $reason) {
+              $problems[] = $key . ' skipped (' . $reason . ')';
+            }
+
+            foreach ($deleted['failed'] + $accounts['failed'] as $key => $error) {
+              $problems[] = $key . ' (' . $error . ')';
+            }
+
+            if ($problems !== []) {
+              throw new Exception($message . '. Not done: ' . implode(', ', $problems));
+            }
+
+            return [
+              'message' => $message
             ];
           }
         ]

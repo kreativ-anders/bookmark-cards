@@ -146,6 +146,26 @@ describe('panel brand stats', function () {
         ]);
     });
 
+    it('copies missing logos as plain text via an actionstats button', function () {
+        expect(site()->missingBrandsClipboard())->toBe('Xyzzy Tool -> xyzzytool.svg (2×, 1 user)');
+
+        $section = new Kirby\Cms\Section('actionstats', [
+            'model'   => site(),
+            'name'    => 'test',
+            'reports' => 'site.missingBrandsReports',
+            'buttons' => [
+                ['text' => 'Copy list', 'icon' => 'copy', 'copy' => 'site.missingBrandsClipboard'],
+                ['text' => 'Inactive accounts', 'icon' => 'trash', 'dialog' => 'inactive-accounts'],
+            ],
+        ]);
+
+        expect($section->toArray()['buttons'])->toBe([
+                ['text' => 'Copy list', 'icon' => 'copy', 'copy' => site()->missingBrandsClipboard(), 'dialog' => null],
+                ['text' => 'Inactive accounts', 'icon' => 'trash', 'copy' => null, 'dialog' => 'inactive-accounts'],
+            ])
+            ->and(array_column($section->toArray()['reports'], 'value'))->toBe(['Xyzzy Tool']);
+    });
+
     it('shows missing logos as panel stat reports without evaluating queries in titles', function () {
         freshUser('jane@example.com')->update(['bookmarks' => Kirby\Data\Yaml::encode([
             ['title' => 'Evil {{ site.title }}', 'link' => 'https://example.org', 'tags' => ''],
@@ -153,21 +173,6 @@ describe('panel brand stats', function () {
 
         expect(site()->missingBrandsReports())->toBe([
             ['label' => 'add evilsitetitle.svg', 'value' => 'Evil { { site.title } }', 'info' => '1× · 1 user', 'icon' => 'image'],
-        ]);
-    });
-
-    it('lists logos that match only a part of the title', function () {
-        freshUser('jane@example.com')->update(['bookmarks' => Kirby\Data\Yaml::encode([
-            ['title' => 'GitHub', 'link' => 'https://github.com', 'tags' => ''],
-            ['title' => 'My GitHub account', 'link' => 'https://github.com/jane', 'tags' => ''],
-            ['title' => 'Bing webmaster', 'link' => 'https://bing.com/webmasters', 'tags' => ''],
-            ['title' => 'Bing Webmaster', 'link' => 'https://bing.com/webmasters/2', 'tags' => ''],
-        ])]);
-
-        // the full match "GitHub" is not listed
-        expect(site()->partialBrandMatches())->toBe([
-            ['title' => 'Bing webmaster', 'logo' => 'bing.svg', 'count' => 2],
-            ['title' => 'My GitHub account', 'logo' => 'github.svg', 'count' => 1],
         ]);
     });
 
@@ -190,10 +195,11 @@ describe('panel user and bookmark stats', function () {
             ['title' => 'Notion', 'link' => 'https://notion.so', 'tags' => ''],
         ])]);
 
-        expect(site()->bookmarksPerUser())->toBe('Ø 1 per user')
+        // averages and shares refer to bookmarks, not to all users
+        expect(site()->bookmarksPerUser())->toBe('Ø 2 per user with bookmarks')
             ->and(site()->usersWithBookmarks())->toBe(1)
-            ->and(site()->usersWithBookmarksInfo())->toBe('50% of all users')
-            ->and(site()->taggedBookmarksInfo())->toBe('50% of bookmarks tagged');
+            ->and(site()->taggedBookmarks())->toBe(1)
+            ->and(site()->taggedBookmarksInfo())->toBe('50% of all bookmarks');
     });
 
     it('counts inactive users like the clean-up dialog', function () {
@@ -230,7 +236,6 @@ describe('panel charts', function () {
             'Registered'      => '100%',
             'Saved bookmarks' => '50%',
             'Uses tags'       => '50%',
-            'Paid'            => '0%',
         ]);
     });
 
@@ -241,21 +246,33 @@ describe('panel charts', function () {
             ->and($chart['Last 7 days'])->toBe(2);
     });
 
-    it('ranks tags case-insensitively', function () {
-        expect(array_column(site()->topTagsChart(), 'value', 'label'))->toBe(['dev' => 2, 'code' => 1]);
+    it('ranks tags case-insensitively by users, then by bookmarks', function () {
+        expect(array_column(site()->topTagsChart(), 'info', 'label'))->toBe([
+            'dev'  => 'user · 2×',
+            'code' => 'user · 1×',
+        ]);
     });
 
     it('ranks used logos with their image', function () {
         expect(site()->topBrandsChart())->toBe([
-            ['label' => 'github', 'value' => 2, 'info' => null, 'color' => 'series-1', 'image' => url('assets/brand-names/github.svg')],
+            ['label' => 'github', 'value' => 1, 'info' => 'user · 2×', 'color' => 'series-1', 'image' => url('assets/brand-names/github.svg')],
         ]);
     });
 
-    it('splits the brand coverage into exact, partial and missing', function () {
+    it('ranks a value used by many users above one used often by a single user', function () {
+        freshUser('john@example.com')->update(['bookmarks' => Kirby\Data\Yaml::encode([
+            ['title' => 'Notes', 'link' => 'https://example.org', 'tags' => 'code'],
+        ])]);
+
+        // dev: 1 user, 2 bookmarks; code: 2 users, 2 bookmarks
+        expect(array_column(site()->topTagsChart(), 'value', 'label'))->toBe(['code' => 2, 'dev' => 1])
+            ->and(site()->topTagsChart()[0]['info'])->toBe('users · 2×');
+    });
+
+    it('splits the brand coverage into bookmarks with and without logo', function () {
         expect(array_column(site()->brandCoverageChart(), 'value', 'label'))->toBe([
-            'Exact logo'    => 1,
-            'Partial match' => 1,
-            'No logo'       => 1,
+            'Logo'    => 2,
+            'No logo' => 1,
         ]);
     });
 
@@ -270,4 +287,40 @@ describe('panel charts', function () {
         expect($section->toArray()['layout'])->toBe('stack')
             ->and($section->toArray()['data'])->toBe(site()->brandCoverageChart());
     });
+});
+
+describe('panel dashboard views', function () {
+
+    it('loads the sections of both dashboards from their blueprints', function (string $dashboard, string $section, string $type) {
+        expect(panelStatsDashboard($dashboard)->section($section)->type())->toBe($type);
+    })->with([
+        ['users', 'Users', 'actionstats'],
+        ['users', 'Activation', 'chart'],
+        ['bookmarks', 'TopTags', 'chart'],
+        ['bookmarks', 'MissingBrands', 'actionstats'],
+    ]);
+
+    it('knows only the bookmarks and users dashboards', function () {
+        expect(panelStatsDashboard('../site'))->toBeNull()
+            ->and(panelStatsDashboard('system'))->toBeNull();
+    });
+
+    it('builds the view for admins with the first tab and the section API parent', function () {
+        createAdmin();
+        kirby()->impersonate('admin@example.com');
+
+        $view = panelStatsView('users', [['icon' => 'users', 'text' => 'All users', 'link' => 'users']]);
+
+        expect($view['component'])->toBe('k-dashboard-view')
+            ->and($view['props']['parent'])->toBe('panel-stats/users')
+            ->and(array_keys($view['props']['tab']['columns']))->toContain('users')
+            ->and($view['props']['buttons'][0]['link'])->toBe('users');
+    });
+
+    it('hides the statistics from other users', function () {
+        registerUser('jane@example.com');
+        kirby()->impersonate('jane@example.com');
+
+        panelStatsView('bookmarks');
+    })->throws(Kirby\Exception\PermissionException::class);
 });

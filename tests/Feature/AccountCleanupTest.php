@@ -27,16 +27,6 @@ function ageUser(string $email, int $time): User
     return freshUser($email);
 }
 
-function createAdmin(string $email = 'admin@example.com'): User
-{
-    $kirby = kirby();
-    $kirby->impersonate('kirby');
-    $user = $kirby->users()->create(['email' => $email, 'role' => 'admin', 'password' => 'Password123']);
-    $kirby->impersonate();
-
-    return $user;
-}
-
 function inactiveEmails(): array
 {
     return array_map(fn (User $user) => $user->email(), AccountActivity::inactive());
