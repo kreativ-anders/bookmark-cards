@@ -6,4 +6,4 @@ Text: Lets get registered!
 
 ----
 
-TOS: I agree to the (link: https://rechtstexte.kreativ-anders.de/#agb text: terms and conditions title: TOS (German only) lang: de target: _blank).
+TOS: I accept the (link: terms text: Terms target: _blank) and have read the (link: privacy text: Privacy policy target: _blank).

@@ -1,55 +1,48 @@
 <?php
-/**
- * Templates render the content of your pages. 
- * They contain the markup together with some control structures like loops or if-statements.
- * The `$page` variable always refers to the currently active page. 
- * To fetch the content from each field we call the field name as a method on the `$page` object, e.g. `$page->title()`. 
- * This home template renders content from others pages, the children of the `photography` page to display a nice gallery grid.
- * Snippets like the header and footer contain markup used in multiple templates. They also help to keep templates clean.
- * More about templates: https://getkirby.com/docs/guide/templates/basics
- */
+  $user = $kirby->user();
+
+  if (!$user) {
+    // the checkout books monthly (tier 1), Stripe Checkout offers yearly (tier 2) as upsell
+    $prices       = Memberkit::prices();
+    $monthlyPrice = $prices[1] ?? null;
+    $yearlyPrice  = $prices[2] ?? null;
+  }
 ?>
-
 <?php snippet('header') ?>
-<?php snippet('modals/login') ?>
-<?php snippet('modals/register') ?>
 
-<?php  if ($kirby->user()) {
-  snippet('modals/change'); 
-  snippet('modals/user'); 
-} ?>
+<main>
 
-<hr style="margin-bottom: unset;">
+<?php if ($user): ?>
+  <h1 class="visually-hidden">My bookmarks</h1>
+  <?php snippet('modals/change') ?>
+  <?php snippet('jumbotron') ?>
 
-<?php if (!$kirby->user()) {
-  snippet('hero'); 
-  snippet('features/feature-tags'); 
-  snippet('features/feature-search'); 
-  snippet('features/feature-beauty'); 
-  snippet('features/feature-export'); 
-  snippet('features/feature-extra'); 
-} ?>
+  <?php if ($error): ?>
+  <section class="container">
+    <?php snippet('alert', ['alert' => $error]) ?>
+  </section>
+  <?php endif ?>
 
-<?php if ($kirby->user()) {
-  snippet('jumbotron'); 
-} ?>
-
-<?php if ($kirby->user() && option('kreativ-anders.memberkit.tiers')[0]['name'] === $kirby->user()->tier()->toString() && count($bookmarks) >= option('noPremiumLimit')) {
-  snippet('premiumbanner');
-} ?>
-
-<?php if (!$kirby->user()) {
-  snippet('values');  
-  snippet('pricing');
-  snippet('techstack');
-} ?>
+  <?php if ($user->isFreeTier() && count($bookmarks) >= option('noPremiumLimit')): ?>
+  <?php snippet('premiumbanner') ?>
+  <?php endif ?>
+<?php else: ?>
+  <?php snippet('hero') ?>
+  <div id="features" class="feature-stack">
+    <?php snippet('features/feature-tags') ?>
+    <?php snippet('features/feature-search') ?>
+    <?php snippet('features/feature-beauty') ?>
+    <?php snippet('features/feature-export') ?>
+    <?php snippet('features/feature-extra') ?>
+  </div>
+  <?php snippet('values') ?>
+  <?php snippet('pricing', ['price' => $yearlyPrice, 'monthly' => $monthlyPrice]) ?>
+  <?php snippet('faq') ?>
+  <?php snippet('techstack') ?>
+  <?php snippet('seo-jsonld', ['price' => $yearlyPrice, 'monthly' => $monthlyPrice]) ?>
+<?php endif ?>
 
 <?php snippet('bookmarks') ?>
-
-
-
-
-</body>
 
 </main>
 

@@ -1,0 +1,83 @@
+# Panel view "Bookmarks" (site/plugins/panel-stats), queries run against the site
+title: Bookmarks
+columns:
+  bookmarks:
+    width: 1/1
+    sections:
+      Bookmarks:
+        type: stats
+        size: large
+        reports:
+          - label: Total Bookmarks
+            value: "{{ site.totalBookmarks }}"
+            info: "{{ site.bookmarksPerUser }}"
+            icon: bookmark
+          # bookmark figures only: user shares (with bookmarks, using tags) are in the activation chart
+          - label: Tagged Bookmarks
+            value: "{{ site.taggedBookmarks }}"
+            info: "{{ site.taggedBookmarksInfo }}"
+            icon: tag
+          - label: Different Tags
+            value: "{{ site.totalTags }}"
+            info: case-insensitive
+            icon: list-bullet
+  bookmarksLeft:
+    width: 1/2
+    sections:
+      TopTags:
+        type: chart
+        headline: Top Tags
+        data: site.topTagsChart
+        empty: No tags yet
+  bookmarksRight:
+    width: 1/2
+    sections:
+      TopBrands:
+        type: chart
+        headline: Most Used Logos
+        data: site.topBrandsChart
+        empty: No logos in use yet
+
+  # ---------- Brands ----------
+  brands:
+    width: 1/1
+    sections:
+      Brands:
+        type: stats
+        size: large
+        reports:
+          - label: Brand Coverage
+            value: "{{ site.brandCoveragePercentage }}"
+            info: "{{ site.brandCoverageInfo }}"
+            icon: chart
+            theme: "{{ site.brandCoverageTheme }}"
+          - label: Bookmarks Without Brands
+            value: "{{ site.bookmarksWithoutBrands }}"
+            info: Listed below
+            icon: alert
+            theme: "{{ site.bookmarksWithoutBrandsTheme }}"
+          - label: Available Brands
+            value: "{{ site.totalAvailableBrands }}"
+            info: "{{ site.brandsInUseInfo }}"
+            icon: image
+  brandsLeft:
+    width: 1/2
+    sections:
+      BrandCoverage:
+        type: chart
+        headline: Brand Coverage
+        layout: stack
+        data: site.brandCoverageChart
+  brandsRight:
+    width: 1/2
+    sections:
+      MissingBrands:
+        headline: Missing Brand Logos
+        type: actionstats
+        size: small
+        reports: site.missingBrandsReports
+        empty: Every bookmark has a logo
+        buttons:
+          - text: Copy list
+            icon: copy
+            copy: site.missingBrandsClipboard

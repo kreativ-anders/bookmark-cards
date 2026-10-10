@@ -1,42 +1,42 @@
 # Bookmark.cards
 
-> A self-hostable, open-source bookmark manager built with PHP and Kirby CMS. Users can save, tag, search, and export URLs. A free tier allows up to 12 bookmarks; a paid Premium tier removes that limit.
+> A self-hostable, open-source bookmark manager built with PHP and Kirby CMS. Users can save, tag, search, and export URLs. A free tier has a bookmark limit; a paid Premium tier removes it.
 
 ## What it does
 
 - Stores bookmarks (URL + title + tags) per registered user
 - Filters bookmarks by tag or searches by title, URL, or tag
 - Detects duplicate URLs when adding a new bookmark
-- Displays bookmarks as cards; if the title contains a known brand name, the card background uses that brand's visual style
+- Displays bookmarks as cards; if the title contains a known brand name, the card shows that brand's logo
 - Exports bookmarks as JSON or CSV
 - Works offline via a service worker (UpUp.js) that caches the bookmark list locally
 
 ## Tech stack
 
-- **Backend**: PHP, [Kirby CMS](https://getkirby.com/) (flat-file, no database)
-- **Payments**: Stripe via the kirby-memberkit plugin
-- **Frontend**: Vanilla JS, Pico CSS (bundled), PostCSS for build
+- **Backend**: PHP 8.2+, [Kirby CMS](https://getkirby.com/) 5 (flat-file, no database), dependencies via Composer
+- **Payments**: Stripe via the local memberkit plugin (`site/plugins/memberkit`)
+- **Frontend**: Vanilla JS, custom CSS (no framework, light/dark, WCAG AA), self-hosted Geist + Instrument Serif fonts, esbuild for build
 - **Analytics**: Pirsch (privacy-friendly, no cookies)
-- **Testing**: Cypress (end-to-end: register, login, delete)
-- **CI**: GitHub Actions (submodule updates, CSS regeneration, changelog)
+- **Testing**: Pest (Stripe integration, brand logos, panel stats) and Cypress (end-to-end: auth, settings, bookmarks)
+- **CI**: GitHub Actions (changelog), Dependabot (Composer, npm)
 
 ## Repository structure
 
-- `site/` — Kirby CMS application (controllers, templates, snippets, blueprints, config, plugins)
+- `site/` — Kirby CMS application (controllers, templates, snippets, blueprints, config, plugins: memberkit, brands, panel-stats)
 - `content/` — Flat-file content (home page, user accounts)
-- `assets/` — Compiled CSS (including brand CSS) and JS
+- `assets/` — CSS and JS sources and builds, brand logos (`assets/brand-names`)
+- `tests/` — Pest tests
 - `cypress/` — End-to-end test specs
-- `.github/workflows/` — Automation: brand-names submodule updates, CSS generation, changelog
+- `.github/` — Changelog workflow, Dependabot config
 
 ## Key design decisions
 
 - Flat-file storage: content is stored as `.txt` files by Kirby; there is no relational database
-- Brand backgrounds are CSS-only: a brand name token in the bookmark title triggers a CSS class; no server-side image processing at render time
+- Brand logos are matched server-side by the `brands` plugin: the longest logo file name contained in the normalized title wins; no image processing at render time
 - No social or collaborative features by design
-- Free tier capped at 12 bookmarks (configurable via `noPremiumLimit` in `site/config/config.php`)
+- Free tier bookmark limit is configurable via `noPremiumLimit` in `site/config/config.php`
 
 ## Links
 
 - Repository: <https://github.com/kreativ-anders/bookmark-cards>
-- Brand-names submodule: <https://github.com/kreativ-anders/brand-names>
 - Author: [kreativ-anders](https://kreativ-anders.de/)

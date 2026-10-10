@@ -10,7 +10,9 @@
       <h3>Edit Bookmark</h3>
     </header>
     <form action="" method="POST" autocomplete="off">
+      <input type="hidden" name="csrf" value="<?= csrf() ?>">
       <input type="hidden" id="id" name="u_id" value="" placeholder="ID" readonly required>
+      <input type="hidden" id="u_hash" name="u_hash" value="">
       <fieldset>
         <legend>
           <label for="title">Title</label>
@@ -28,7 +30,7 @@
           <label for="tags">Tags</label>
         </legend>
         <input class="input" type="text" id="tags" name="u_tags" placeholder="Tag1, Tag2, Tag3" value="">
-        <small><i>Seperate values with a comma.</i></small>
+        <small><i>Separate tags with a comma.</i></small>
       </fieldset>
       <button type="submit" data-pirsch-event="Update Bookmark">Update Bookmark</button>
     </form>

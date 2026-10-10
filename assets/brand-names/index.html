@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SVG Grid with Navigation</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@next/css/pico.min.css" />
+  <style>
+    .flex {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      gap: 1rem;
+      align-items: center;
+    }
+    .item {
+      flex-basis: 20%;
+      flex-grow: 1;
+      flex-shrink: 1;
+      max-width: 350px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="container" style="padding: unset">
+    <nav>
+      <ul>
+        <li><strong>Acme Corp</strong></li>
+      </ul>
+      <ul>
+        <li><a href="#" class="contrast">About</a></li>
+        <li><a href="#" class="contrast">Services</a></li>
+        <li><a href="#" class="contrast">Products</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <hr>
+
+  <div class="container">
+      <input type="search" placeholder="Search" aria-label="Search" disabled/>
+  </div>
+
+  <main class="container flex">
+    <article class="item">
+      <main><img src="image1.svg" alt="Image 1"></main>
+      <footer>Footer</footer>
+    </article>
+    <article class="item">
+      <main><img src="image1.svg" alt="Image 1"></main>
+      <footer>Footer</footer>
+    </article>
+    <article class="item">
+      <main><img src="image1.svg" alt="Image 1"></main>
+      <footer>Footer</footer>
+    </article>
+    <article class="item">
+      <main><img src="image1.svg" alt="Image 1"></main>
+      <footer>Footer</footer>
+    </article>
+    <article class="item">
+      <main><img src="image1.svg" alt="Image 1"></main>
+      <footer>Footer</footer>
+    </article>
+    <article class="item">
+      <main><img src="image1.svg" alt="Image 1"></main>
+      <footer>Footer</footer>
+    </article>
+  </main>
+
+
+</body>
+
+</html>

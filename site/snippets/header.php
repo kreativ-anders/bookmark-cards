@@ -1,114 +1,187 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 
 <head>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-  <title>Bookmark.cards — Simple, Privacy-friendly Bookmark Manager</title>
-  <meta name="description"
-    content="Bookmark.cards is a privacy-friendly bookmark manager to save, tag and search websites and articles. Organize bookmarks with tags, find them fast, and export your data anytime.">
+  <?php
+    // only the landing page is indexable
+    $isHome      = $page->isHomePage();
+    $indexable   = $isHome && !$kirby->user();
+    $siteName    = 'Bookmark.cards';
+    $seoTitle    = $isHome
+      ? 'Bookmark Manager: Save &amp; Tag Links as Cards | Bookmark.cards'
+      : $page->title()->escape() . ' | Bookmark.cards';
+    $seoDesc     = $page->description()->isNotEmpty()
+      ? $page->description()->escape()
+      : 'Free, privacy-friendly bookmark manager. Save links as visual cards, organize them with tags, search instantly and export to JSON or CSV anytime.';
+    $canonical   = $isHome ? $site->url() . '/' : $page->url();
+    $ogImage     = $site->url() . '/assets/images/og-image.png';
+  ?>
+  <title><?= $seoTitle ?></title>
+  <meta name="description" content="<?= $seoDesc ?>">
+  <meta name="robots" content="<?= $indexable ? 'index, follow, max-image-preview:large' : 'noindex, follow' ?>">
+  <link rel="canonical" href="<?= esc($canonical, 'attr') ?>">
 
-  <link rel="dns-prefetch" href="//bookmark.cards">
-  <link rel="preconnect" href="//bookmark.cards">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="<?= $siteName ?>">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:title" content="<?= $seoTitle ?>">
+  <meta property="og:description" content="<?= $seoDesc ?>">
+  <meta property="og:url" content="<?= esc($canonical, 'attr') ?>">
+  <meta property="og:image" content="<?= esc($ogImage, 'attr') ?>">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Bookmark.cards logo and branded bookmark cards">
+  <meta name="twitter:card" content="summary_large_image">
 
-  <?php if ($kirby->user()): ?>
+  <!-- stored color theme, applied before the CSS to avoid a flash -->
+  <script>try{var t=localStorage.getItem('bookmark.cards.theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+  <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101012" media="(prefers-color-scheme: dark)">
+
+  <link rel="preconnect" href="https://api.pirsch.io">
+
+  <?php
+    $asset = fn (string $path) => '/' . $path . '?v=' . (@filemtime($kirby->root('index') . '/' . $path) ?: 0);
+  ?>
+  <?php if ($user = $kirby->user()): ?>
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#ffffff" />
-  <!-- UpUp.js --> 
   <script src="/upup.min.js"></script>
+  <?php
+    $offlineFiles = [
+      'favicon.ico',
+      'favicon.svg',
+      'assets/css/main.min.css',
+      'assets/css/fonts/geist-latin-wght-normal.woff2',
+      'assets/css/fonts/instrument-serif-latin-400-italic.woff2',
+      'assets/images/kreativ-anders.svg',
+      'offline.min.js',
+      'assets/js/main.min.js',
+    ];
+    $offlineLogos = [];
+    foreach ((array)$user->bookmarks()->yaml() as $bookmark) {
+      if ($logo = $site->brandLogo((string)($bookmark['title'] ?? ''), (string)($bookmark['link'] ?? ''))) {
+        $offlineLogos[$logo] = true;
+      }
+    }
+    $offlineAssets = array_merge($offlineFiles, ['brands.json', 'brands-rules.json', 'user.json'], array_keys($offlineLogos));
+    $offlineStamps = array_map(fn ($path) => @filemtime($kirby->root('index') . '/' . $path), [...$offlineFiles, 'offline.html', 'assets/brand-names', 'site/plugins/brands/index.php']);
+    $offlineVersion = substr(md5(json_encode([$offlineAssets, $offlineStamps, $user->id(), $user->modified()])), 0, 12);
+  ?>
   <script>
-  UpUp.start({
-    'cache-version': Date.now(),
-    'content-url': 'offline.html',
-    'assets': [
-      'favicon.ico', 
-      'assets/css/brands.min.css', 
-      'assets/css/main.min.css', 
-      'offline.min.js', 
-      'user.json', 
-      'assets/js/main.min.js'],
-    'service-worker-url': '/upup.sw.min.js'
-  });
+  // the service worker re-downloads every asset whenever UpUp starts, so only when something changed
+  (function (version, assets) {
+    if (!window.UpUp) return;
+    try {
+      if (navigator.serviceWorker.controller && localStorage.getItem('bookmark.cards.offline') === version) return;
+      localStorage.setItem('bookmark.cards.offline', version);
+    } catch (e) {}
+    UpUp.start({
+      'cache-version': version,
+      'content-url': 'offline.html',
+      'assets': assets,
+      'service-worker-url': '/upup.sw.min.js'
+    });
+  })(<?= json_encode($offlineVersion) ?>, <?= json_encode($offlineAssets, JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) ?>);
   </script>
-  <?php endif; ?>
+  <?php endif ?>
 
-  <script src="assets/js/main.min.js"></script>
+  <script defer src="<?= $asset('assets/js/main.min.js') ?>"></script>
 
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 
-  <!-- <link rel="stylesheet" href="assets/css/pico/css/pico.min.css"> -->
-  <!-- <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script> -->
-  <!-- <script src="https://kit.fontawesome.com/4520751a1c.js" crossorigin="anonymous"></script> -->
-
-  <link rel="stylesheet" href="assets/css/main.min.css">
+  <link rel="preload" href="/assets/css/fonts/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="<?= $asset('assets/css/main.min.css') ?>">
 
   <script defer src="https://api.pirsch.io/pa.js"
     id="pianjs"
+    <?php if ($kirby->user()): ?>data-disable-outbound-links<?php endif ?>
     data-code="DKo22RMuBesw3XMADDNrwe0fQ7544AG1"></script>
 
 </head>
 
 <body>
+  <a class="skip-link" href="#content">Skip to content</a>
   <header>
-    <nav role="navigation" aria-label="main navigation">
+    <nav aria-label="Main navigation">
       <ul>
-        <li>
-          <a class="navbar-item" href="<?= $site->url() ?>">
-            <h1>
-              Bookmark
-            </h1>
+        <li class="brand">
+          <a class="navbar-item" href="<?= $site->url() ?>" aria-label="Bookmark.cards home">
+            <?php snippet('logo') ?>
+            <span class="brand-name">Bookmark<span class="accent">.cards</span></span>
           </a>
-          <p style="margin: 0">
-            .cards <?= e(option('debug'), " Kirby v" . Kirby::version() . " PHP " . phpversion())?>
-            <?php if ($kirby->user() && $kirby->user()->isAllowed(option('kreativ-anders.memberkit.tiers')[1]['name'])): ?>
-            <span><strong style="color: darkgoldenrod">Premium</strong></span>
+          <?php $isPremium = $user && $user->isPremium() ?>
+          <?php if (option('debug') || $isPremium): ?>
+          <p class="brand-meta">
+            <?= e(option('debug'), "Kirby v" . Kirby::version() . " PHP " . phpversion())?>
+            <?php if ($isPremium): ?>
+            <span class="premium-badge">Premium</span>
             <?php endif; ?>
           </p>
+          <?php endif; ?>
         </li>
       </ul>
       <ul>
-        <?php  if(!$kirby->user()): ?>
+        <?php if (!$user): ?>
+        <?php if ($isHome): ?>
+        <li class="nav-anchor"><a class="nav-link" href="#features">Features</a></li>
+        <li class="nav-anchor"><a class="nav-link" href="#pricing">Pricing</a></li>
+        <li class="nav-anchor"><a class="nav-link" href="#faq">FAQ</a></li>
+        <?php endif ?>
+        <li><?php snippet('theme-toggle') ?></li>
         <li>
-          <button type="button" id="login" class="contrast outline" data-target="loginModal" data-pirsch-event="Open Login Modal" onclick="toggleModal(event)">Login</button>
-        </li>  
+          <a id="login" href="<?= url('login') ?>" role="button" class="contrast outline" data-pirsch-event="Open Login Modal">Login</a>
+        </li>
         <li>
-          <button type="button" id="register" data-target="registerModal" data-pirsch-event="Open Register Modal" onclick="toggleModal(event)"><strong>Register</strong></button>
+          <a id="register" href="<?= url('register') ?>" role="button" data-pirsch-event="Open Register Modal" data-pirsch-meta-source="Header">Register</a>
         </li>
         <?php endif; ?>
 
-        <?php  if($kirby->user()): ?>
-        <!-- Top Tags -->  
-         <ul>
-          <li id="top-tags-placeholder"></li> 
-         </ul>
+        <?php if ($user): ?>
+        <?php if (!$isHome): ?>
         <li>
-          <button type="button" id="user" title="User Settings" class="secondary outline" data-target="userModal" data-pirsch-event="Open User Settings Modal" onclick="toggleModal(event)">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M425.1 482.6c-2.303-1.25-4.572-2.559-6.809-3.93l-7.818 4.493c-6.002 3.504-12.83 5.352-19.75 5.352c-10.71 0-21.13-4.492-28.97-12.75c-18.41-20.09-32.29-44.15-40.22-69.9c-5.352-18.06 2.343-36.87 17.83-45.24l8.018-4.669c-.0664-2.621-.0664-5.242 0-7.859l-7.655-4.461c-12.3-6.953-19.4-19.66-19.64-33.38C305.6 306.3 290.4 304 274.7 304H173.3C77.61 304 0 381.7 0 477.4C0 496.5 15.52 512 34.66 512H413.3c5.727 0 10.9-1.727 15.66-4.188c-2.271-4.984-3.86-10.3-3.86-16.06V482.6zM224 256c70.7 0 128-57.31 128-128S294.7 0 224 0C153.3 0 96 57.31 96 128S153.3 256 224 256zM610.5 373.3c2.625-14 2.625-28.5 0-42.5l25.75-15c3-1.625 4.375-5.125 3.375-8.5c-6.75-21.5-18.25-41.13-33.25-57.38c-2.25-2.5-6-3.125-9-1.375l-25.75 14.88c-10.88-9.25-23.38-16.5-36.88-21.25V212.3c0-3.375-2.5-6.375-5.75-7c-22.25-5-45-4.875-66.25 0c-3.25 .625-5.625 3.625-5.625 7v29.88c-13.5 4.75-26 12-36.88 21.25L394.4 248.5c-2.875-1.75-6.625-1.125-9 1.375c-15 16.25-26.5 35.88-33.13 57.38c-1 3.375 .3751 6.875 3.25 8.5l25.75 15c-2.5 14-2.5 28.5 0 42.5l-25.75 15c-3 1.625-4.25 5.125-3.25 8.5c6.625 21.5 18.13 41 33.13 57.38c2.375 2.5 6 3.125 9 1.375l25.88-14.88c10.88 9.25 23.38 16.5 36.88 21.25v29.88c0 3.375 2.375 6.375 5.625 7c22.38 5 45 4.875 66.25 0c3.25-.625 5.75-3.625 5.75-7v-29.88c13.5-4.75 26-12 36.88-21.25l25.75 14.88c2.875 1.75 6.75 1.125 9-1.375c15-16.25 26.5-35.88 33.25-57.38c1-3.375-.3751-6.875-3.375-8.5L610.5 373.3zM496 400.5c-26.75 0-48.5-21.75-48.5-48.5s21.75-48.5 48.5-48.5c26.75 0 48.5 21.75 48.5 48.5S522.8 400.5 496 400.5z"/></svg>
-            Settings
-          </button>
+          <a id="nav-bookmarks" href="<?= $site->url() ?>" role="button" class="secondary outline">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            My Bookmarks
+          </a>
         </li>
-        
-        <?php
-          $url = $kirby->user()->getStripeCheckoutURL(option('kreativ-anders.memberkit.tiers')[1]['name']);                            
-          if (!$kirby->user()->isAllowed(option('kreativ-anders.memberkit.tiers')[1]['name'])): 
-        ?>
+        <?php endif ?>
+        <li class="top-tags">
+          <ul aria-label="Top tags">
+            <li id="top-tags-placeholder"></li>
+          </ul>
+        </li>
         <li>
-        <?= snippet( 'stripe-checkout-button', [ 'id'      => 'premium-checkout-button'
-                    ,'classes' => 'pirsch-event=Open+Stripe+Checkout'
-                    ,'text'    => 'Premium'
-                    ,'url'     => $url]);
-                  ?>
+          <a id="user" href="<?= url('user') ?>" role="button" title="User Settings" class="secondary outline"<?= e($page->is('user'), ' aria-current="page"') ?> data-pirsch-event="Open User Settings Modal">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4.5 20c1.4-3.6 4.2-5.5 7.5-5.5s6.1 1.9 7.5 5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            Settings
+          </a>
+        </li>
+
+        <?php if (!$isPremium): ?>
+        <li>
+          <?php snippet('stripe-checkout-button', [
+            'id'      => 'premium-checkout-button',
+            'classes' => 'pirsch-event=Open+Stripe+Checkout pirsch-meta-source=Header',
+            'text'    => 'Premium',
+            'url'     => $user->getStripeCheckoutURL(option('kreativ-anders.memberkit.tiers')[1]['name'])
+          ]) ?>
         </li>
         <?php endif ?>
 
+        <li><?php snippet('theme-toggle') ?></li>
         <li>
-          <a id="logout" href="logout" class="secondary outline" data-pirsch-event="Logout">Logout</a>
-        </li>  
+          <a id="logout" href="<?= url('logout') ?>" data-no-instant class="secondary outline" data-pirsch-event="Logout">Logout</a>
+        </li>
         <?php endif; ?>
       </ul>
     </nav>
   </header>
+  <div id="content" tabindex="-1"></div>

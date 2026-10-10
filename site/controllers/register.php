@@ -1,94 +1,115 @@
 <?php
 
+use Kirby\Cache\FileCache;
+
 return function ($kirby) {
 
   if($kirby->user()) {
     go('/');
-  } 
-  
+  }
+
   $error = null;
   $alert = null;
 
 	if($kirby->request()->is('post') && get('register')) {
 
-    // VALIDATE CSRF TOKEN
-    if (csrf(get('csrf')) === true) {
+    // registrations per IP and hour: every account creates a folder and a Stripe customer
+    $throttle = new FileCache(['root' => $kirby->root('cache') . '/registrations']);
+    $visitor  = $kirby->visitor()->ip(hash: true);
+    $attempts = (int)$throttle->get($visitor, 0);
+
+    if (csrf(get('csrf')) !== true) {
+
+      $alert['error'] = 'Invalid CSRF token!';
+
+    // honeypot: hidden field only bots fill in
+    } elseif (get('bc_hp')) {
+
+      $alert['error'] = 'Could not register user!';
+      $error = true;
+
+    } elseif ($attempts >= (int)option('registerLimit', 10)) {
+
+      $alert['error'] = 'Too many registrations. Please try again later.';
+      $error = true;
+
+    } else {
 
       $data = [
-        'email'     => get('email'),
-        'password'  => get('password'),
+        'email'     => is_string(get('email')) ? trim(get('email')) : '',
+        'password'  => is_string(get('password')) ? get('password') : '',
         'tos'       => get('tos')
       ];
-  
+
       $rules = [
         'email'     => ['required', 'email'],
         'password'  => ['required', 'minLength' => 8],
         'tos'       => ['required'],
       ];
-  
+
       $messages = [
         'email'     => 'Please enter a valid email address',
         'password'  => 'Please enter a valid password',
-        'tos'       => 'Please check the box or close the browser window'
+        'tos'       => 'Please accept the terms to continue'
       ];
-  
-      // INVALID DATA
+
       if($invalid = invalid($data, $rules, $messages)) {
-  
+
         $alert = $invalid;
         $error = true;
-  
-      // DATA IS GOOD
+
       } else {
-      
-        $kirby = kirby();
-        $kirby->impersonate('kirby');
-  
+
         try {
-  
-          // CREATE USER
-          $user = $kirby->users()->create([
-            'email'     => esc(get('email')),
+
+          // Raw values: Kirby validates the email and hashes the password.
+          // esc() is for HTML output only — escaping here broke logins with &, <, > or quotes.
+          $user = $kirby->impersonate('kirby', fn () => $kirby->users()->create([
+            'email'     => $data['email'],
             'role'      => 'user',
             'language'  => 'en',
-            'password'  => esc(get('password'))
-          ]);
-  
-          $kirby->impersonate();
-  
-          // LOGIN USER
-          if($user && $user->login(get('password'))) {
-            go('/#welcome', 204);
-          } 
-  
+            'password'  => $data['password']
+          ]));
+
+          $throttle->set($visitor, $attempts + 1, 60);
+
         } catch(Exception $e) {
-        
+
           if(option('debug')) {
-            $alert['error'] = 'Register failed: <strong>' . $e->getMessage() . '</strong>';
+            $alert['error'] = 'Register failed: ' . $e->getMessage();
           }
           else {
             $alert['error'] = 'Could not register user!';
-          } 
-          
-          $error = true;          
-        }
-  
-        // SUCCESS
-        if (empty($alert) === true) {
-          $data = [];
-        }
-      } 
-    // INVALID CSRF TOKEN  
-    } else {
+          }
 
-      $alert['error'] = 'Invalid CSRF token!';
+          $error = true;
+        }
+
+        // the account exists, so a failed auto login leads to the login page
+        if (isset($user)) {
+
+          try {
+            $user->login($data['password']);
+          } catch(Exception $e) {
+            go('login');
+          }
+
+          Analytics::track('Registration Completed');
+          go('/#welcome');
+        }
+      }
     }
+  }
+
+  // never hand the password back to the template
+  if (isset($data['password'])) {
+    unset($data['password']);
   }
 
   return [
     'error'   => $error,
     'alert'   => $alert,
     'data'    => $data ?? false,
-    'success' => $success ?? false
-  ];     
+    'success' => false
+  ];
 };

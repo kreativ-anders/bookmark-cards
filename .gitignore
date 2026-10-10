@@ -43,3 +43,14 @@ site/config/config.*.php
 assets/css/prepros.config
 .vscode/settings.json
 /node_modules
+
+# Composer dependencies (installed via `composer install`)
+# ---------------
+/kirby
+/vendor
+
+# Test artifacts
+# ---------------
+/cypress/screenshots
+/cypress/videos
+/.phpunit.cache

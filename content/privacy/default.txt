@@ -1,0 +1,39 @@
+Title: Privacy
+
+----
+
+Text:
+
+## Your bookmarks are yours. No ads, no tracking cookies.
+
+### What we store
+
+Your email address, your password (encrypted) and your bookmarks. We need them to run your account (Art. 6(1)(b) GDPR).
+
+### Delete it yourself
+
+In your settings you can export your data and delete your account. Deleting removes everything.
+
+### Payments through Stripe
+
+Your email address is shared with Stripe (Stripe Payments Europe, Ltd., Dublin, Ireland) so Premium can be paid. Payment details go to Stripe only and never reach us. (link: https://stripe.com/privacy text: Stripe's privacy policy target: _blank) applies (Art. 6(1)(b) GDPR).
+
+### On your device
+
+Only cookies needed to keep you logged in. For offline use, your browser keeps a copy of your bookmarks.
+
+### Scripts from cdnjs
+
+When you are logged in, some scripts load from cdnjs, run by Cloudflare, Inc. Cloudflare sees your IP address and may process it in the USA under the EU–U.S. Data Privacy Framework (Art. 6(1)(f) GDPR).
+
+### Visits counted by Pirsch
+
+Pirsch Analytics counts visits and clicks without cookies and without storing your IP address. Provider: Emvi Software GmbH, Germany; data stays in Germany. More: (link: https://pirsch.io/privacy text: privacy at Pirsch target: _blank) (Art. 6(1)(f) GDPR).
+
+### Hosted by Hetzner
+
+Hetzner Online GmbH, Gunzenhausen, Germany, runs the server and logs requests, including your IP address, to keep the site running and secure (Art. 6(1)(f) GDPR).
+
+### Your rights
+
+You can ask for access, correction, deletion, restriction, objection or a copy of your data, through the (link: https://kreativ-anders.de/kontakt text: contact form target: _blank). You may also complain to a data protection authority, for us the BayLDA. Responsible: see (link: imprint text: imprint).

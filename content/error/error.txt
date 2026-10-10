@@ -1,9 +1,9 @@
-Title: Error
+Title: Page not found
 
 ----
 
-Intro: The page could not be found.
+Intro: This card got
 
 ----
 
-Text: Well, stuff can go wrong sometimes and maybe you mistyped a URL, tapped/clicked on a broken link or your computer just wants to drive you nuts. Anyway … keep calm and take a look at our beautiful (link: / text: homepage) instead.
+Text: The page you are looking for does not exist (anymore). Maybe the link is broken or the address has a typo. Your bookmarks are safe, though.

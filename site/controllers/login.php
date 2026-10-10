@@ -11,13 +11,11 @@ return function ($kirby) {
 
   if ($kirby->request()->is('POST') && get('login')) {
 
-    // VALIDATE CSRF TOKEN
     if (csrf(get('csrf')) === true) {
 
-      // GET FORM DATA
       $data = [
-        'email'     => get('email'),
-        'password'  => get('password')
+        'email'     => is_string(get('email')) ? trim(get('email')) : '',
+        'password'  => is_string(get('password')) ? get('password') : ''
       ];
 
       $rules = [
@@ -26,23 +24,40 @@ return function ($kirby) {
       ];
 
       $messages = [
-        'email'     => 'Please enter a valid email adress',
+        'email'     => 'Please enter a valid email address',
         'password'  => 'Please enter a password'
       ];
 
-      // VALIDATE FORM DATA
       if($invalid = invalid($data, $rules, $messages)) {
 
         $alert = $invalid;
         $error = true;
 
-      // VALID DATA
       } else {
 
-        // LOGIN USER
         try {
 
-          $kirby->auth()->login($data['email'], $data['password']);
+          try {
+
+            $kirby->auth()->login($data['email'], $data['password']);
+
+          } catch (Exception $e) {
+
+            // LEGACY: accounts registered before the fix stored esc()'d passwords.
+            // Accept the escaped variant once, re-save the raw password and log in.
+            // (password_verify instead of a 2nd login() so it doesn't count as another failed trial)
+            // Never while rate-limited, otherwise this path would allow unlimited guesses.
+            $escaped = esc($data['password']);
+            $legacy  = $kirby->user($data['email']);
+
+            if ($escaped === $data['password'] || !$legacy || $kirby->auth()->isBlocked($data['email']) || !password_verify($escaped, (string)$legacy->password())) {
+              throw $e;
+            }
+
+            $kirby->impersonate('kirby', fn () => $legacy->changePassword($data['password']));
+
+            $kirby->auth()->login($data['email'], $data['password']);
+          }
 
         } catch (Exception $e) {
 
@@ -56,18 +71,21 @@ return function ($kirby) {
           }
         }
 
-        // SUCCESSFUL
         if (empty($alert) === true) {
 
           $data = [];
           go();
         }
       }
-    // INVALID CSRF TOKEN    
     } else {
 
       $alert['error'] = 'Invalid CSRF token!';
     }
+  }
+
+  // never hand the password back to the template
+  if (isset($data['password'])) {
+    unset($data['password']);
   }
 
   return [

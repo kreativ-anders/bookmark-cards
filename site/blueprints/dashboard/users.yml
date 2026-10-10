@@ -1,0 +1,53 @@
+# Panel view "Users › Statistics" (site/plugins/panel-stats), queries run against the site
+title: User Statistics
+columns:
+  users:
+    width: 1/1
+    sections:
+      Users:
+        type: actionstats
+        buttons:
+          - text: Inactive accounts
+            icon: trash
+            dialog: inactive-accounts
+        # Available size options: small, medium, large, huge. Default is large
+        size: huge
+        reports:
+          - label: Total Users
+            value: "{{ site.totalUsers }}"
+            icon: users
+          - label: Free Users
+            value: "{{ site.freeUsers }}"
+            info: "{{ site.freeUsersPercentage }}"
+            icon: user
+          - label: Paid Users
+            value: "{{ site.paidUsers }}"
+            info: "{{ site.paidUsersPercentage }}"
+            icon: money
+            theme: positive
+          - label: Inactive Users
+            value: "{{ site.inactiveUsers }}"
+            info: "{{ site.inactiveUsersInfo }}"
+            icon: clock
+            theme: "{{ site.inactiveUsersTheme }}"
+            # same dialog as the "Inactive accounts" button
+            dialog: inactive-accounts
+  usersLeft:
+    width: 1/2
+    sections:
+      UserMix:
+        type: chart
+        headline: User Mix
+        layout: stack
+        data: site.userMixChart
+      Activation:
+        type: chart
+        headline: Activation
+        data: site.activationChart
+  usersRight:
+    width: 1/2
+    sections:
+      Activity:
+        type: chart
+        headline: Last Activity
+        data: site.activityChart

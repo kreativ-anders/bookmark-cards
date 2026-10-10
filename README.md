@@ -1,62 +1,82 @@
 # Bookmarks.cards
 
-Bookmark.cards is a bookmarket collection tool in its simpliest form.
+Bookmark.cards is a bookmark collection tool in its simplest form.
 
-## Automated Brand Names Updates
+Built with [Kirby CMS](https://getkirby.com) 5, a small custom stylesheet (no CSS framework) and Stripe (via the local `memberkit` plugin).
 
-This repository uses GitHub Actions workflows to automatically manage the brand-names submodule and regenerate brand CSS files:
+## Setup
 
-### 1. Monthly Submodule Update Check
-- **Workflow**: `.github/workflows/check-brand-names-update.yml`
-- **Schedule**: Runs automatically on the 1st of each month
-- **Manual Trigger**: Can be triggered manually via GitHub Actions UI
-- **Actions**:
-  - Checks for updates in the brand-names submodule
-  - Creates a PR if a newer version is available
-  - Includes labels: `dependencies`, `submodule-update`
-
-### 2. Automatic CSS Generation
-- **Workflow**: `.github/workflows/generate-brands-css.yml`
-- **Trigger**: Runs when a PR updates the `assets/brand-names` directory
-- **Actions**:
-  - Generates `brands.css` using the npm script
-  - Autoprefixes and minifies to `brands.min.css`
-  - Commits changes back to the PR branch
-
-## BrandsCSS
-
-### Manual Generation
-
-To manually generate and minify brand CSS files:
+Requirements: PHP 8.4+ (Composer resolves dependencies for PHP 8.4, see `config.platform`), Composer, Node.js
 
 ```bash
-npm i --save-dev colorthief
-npm i --save-dev jimp
-npm i --save-dev get-image-colors
-npm run generateBrandsCSS
-npm run minifyBrandsCSS
+git clone https://github.com/kreativ-anders/bookmark-cards.git
+cd bookmark-cards
+composer install   # Kirby, Stripe (+ Pest for development)
+npm ci             # esbuild, fonts (@fontsource), Cypress
 ```
 
-The automated workflow handles these steps automatically when the brand-names submodule is updated.
+Local configuration (Stripe keys, tiers) goes into `site/config/config.<host>.php`, e.g. `config.bookmark-cards.localhost.php` (git-ignored).
 
-## Brand Coverage Testing
+### Deployment
 
-View brand coverage statistics in the admin panel under **Site → Brands**.
+```bash
+composer install --no-dev
+```
 
-The admin panel shows:
-- Available brand logos count
-- Brand coverage percentage
-- List of bookmarks without matching brand logos
+Production settings go into the git-ignored `site/config/config.<domain>.php` on the server. Keep `debug` off there (default) and set long random secrets for `content.salt` (media and preview URLs) and `cookie.key` (cookie signatures):
+
+```php
+'content' => ['salt' => '…'],  // e.g. php -r 'echo bin2hex(random_bytes(32));'
+'cookie'  => ['key'  => '…'],
+```
+
+Changing `cookie.key` invalidates existing login cookies once. The Panel runs without the Vue template compiler (`panel.vue.compiler => false`), so Panel plugins must ship precompiled.
+
+`kirby/` and `vendor/` are not committed. Built assets (`assets/css/main.min.css`, `assets/js/main.min.js`, `offline.min.js`) are committed, so no Node.js is needed on the server.
+
+## Assets
+
+CSS and JS are built with esbuild (`build.mjs`):
+
+```bash
+npm run build   # one-off
+npm run watch   # rebuild on change
+```
+
+- `assets/css/main.css` → `main.min.css` (custom design tokens, light + dark mode, WCAG 2.2 AA contrast); fonts Geist + Instrument Serif are self-hosted from npm → `assets/css/fonts/`
+- The CSS targets existing IDs/classes used by `main.js`, `offline.js` and Cypress (e.g. `#bookmarks`, `#s_title`, `.card-title`, `span.tag`, `button.edit`, `#changeModal`) – keep them stable
+- `assets/js/pico-modal.js` + `assets/js/main.js` → `main.min.js`
+- `offline.js` → `offline.min.js`
+
+## Brand Logos
+
+Logos live in `assets/brand-names/*.svg` (see its README for the SVG guideline). The `brands` plugin (`site/plugins/brands`) matches them to bookmarks server-side — no CSS generation needed:
+
+- Bookmark title and file names are normalized to lowercase `a-z`
+- The **longest** file name contained in the title wins (`Buy me a coffee` → `buymeacoffee.svg`, not `coffee.svg`)
+- `site()->brandLogo($title)` returns the logo URL, `/brands.json` serves all logos for the offline page
+
+New SVGs in `assets/brand-names` are picked up automatically.
+
+Brand coverage (logos available, bookmarks without logo, suggested file names) is shown in the panel under **Site → Brands**.
 
 ## Test
 
 ```bash
-cd /your/project/path
-npm install cypress --save-dev
-npm init
-npm run cy:open
-npm run cy:test
+composer test     # Pest: Stripe integration (offline, fake Stripe client), brand logos, panel stats
+npm run cy:test   # Cypress e2e against a running site (Stripe test mode)
 ```
+
+Cypress uses `http://bookmark-cards.localhost` by default. Override it with `CYPRESS_BASE_URL`, e.g. for PHP's built-in server:
+
+```bash
+php -S bookmark-cards.localhost:8000 kirby/router.php
+CYPRESS_BASE_URL=http://bookmark-cards.localhost:8000 npm run cy:test
+```
+
+CI (`.github/workflows/ci.yml`) runs on every pull request, including Dependabot: Pest on PHP 8.4 and 8.5, a check that the committed `*.min.*` files match `npm run build`, and the Cypress suite against PHP's built-in server with [stripe-mock](https://github.com/stripe/stripe-mock) instead of Stripe (option `kreativ-anders.memberkit.apiBase`), so no secrets are needed.
+
+In VS Code's integrated terminal run `env -u ELECTRON_RUN_AS_NODE npm run cy:test` (VS Code sets `ELECTRON_RUN_AS_NODE=1`, which prevents Cypress from starting). Kirby blocks an IP after 10 failed logins per hour — when running the suite often, raise `'auth' => ['trials' => 100]` in your local config.
 
 ## Support
 

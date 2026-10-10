@@ -1,0 +1,135 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  php:
+    name: Pest (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.4', '8.5']
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: composer
+          coverage: none
+
+      - run: composer validate --strict
+      - run: composer install --prefer-dist --no-progress --no-interaction
+      - run: composer audit
+      - run: vendor/bin/pest
+
+  assets:
+    name: Asset build is committed
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - run: npm ci
+        env:
+          CYPRESS_INSTALL_BINARY: '0'
+      - run: npm audit --omit=dev
+      - run: npm run build
+      - name: Minified files match their sources (run `npm run build` and commit)
+        run: git diff --exit-code -- assets/css/main.min.css assets/css/fonts assets/js/main.min.js offline.min.js
+
+  e2e:
+    name: Cypress (stripe-mock)
+    runs-on: ubuntu-latest
+    services:
+      stripe:
+        image: stripe/stripe-mock:latest
+        ports:
+          - 12111:12111
+    env:
+      CYPRESS_BASE_URL: http://localhost:8000
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer
+          coverage: none
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - run: composer install --no-dev --prefer-dist --no-progress --no-interaction
+      - run: npm ci
+
+      - name: Local config (stripe-mock, no limits for repeated test registrations)
+        run: |
+          cat > site/config/config.localhost.php <<'PHP'
+          <?php
+          return [
+            'auth'          => ['trials' => 1000],
+            'registerLimit' => 1000,
+            'kreativ-anders.memberkit.secretKey'     => 'sk_test_123',
+            'kreativ-anders.memberkit.publicKey'     => 'pk_test_123',
+            'kreativ-anders.memberkit.webhookSecret' => 'whsec_ci',
+            'kreativ-anders.memberkit.apiBase'       => 'http://localhost:12111',
+            'kreativ-anders.memberkit.tiers'         => [
+              ['name' => 'Free',    'price' => null],
+              ['name' => 'Basic',   'price' => 'price_basic'],
+              ['name' => 'Premium', 'price' => 'price_premium'],
+            ],
+          ];
+          PHP
+
+      # Kirby never deletes the last user: without a second account the first e2e test could not delete its own
+      - name: Seed admin account
+        run: |
+          php -r '
+            require "kirby/bootstrap.php";
+            $kirby = new Kirby\Cms\App(["options" => [
+              "kreativ-anders.memberkit.secretKey" => "sk_test_123",
+              "kreativ-anders.memberkit.apiBase"   => "http://localhost:12111",
+            ]]);
+            $kirby->impersonate("kirby", fn () => $kirby->users()->create([
+              "email" => "ci-admin@example.com", "role" => "admin", "password" => bin2hex(random_bytes(16)),
+            ]));
+          '
+
+      - name: Start PHP server
+        run: |
+          PHP_CLI_SERVER_WORKERS=4 php -S localhost:8000 kirby/router.php > php-server.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf -o /dev/null http://localhost:8000/login && exit 0; sleep 1; done
+          cat php-server.log; exit 1
+
+      - run: npx cypress run --browser chrome
+
+      - name: PHP server log
+        if: failure()
+        run: cat php-server.log
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+          if-no-files-found: ignore

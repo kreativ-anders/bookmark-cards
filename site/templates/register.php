@@ -1,31 +1,40 @@
-<?php
-/**
- * Templates render the content of your pages. 
- * They contain the markup together with some control structures like loops or if-statements.
- * The `$page` variable always refers to the currently active page. 
- * To fetch the content from each field we call the field name as a method on the `$page` object, e.g. `$page->title()`. * 
- * This default template must not be removed. It is used whenever Kirby cannot find a template with the name of the content file.
- * Snippets like the header, footer and intro contain markup used in multiple templates. They also help to keep templates clean.
- * More about templates: https://getkirby.com/docs/guide/templates/basics
- */
-?>
 <?php snippet('header') ?>
-<?php snippet('modals/login') ?>
-<?php snippet('modals/register') ?>
 
-<main class="section">
-  <div class="container">
-  <?php if(isset($error) && isset($alert) && $kirby->request()->is('POST')): ?> 
-    <div class="notification is-danger">
+<main class="container account-page">
+  <article>
+    <header>
+      <h2>Register</h2>
+      <p><?= $page->text()->escape() ?></p>
+    </header>
 
-      <?= isset($alert['error']) ? $alert['error'] : '' ?>
-      <?= isset($alert['email']) ? $alert['email'] : '' ?>
-      <?= isset($alert['password']) ? $alert['password'] : '' ?>
-      <?= isset($alert['tos']) ? $alert['tos'] : '' ?>
+    <?php snippet('alert', ['alert' => $alert]) ?>
 
-    </div>
-  <?php else: go(); endif;?> 
-  </div>
+    <form action="<?= $page->url() ?>" method="POST">
+      <input type="hidden" name="csrf" value="<?= csrf() ?>">
+      <label for="email">
+        Email
+        <input type="email" id="email" name="email" value="<?= esc(is_array($data) ? ($data['email'] ?? '') : '', 'attr') ?>" autocomplete="email" aria-describedby="email-help" required autofocus>
+        <small id="email-help">The email address is used for login and payments.</small>
+      </label>
+      <label for="password">
+        Password
+        <input type="password" id="password" name="password" minlength="8" autocomplete="new-password" aria-describedby="password-help" required>
+        <small id="password-help">At least 8 characters. Re-type the password? Nah... You can do it!</small>
+      </label>
+      <label for="tos">
+        <input type="checkbox" id="tos" name="tos" required>
+        I accept the <a href="<?= url('terms') ?>" target="_blank">Terms</a> and have read the <a href="<?= url('privacy') ?>" target="_blank">Privacy policy</a>.
+      </label>
+      <div aria-hidden="true" style="position: absolute; left: -10000px;">
+        <label for="bc_hp">Leave this field empty <input type="text" id="bc_hp" name="bc_hp" tabindex="-1" autocomplete="off"></label>
+      </div>
+      <input type="submit" name="register" value="Register" data-pirsch-event="Register">
+    </form>
+
+    <footer>
+      Already registered? <a href="<?= url('login') ?>">Login</a>
+    </footer>
+  </article>
 </main>
 
 <?php snippet('footer') ?>

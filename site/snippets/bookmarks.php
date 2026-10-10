@@ -1,127 +1,85 @@
+<?php
+$bookmarks = is_array($bookmarks ?? null) ? $bookmarks : [];
+$user      = $kirby->user();
+?>
+<svg class="icon-sprite" aria-hidden="true" focusable="false">
+  <!-- Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+  <symbol id="icon-edit" viewBox="0 0 512 512"><path d="M490.3 40.4C512.2 62.27 512.2 97.73 490.3 119.6L460.3 149.7L362.3 51.72L392.4 21.66C414.3-.2135 449.7-.2135 471.6 21.66L490.3 40.4zM172.4 241.7L339.7 74.34L437.7 172.3L270.3 339.6C264.2 345.8 256.7 350.4 248.4 353.2L159.6 382.8C150.1 385.6 141.5 383.4 135 376.1C128.6 370.5 126.4 361 129.2 352.4L158.8 263.6C161.6 255.3 166.2 247.8 172.4 241.7V241.7zM192 63.1C209.7 63.1 224 78.33 224 95.1C224 113.7 209.7 127.1 192 127.1H96C78.33 127.1 64 142.3 64 159.1V416C64 433.7 78.33 448 96 448H352C369.7 448 384 433.7 384 416V319.1C384 302.3 398.3 287.1 416 287.1C433.7 287.1 448 302.3 448 319.1V416C448 469 405 512 352 512H96C42.98 512 0 469 0 416V159.1C0 106.1 42.98 63.1 96 63.1H192z"/></symbol>
+  <symbol id="icon-delete" viewBox="0 0 448 512"><path d="M135.2 17.69C140.6 6.848 151.7 0 163.8 0H284.2C296.3 0 307.4 6.848 312.8 17.69L320 32H416C433.7 32 448 46.33 448 64C448 81.67 433.7 96 416 96H32C14.33 96 0 81.67 0 64C0 46.33 14.33 32 32 32H128L135.2 17.69zM31.1 128H416V448C416 483.3 387.3 512 352 512H95.1C60.65 512 31.1 483.3 31.1 448V128zM111.1 208V432C111.1 440.8 119.2 448 127.1 448C136.8 448 143.1 440.8 143.1 432V208C143.1 199.2 136.8 192 127.1 192C119.2 192 111.1 199.2 111.1 208zM207.1 208V432C207.1 440.8 215.2 448 223.1 448C232.8 448 240 440.8 240 432V208C240 199.2 232.8 192 223.1 192C215.2 192 207.1 199.2 207.1 208zM304 208V432C304 440.8 311.2 448 320 448C328.8 448 336 440.8 336 432V208C336 199.2 328.8 192 320 192C311.2 192 304 199.2 304 208z"/></symbol>
+</svg>
 <section id="grid">
   <div id="bookmarks" class="grid">
+    <?php foreach ($bookmarks as $i => $bookmark):
+      $title = (string)($bookmark['title'] ?? '');
+      $link  = (string)($bookmark['link'] ?? '');
+      $tags  = (string)($bookmark['tags'] ?? '');
+      $href  = Bookmarks::href($link);
+      $hash  = Bookmarks::fingerprint($bookmark);
+      $logo  = $site->brandLogo($title, $link);
+    ?>
+    <article
+      class="bookmark card-background"
+      data-search="<?= esc($title . ';' . $link . ';' . $tags) ?>"
+      data-tags="<?= esc($tags) ?>"
+      <?php if ($logo): ?>style="background-image: url('<?= esc($logo) ?>')"<?php endif ?>>
 
-    <?php
-    /**
-     * Bookmarks list snippet
-     * Performance/security small improvements:
-     * - cache common options/user to avoid repeated lookups inside the loop
-     * - ensure `$bookmarks` is an array
-     * - keep all escaping and onclick payload behavior identical
-     */
-    $bookmarks = isset($bookmarks) && is_array($bookmarks) ? $bookmarks : [];
-    $bookmarksCount = count($bookmarks);
-    $user = $kirby->user();
-    // Cache tier options once
-    $memberTiers = option('kreativ-anders.memberkit.tiers', []);
-    $tier0Name = isset($memberTiers[0]['name']) ? $memberTiers[0]['name'] : null;
-    $tier1Name = isset($memberTiers[1]['name']) ? $memberTiers[1]['name'] : null;
-    $noPremiumLimit = (int) option('noPremiumLimit');
-    $noPremiumTitle = option('noPremiumTitle');
+      <header>
+        <a class="card-title" rel="noopener noreferrer" target="_self" href="<?= esc($href) ?>"><?= esc($title) ?></a>
+      </header>
 
-    foreach ($bookmarks as $i => $bookmark): ?>
-        <?php
-          // normalize and prepare safe values
-          $rawTitle = (string)$bookmark['title'];
-          $title = Str::lower($rawTitle);
-          // keep only lowercase letters a-z (remove spaces, hyphens, apostrophes, digits, punctuation, etc.)
-          $brand = preg_replace('/[^a-z]+/', '', $title);
+      <a rel="noopener noreferrer" aria-label="<?= esc($title) ?>" target="_self" href="<?= esc($href) ?>">
+        <span class="card-spanner"></span>
+      </a>
 
-          $search = (string)($bookmark['title'] . ';' . $bookmark['link'] . ';' . $bookmark['tags']);
-          $titleEsc = htmlspecialchars($rawTitle, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-          $linkEsc = htmlspecialchars((string)$bookmark['link'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-          $tagsEsc = htmlspecialchars((string)$bookmark['tags'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-          $titleAttr = htmlspecialchars($title, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-          $brandAttr = htmlspecialchars($brand, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        ?>
-        <article 
-          class="bookmark card-background lazy" 
-          data-search="<?= htmlspecialchars($search, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>" 
-          data-tags="<?= $tagsEsc ?>" 
-          brand="<?= $titleAttr ?>, <?= $brandAttr ?>"
-          >
+      <footer>
+        <div class="grid card-grid">
+          <?php if ($user): ?>
 
-          <header>
-            <a class="card-title" rel="noopener noreferrer" target="_self" href="<?= $linkEsc ?>">
-              <?= $titleEsc ?>
-            </a>
-          </header>
+          <?php if (Bookmarks::editable($user, $bookmarks, $bookmark)):
+            $onclick = 'changeData(' . json_encode($i) . ', ' . json_encode($title) . ', ' . json_encode($link) . ', ' . json_encode($tags) . '); document.getElementById(\'u_hash\').value = ' . json_encode($hash) . '; toggleModal(event);';
+          ?>
+          <button type="button" class="edit" data-target="changeModal" title="Edit Bookmark" data-pirsch-event="Update Bookmark" onclick="<?= esc($onclick) ?>">
+            <svg aria-hidden="true" focusable="false"><use href="#icon-edit"/></svg>
+          </button>
+          <?php endif ?>
 
-          <!-- Middle -->
-          <a rel="noopener noreferrer" aria-label="<?= $titleEsc ?>" target="_self" href="<?= $linkEsc ?>">
-            <span class="card-spanner"></span>
-          </a>
+          <?php foreach (Str::split($tags) as $tag): ?>
+          <span class="tag" data-tag="<?= esc($tag) ?>" onclick="toggleTag(this.getAttribute('data-tag'))"><?= esc($tag) ?></span>
+          <?php endforeach ?>
 
-          <!-- Footer -->
-          <?php  if($kirby->user()): ?>
-          <footer>  
-            <div class="grid card-grid">
-
-              <!-- Edit Icon -->
-              <!-- Edit Icon -->
-              <?php if (
-                (option('kreativ-anders.memberkit.tiers')[0]['name'] === $kirby->user()->tier()->toString() && 
-                count($bookmarks) <= option('noPremiumLimit')) && 
-                $bookmark['title'] != option('noPremiumTitle') || 
-                $kirby->user()->isAllowed(option('kreativ-anders.memberkit.tiers')[1]['name'])): ?>
-                <?php
-                  // Build a safe onclick payload using JSON encoding for JS literals and HTML-escape it
-                  $onclick = 'changeData(' . json_encode($i) . ', ' . json_encode($rawTitle) . ', ' . json_encode((string)$bookmark['link']) . ', ' . json_encode((string)$bookmark['tags']) . '); toggleModal(event);';
-                ?>
-                <button type="button" class="edit" data-target="changeModal"  title="Edit Bookmark" data-pirsch-event="Update Bookmark" onclick="<?= htmlspecialchars($onclick, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M490.3 40.4C512.2 62.27 512.2 97.73 490.3 119.6L460.3 149.7L362.3 51.72L392.4 21.66C414.3-.2135 449.7-.2135 471.6 21.66L490.3 40.4zM172.4 241.7L339.7 74.34L437.7 172.3L270.3 339.6C264.2 345.8 256.7 350.4 248.4 353.2L159.6 382.8C150.1 385.6 141.5 383.4 135 376.1C128.6 370.5 126.4 361 129.2 352.4L158.8 263.6C161.6 255.3 166.2 247.8 172.4 241.7V241.7zM192 63.1C209.7 63.1 224 78.33 224 95.1C224 113.7 209.7 127.1 192 127.1H96C78.33 127.1 64 142.3 64 159.1V416C64 433.7 78.33 448 96 448H352C369.7 448 384 433.7 384 416V319.1C384 302.3 398.3 287.1 416 287.1C433.7 287.1 448 302.3 448 319.1V416C448 469 405 512 352 512H96C42.98 512 0 469 0 416V159.1C0 106.1 42.98 63.1 96 63.1H192z"/></svg>
-                </button>
-              <?php endif; ?>
-
-              <!-- Bookmark Tags -->  
-              <?php foreach (Str::split($bookmark['tags']) as $tag):
-                $tagEsc = htmlspecialchars($tag, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>
-                <span class="tag" data-tag="<?= $tagEsc ?>" onclick="toggleTag(this.getAttribute('data-tag'))"><?= $tagEsc ?></span>
-              <?php endforeach; ?>
-
-              <!-- Delete Icon -->
-              <form action="" method="POST">
-                <input name="d_bookmark" value="<?= (int)$i ?>" type="hidden" />
-                <button class="delete" type="submit" title="Delete Bookmark" data-pirsch-event="Delete Bookmark">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M135.2 17.69C140.6 6.848 151.7 0 163.8 0H284.2C296.3 0 307.4 6.848 312.8 17.69L320 32H416C433.7 32 448 46.33 448 64C448 81.67 433.7 96 416 96H32C14.33 96 0 81.67 0 64C0 46.33 14.33 32 32 32H128L135.2 17.69zM31.1 128H416V448C416 483.3 387.3 512 352 512H95.1C60.65 512 31.1 483.3 31.1 448V128zM111.1 208V432C111.1 440.8 119.2 448 127.1 448C136.8 448 143.1 440.8 143.1 432V208C143.1 199.2 136.8 192 127.1 192C119.2 192 111.1 199.2 111.1 208zM207.1 208V432C207.1 440.8 215.2 448 223.1 448C232.8 448 240 440.8 240 432V208C240 199.2 232.8 192 223.1 192C215.2 192 207.1 199.2 207.1 208zM304 208V432C304 440.8 311.2 448 320 448C328.8 448 336 440.8 336 432V208C336 199.2 328.8 192 320 192C311.2 192 304 199.2 304 208z"/></svg>
-                </button>
-              </form>   
-
-            </div>                
-          </footer>
-          <?php else: ?>
-          <footer>
-
-          <div class="grid card-grid">
-
-            <!-- Edit Icon -->
-            <button type="button" class="edit" disabled>
-              
+          <form action="" method="POST">
+            <input type="hidden" name="csrf" value="<?= csrf() ?>">
+            <input name="d_bookmark" value="<?= (int)$i ?>" type="hidden" />
+            <input name="d_hash" value="<?= $hash ?>" type="hidden" />
+            <button class="delete" type="submit" title="Delete Bookmark" data-pirsch-event="Delete Bookmark">
+              <svg aria-hidden="true" focusable="false"><use href="#icon-delete"/></svg>
             </button>
+          </form>
 
-            <!-- Bookmark Tags -->  
-            <div>
-              <?php foreach (Str::split($bookmark['tags']) as $tag):
-                $tagEsc = htmlspecialchars($tag, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>
-                <span class="tag" data-tag="<?= $tagEsc ?>"><?= $tagEsc ?></span>
-              <?php endforeach; ?>
-            </div>
+          <?php else: ?>
 
-            <!-- Delete Icon -->
-            <form action="" method="POST" disabled>
-              <button class="delete" type="submit"  title="Delete Bookmark" disabled>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M135.2 17.69C140.6 6.848 151.7 0 163.8 0H284.2C296.3 0 307.4 6.848 312.8 17.69L320 32H416C433.7 32 448 46.33 448 64C448 81.67 433.7 96 416 96H32C14.33 96 0 81.67 0 64C0 46.33 14.33 32 32 32H128L135.2 17.69zM31.1 128H416V448C416 483.3 387.3 512 352 512H95.1C60.65 512 31.1 483.3 31.1 448V128zM111.1 208V432C111.1 440.8 119.2 448 127.1 448C136.8 448 143.1 440.8 143.1 432V208C143.1 199.2 136.8 192 127.1 192C119.2 192 111.1 199.2 111.1 208zM207.1 208V432C207.1 440.8 215.2 448 223.1 448C232.8 448 240 440.8 240 432V208C240 199.2 232.8 192 223.1 192C215.2 192 207.1 199.2 207.1 208zM304 208V432C304 440.8 311.2 448 320 448C328.8 448 336 440.8 336 432V208C336 199.2 328.8 192 320 192C311.2 192 304 199.2 304 208z"/></svg>
-              </button>
-            </form>
+          <button type="button" class="edit" disabled></button>
 
-          </footer>
-          <?php endif; ?>
+          <div>
+            <?php foreach (Str::split($tags) as $tag): ?>
+            <span class="tag" data-tag="<?= esc($tag) ?>"><?= esc($tag) ?></span>
+            <?php endforeach ?>
+          </div>
 
-        </article>
+          <form action="" method="POST" disabled>
+            <button class="delete" type="submit" title="Delete Bookmark" disabled>
+              <svg aria-hidden="true" focusable="false"><use href="#icon-delete"/></svg>
+            </button>
+          </form>
+
+          <?php endif ?>
+        </div>
+      </footer>
+
+    </article>
     <?php endforeach ?>
-
   </div>
+  <?php if ($user): ?>
+  <p id="search-status" class="search-status" aria-live="polite"></p>
+  <?php endif ?>
 </section>
-
-
-      

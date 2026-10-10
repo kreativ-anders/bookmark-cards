@@ -1,39 +1,42 @@
 title: Site
-sections:
-  Users:
-    type: stats
-    # Available size options: small, medium, large, huge. Default is large
-    size: huge
-    reports:
-      - label: Total Users
-        value: "{{ site.totalUsers }}"
-      - label: Free Users
-        value: "{{ site.freeUsers }}"
-      - label: Paid Users
-        value: "{{ site.paidUsers }}"
-        info: "{{ site.paidUsersPercentage }}"
-  Bookmarks:
-    type: stats
-    # Available size options: small, medium, large, huge. Default is large
-    size: medium
-    reports:
-      - label: Total Bookmarks
-        value: "{{ site.totalBookmarks }}"
-      - label: Total Tags
-        value: "{{ site.totalTags }}"
-  Brands:
-    type: stats
-    # Available size options: small, medium, large, huge. Default is large
-    size: medium
-    reports:
-      - label: Available Brands
-        value: "{{ site.totalAvailableBrands }}"
-      - label: Brand Coverage
-        value: "{{ site.brandCoveragePercentage }}"
-      - label: Bookmarks Without Brands
-        value: "{{ site.bookmarksWithoutBrands }}"
-  MissingBrands:
-    headline: Missing Brand Logos
-    type: info
-    text: "{{ site.missingBrandsText }}"
-
+buttons:
+  - open
+  - preview
+columns:
+  # ---------- At a glance: details in "Bookmarks" and "Users › Statistics" (site/plugins/panel-stats) ----------
+  overview:
+    width: 1/1
+    sections:
+      Overview:
+        type: stats
+        size: large
+        reports:
+          - label: Users
+            value: "{{ site.totalUsers }}"
+            info: "{{ site.paidUsers }} paid"
+            icon: users
+            link: "{{ kirby.url('panel') }}/user-statistics"
+          - label: Bookmarks
+            value: "{{ site.totalBookmarks }}"
+            info: "{{ site.bookmarksPerUser }}"
+            icon: bookmark
+            link: "{{ kirby.url('panel') }}/bookmarks"
+          - label: Missing Logos
+            value: "{{ site.bookmarksWithoutBrands }}"
+            info: "{{ site.brandCoverageInfo }} with logo"
+            icon: image
+            theme: "{{ site.bookmarksWithoutBrandsTheme }}"
+            link: "{{ kirby.url('panel') }}/bookmarks"
+  # ---------- Legal pages: the only pages with editable text, technical pages (login, register, ...) stay hidden ----------
+  legal:
+    width: 1/1
+    sections:
+      Legal:
+        type: pages
+        headline: Legal Pages
+        query: site.children.filterBy('slug', 'in', ['imprint', 'privacy', 'terms'])
+        status: all
+        create: false
+        sortable: false
+        layout: list
+        empty: No legal pages yet

@@ -1,74 +1,109 @@
 <!DOCTYPE html>
 
-<html lang="en" data-theme="light">
+<html lang="en">
 
 <head>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101012" media="(prefers-color-scheme: dark)">
 
-  <title>Bookmark.cards | bookmarket tool in its simplest form.</title>
-  <meta name="description" content="Organize and store your articles, websites or other online links privacy friendly. Search and find those again with an easy to use tagging or search feature.">
+  <title>Offline | Bookmark.cards</title>
+  <meta name="description" content="Your saved bookmarks, available offline.">
+  <meta name="robots" content="noindex, follow">
 
-  <script src="/offline.min.js"></script>
+  <script>try{var t=localStorage.getItem('bookmark.cards.theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+  <script defer src="/offline.min.js"></script>
 
-  <link rel="stylesheet" href="assets/css/main.min.css" defer>
-  <link rel="stylesheet" href="assets/css/brands.min.css">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/css/main.min.css">
 
 </head>
 
 <body>
+  <a class="skip-link" href="#content">Skip to content</a>
   <header>
-    <nav role="navigation" aria-label="main navigation">
+    <nav aria-label="Main navigation">
       <ul>
-        <li>
-          <a class="navbar-item" href="https://bookmark-cards.test">
-            <h1>
-              Bookmark
-            </h1>
+        <li class="brand">
+          <a class="navbar-item" href="/" aria-label="Bookmark.cards home">
+            <!-- keep in sync with site/snippets/logo.php -->
+            <svg class="logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+              <defs>
+                <linearGradient id="logo-ribbon" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#ffb340"/>
+                  <stop offset="1" stop-color="#ff7a00"/>
+                </linearGradient>
+              </defs>
+              <rect x="5" y="16" width="25" height="43" rx="7" fill="currentColor"/>
+              <rect x="34" y="16" width="25" height="20" rx="7" fill="currentColor" fill-opacity=".45"/>
+              <rect x="34" y="40" width="25" height="19" rx="7" fill="currentColor"/>
+              <path d="M12 5h11v25l-5.5-4-5.5 4z" fill="url(#logo-ribbon)"/>
+            </svg>
+            <span class="brand-name">Bookmark<span class="accent">.cards</span></span>
           </a>
-          <p style="margin: 0">
-            .cards <span><strong style="color: darkgoldenrod">Premium</strong> <span style="color: red">Offline</span></span>
-          </p>
+          <p class="brand-meta"><span id="premium-meta" hidden><span class="premium-badge">Premium</span> · </span><strong>Offline</strong></p>
         </li>
       </ul>
       <ul>
         <!-- Top Tags -->
-        <li id="top-tags-placeholder"></li>
+        <li class="top-tags">
+          <ul aria-label="Top tags">
+            <li id="top-tags-placeholder"></li>
+          </ul>
+        </li>
+        <li>
+          <!-- keep in sync with site/snippets/theme-toggle.php -->
+          <button type="button" id="theme-toggle" class="icon-button" data-theme-mode="system" aria-label="Color theme: system" title="Color theme: system" hidden>
+            <svg class="i-system" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg>
+            <svg class="i-light" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="3.6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 3v2.2M12 18.8V21M3 12h2.2M18.8 12H21M5.6 5.6l1.6 1.6M16.8 16.8l1.6 1.6M5.6 18.4l1.6-1.6M16.8 7.2l1.6-1.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <svg class="i-dark" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          </button>
+        </li>
       </ul>
     </nav>
   </header>
+  <div id="content" tabindex="-1"></div>
 
-  <hr style="margin-bottom: unset;">
-
-  <section id="jumbotron" class="container">
-    <form method="POST">
-      <div class="grid" style="grid-column-gap: unset;">
-        <input id="s_title" type="search" name="c_title" placeholder="Title / Brand" minlength="2" maxlength="200" autocomplete="on" disabled>
-        <input id="s_link" type="url" name="c_link" placeholder="Web Link (https://)" maxlength="255" onblur="checkURL(this)" disabled>
-        <input id="s_tags" type="text" name="c_tags" placeholder="Search Tag" maxlength="200" autocomplete="on" disabled>
+  <main>
+    <h1 class="visually-hidden">My bookmarks (offline)</h1>
+    <section id="jumbotron" class="container">
+      <div class="alert alert-offline" role="status">
+        <p>You are offline. Search and tag filters work, adding and editing bookmarks is back once you are online.</p>
       </div>
-    </form>
-  </section>
+      <!-- search only: main.js filters the cards, nothing is submitted offline -->
+      <form method="POST" onsubmit="return false">
+        <fieldset role="group" aria-label="Search bookmarks">
+          <input id="s_title" type="search" name="c_title" placeholder="Title / Brand" aria-label="Search title or brand" maxlength="200" autocomplete="off">
+          <input id="s_link" type="url" name="c_link" placeholder="Web Link (https://)" aria-label="Web link" maxlength="255" disabled>
+          <input id="s_tags" type="text" name="c_tags" placeholder="Search Tag" aria-label="Search tags" maxlength="200" autocomplete="off">
+        </fieldset>
+      </form>
+    </section>
 
-  <section id="grid">
-    <div id="bookmarks" class="grid"></div>
-  </section>
+    <section id="grid">
+      <div id="bookmarks" class="grid"></div>
+      <p id="search-status" class="search-status" aria-live="polite"></p>
+    </section>
+  </main>
 
+  <!-- keep in sync with site/snippets/footer.php (logged-in variant, without links that need the server) -->
   <footer class="container" style="text-align: center;">
-  <div class="grid">
     <p>
-      <b>Bookmarks.cards</b>
-      <br> by Manuel Steinberg
+      <span class="footer-brand">Bookmark<span class="accent">.cards</span></span>
+      <br>
+      by
+      <a href="https://kreativ-anders.de/" target="_blank" rel="noopener">kreativ-anders</a>
     </p>
-    <a href="https://kreativ-anders.de/" target="_blank" rel="noopener noreferrer">
-      <figure class="image is-128x128" style="margin: auto">
-        <img src="https://github.kreativ-anders.dev/logo/dark.svg" style="width: 100px" alt="kreativ-anders logo">
+    <a href="https://kreativ-anders.de/" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+      <figure>
+        <img src="/assets/images/kreativ-anders.svg" width="225" height="178" alt="">
       </figure>
     </a>
-  </div>
-
-</footer>
+    <p class="legal"><small>Brand names and logos are trademarks of their respective owners. They are shown for illustration only and do not imply any affiliation or endorsement.</small></p>
+  </footer>
 </body>
 
 </html>
