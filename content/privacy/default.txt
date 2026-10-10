@@ -14,6 +14,10 @@ Your email address, your password (encrypted) and your bookmarks. We need them t
 
 In your settings you can export your data and delete your account. Deleting removes everything.
 
+### Inactive accounts
+
+We note the date of your last visit. Free accounts may be deleted with all their data after 12 months or more of inactivity. Premium accounts are not affected.
+
 ### Payments through Stripe
 
 Your email address is shared with Stripe (Stripe Payments Europe, Ltd., Dublin, Ireland) so Premium can be paid. Payment details go to Stripe only and never reach us. (link: https://stripe.com/privacy text: Stripe's privacy policy target: _blank) applies (Art. 6(1)(b) GDPR).
