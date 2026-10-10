@@ -2,6 +2,11 @@
 
 ### Changes in the last 365 days
 
+- Merge branch 'main' of https://github.com/kreativ-anders/bookmark-cards (Manuel Steinberg, 2026-10-10)
+- 🔍️ Improve brand matching and SEO metadata (Manuel Steinberg, 2026-10-10)
+- 💄 add more brands (Manuel Steinberg, 2026-10-10)
+- 🗑️ Document inactive account deletion (Manuel Steinberg, 2026-10-10)
+- 📝 update CHANGELOG (github-actions[bot], 2026-10-10)
 - 🔧 Update Ploi nginx example for current server (Manuel Steinberg, 2026-10-10)
 - 📝 update CHANGELOG (github-actions[bot], 2026-10-10)
 - Upgrade to Kirby 5, Composer/npm dependencies and automated tests (#47) (Manuel Steinberg, 2026-10-10)
