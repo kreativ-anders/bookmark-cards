@@ -2,6 +2,8 @@
 
 ### Changes in the last 365 days
 
+- 🔧 Update Ploi nginx example for current server (Manuel Steinberg, 2026-10-10)
+- 📝 update CHANGELOG (github-actions[bot], 2026-10-10)
 - Upgrade to Kirby 5, Composer/npm dependencies and automated tests (#47) (Manuel Steinberg, 2026-10-10)
 - 📝 update CHANGELOG (github-actions[bot], 2026-07-12)
 - Add llms.txt (#46) (Copilot, 2026-07-12)
