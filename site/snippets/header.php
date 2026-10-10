@@ -12,7 +12,7 @@
     $indexable   = $isHome && !$kirby->user();
     $siteName    = 'Bookmark.cards';
     $seoTitle    = $isHome
-      ? 'Bookmark Manager: Save &amp; Tag Links as Cards | Bookmark.cards'
+      ? 'Bookmark Manager: Save Links as Cards | Bookmark.cards'
       : $page->title()->escape() . ' | Bookmark.cards';
     $seoDesc     = $page->description()->isNotEmpty()
       ? $page->description()->escape()
@@ -23,15 +23,15 @@
   <title><?= $seoTitle ?></title>
   <meta name="description" content="<?= $seoDesc ?>">
   <meta name="robots" content="<?= $indexable ? 'index, follow, max-image-preview:large' : 'noindex, follow' ?>">
-  <link rel="canonical" href="<?= esc($canonical, 'attr') ?>">
+  <link rel="canonical" href="<?= esc($canonical) ?>">
 
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="<?= $siteName ?>">
   <meta property="og:locale" content="en_US">
   <meta property="og:title" content="<?= $seoTitle ?>">
   <meta property="og:description" content="<?= $seoDesc ?>">
-  <meta property="og:url" content="<?= esc($canonical, 'attr') ?>">
-  <meta property="og:image" content="<?= esc($ogImage, 'attr') ?>">
+  <meta property="og:url" content="<?= esc($canonical) ?>">
+  <meta property="og:image" content="<?= esc($ogImage) ?>">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Bookmark.cards logo and branded bookmark cards">

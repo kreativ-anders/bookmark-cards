@@ -20,7 +20,7 @@
   </p>
   <a href="https://kreativ-anders.de/" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
     <figure>
-      <img src="/assets/images/kreativ-anders.svg" width="225" height="178" alt="">
+      <img src="/assets/images/kreativ-anders.svg" width="225" height="178" alt="kreativ-anders logo">
     </figure>
   </a>
 

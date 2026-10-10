@@ -70,7 +70,7 @@ class BrandLogos
 
     /** Tokens that are everyday words: matched via the link only, never via the title */
     public const DOMAIN_ONLY = [
-        'absence', 'bild', 'brave', 'buffer', 'bunch', 'canny', 'carbon', 'chip', 'circle', 'coffee',
+        'absence', 'acquire', 'bild', 'brave', 'buffer', 'bunch', 'canny', 'carbon', 'chip', 'circle', 'coffee',
         'copy', 'coworker', 'dev', 'gamma', 'ghost', 'heap', 'intuit', 'kicker', 'linear', 'liner',
         'loaded', 'lumen', 'medium', 'moss', 'napkin', 'notion', 'ohm', 'otto', 'pocket', 'signal',
         'steam', 'threads', 'uber', 'wave', 'wbs', 'wc', 'web', 'wise', 'wlw', 'zoom',
