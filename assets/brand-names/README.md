@@ -1,6 +1,6 @@
 # Brand Names
 
-Brand logos shown on bookmark cards (263 SVGs). Formerly the standalone repo [kreativ-anders/brand-names](https://github.com/kreativ-anders/brand-names), now maintained here.
+Brand logos shown on bookmark cards (311 SVGs). Formerly the standalone repo [kreativ-anders/brand-names](https://github.com/kreativ-anders/brand-names), now maintained here.
 
 ## Adding a logo
 
@@ -14,11 +14,12 @@ The panel (**Site → Brands**) lists bookmark titles without a logo and the sug
 
 All `.svg` files follow this guideline (based on [Inkscape](https://inkscape.org/)):
 
-1. Resize Page to brand/selection.
-2. Transform size to 250px width.
-3. Scale Page with the factor 1.2.
-4. Align brand/selection to center.
-5. Compress svg file (with any tool you prefer, e.g. [SVGOMG](https://jakearchibald.github.io/svgomg/))
+1. Use the full logo with the brand name (wordmark). An icon or symbol alone is not enough.
+2. Resize Page to brand/selection.
+3. Transform size to 250px width.
+4. Scale Page with the factor 1.2.
+5. Align brand/selection to center.
+6. Compress svg file (with any tool you prefer, e.g. [SVGOMG](https://jakearchibald.github.io/svgomg/))
 
 ## Legal & Disclaimer
 
