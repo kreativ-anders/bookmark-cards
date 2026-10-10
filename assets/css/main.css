@@ -1195,6 +1195,24 @@ div#bookmarks article footer button.delete svg {
   width: .8rem;
 }
 
+.icon-sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.search-status {
+  margin: 0 auto;
+  padding: 1rem;
+  text-align: center;
+  color: var(--muted);
+}
+
+.search-status:empty {
+  display: none;
+}
+
 /* guests see the demo cards without actions */
 div#bookmarks article footer button[disabled] {
   visibility: hidden;
@@ -1392,6 +1410,10 @@ span.tag:focus-visible {
   color: var(--muted);
 }
 
+.feature picture {
+  display: block;
+}
+
 .feature img {
   border-radius: var(--radius);
   border: 1px solid var(--line);
@@ -1403,7 +1425,8 @@ span.tag:focus-visible {
     padding: 2.5rem;
   }
 
-  .feature:has(> img) {
+  .feature:has(> img),
+  .feature:has(> picture) {
     grid-template-columns: 1fr 1fr;
   }
 

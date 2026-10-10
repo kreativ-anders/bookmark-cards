@@ -10,12 +10,10 @@ return function ($kirby, $page) {
   $alert   = null;
   $session = $kirby->session();
 
-  // POST REQUESTS (CHANGE EMAIL / CHANGE PASSWORD / DELETE) REQUIRE A VALID CSRF TOKEN
   if($kirby->request()->is('post') && csrf(get('csrf')) !== true) {
 
     $alert['error'] = 'Invalid CSRF token!';
 
-  // UPDATE USER
   } elseif($kirby->request()->is('post') && get('update')) {
 
     $data = [
@@ -29,22 +27,20 @@ return function ($kirby, $page) {
     ];
 
     $messages = [
-      'email'     => 'Please enter a valid email adress',
+      'email'     => 'Please enter a valid email address',
       'password'  => 'Please enter an eight character password'
     ];
 
-    // INVALID DATA
     if($invalid = invalid($data, $rules, $messages)) {
 
       $alert = $invalid;
       $error = true;
 
-    // VALID DATA
     } else {
 
       try {
 
-        // RE-AUTHENTICATE: A HIJACKED SESSION ALONE MUST NOT TAKE OVER THE ACCOUNT
+        // re-authenticate: a hijacked session alone must not take over the account
         $kirby->auth()->validatePassword($kirby->user()->email(), (is_string(get('current_password')) ? get('current_password') : ''));
 
       } catch(Exception $e) {
@@ -53,7 +49,6 @@ return function ($kirby, $page) {
         $error = true;
       }
 
-      // EMAIL
       if (empty($alert) === true && $data['email'] !== '') {
 
         try {
@@ -74,7 +69,6 @@ return function ($kirby, $page) {
         }
       }
 
-      // PASSWORD
       if (empty($alert) === true && $data['password'] !== '') {
 
         try {
@@ -95,7 +89,7 @@ return function ($kirby, $page) {
         }
       }
 
-      // SUCCESSFUL: POST/REDIRECT/GET (no resubmission on reload, fresh user object)
+      // POST/REDIRECT/GET: no resubmission on reload, fresh user object
       if (empty($alert) === true && isset($success)) {
 
         $session->set('user.success', $success);
@@ -103,13 +97,12 @@ return function ($kirby, $page) {
       }
     }
 
-  // DELETE USER
   } elseif($kirby->request()->is('post') && get('delete')) {
 
     try {
 
-      // RE-AUTHENTICATE: A HIJACKED SESSION ALONE MUST NOT DELETE THE ACCOUNT
-      // (AUTH TRACKS FAILED ATTEMPTS AND BLOCKS BRUTE FORCE LIKE THE LOGIN DOES)
+      // re-authenticate: a hijacked session alone must not delete the account
+      // (auth tracks failed attempts and blocks brute force like the login does)
       $kirby->auth()->validatePassword($kirby->user()->email(), (is_string(get('current_password')) ? get('current_password') : ''));
 
       try {

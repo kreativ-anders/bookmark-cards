@@ -1,31 +1,33 @@
 <?php
 /**
- * Structured data for the landing page (schema.org: Organization, WebSite, WebApplication).
- * @var float|null $price yearly Premium price in EUR
+ * Structured data for the landing page (schema.org: Organization, WebSite, WebApplication)
+ * @var float|null $monthly monthly Premium price in EUR
+ * @var float|null $price   yearly Premium price in EUR
  */
 $url    = $site->url() . '/';
-$offers = [[
-  '@type'         => 'Offer',
-  'name'          => 'Basic',
-  'price'         => '0',
-  'priceCurrency' => 'EUR',
-  'description'   => 'Up to ' . option('noPremiumLimit') . ' bookmarks with all core features',
-]];
+$offer  = fn (string $name, float $price, string $description, string|null $unit = null) => array_filter([
+  '@type'              => 'Offer',
+  'name'               => $name,
+  'price'              => number_format($price, 2, '.', ''),
+  'priceCurrency'      => 'EUR',
+  'description'        => $description,
+  'priceSpecification' => $unit ? [
+    '@type'             => 'UnitPriceSpecification',
+    'price'             => number_format($price, 2, '.', ''),
+    'priceCurrency'     => 'EUR',
+    'unitCode'          => $unit,
+    'referenceQuantity' => ['@type' => 'QuantitativeValue', 'value' => 1, 'unitCode' => $unit],
+  ] : null,
+]);
+
+$offers = [$offer('Free', 0, 'Up to ' . option('noPremiumLimit') . ' bookmarks with all core features')];
+
+if (($monthly ?? null) !== null) {
+  $offers[] = $offer('Premium (monthly)', (float)$monthly, 'Unlimited bookmarks, billed monthly', 'MON');
+}
+
 if (($price ?? null) !== null) {
-  $offers[] = [
-    '@type'              => 'Offer',
-    'name'               => 'Premium',
-    'price'              => number_format((float)$price, 2, '.', ''),
-    'priceCurrency'      => 'EUR',
-    'description'        => 'Unlimited bookmarks, billed yearly',
-    'priceSpecification' => [
-      '@type'            => 'UnitPriceSpecification',
-      'price'            => number_format((float)$price, 2, '.', ''),
-      'priceCurrency'    => 'EUR',
-      'unitCode'         => 'ANN',
-      'referenceQuantity' => ['@type' => 'QuantitativeValue', 'value' => 1, 'unitCode' => 'ANN'],
-    ],
-  ];
+  $offers[] = $offer('Premium (yearly)', (float)$price, 'Unlimited bookmarks, billed yearly', 'ANN');
 }
 
 $data = [
@@ -55,6 +57,7 @@ $data = [
       'applicationCategory' => 'ProductivityApplication',
       'operatingSystem'     => 'Any (web browser)',
       'browserRequirements' => 'Requires JavaScript and a modern web browser',
+      'inLanguage'          => 'en',
       'image'               => $site->url() . '/assets/images/og-image.png',
       'screenshot'          => $site->url() . '/assets/images/feature-brands.png',
       'featureList'         => ['Tags', 'Instant search', 'Brand logos on cards', 'JSON and CSV export', 'Offline access', 'Light and dark mode'],
@@ -66,6 +69,6 @@ $data = [
 ];
 ?>
 <script type="application/ld+json">
-<?= json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) ?>
+<?= json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_HEX_TAG) ?>
 
 </script>

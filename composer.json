@@ -13,7 +13,10 @@
       "getkirby/composer-installer": true,
       "pestphp/pest-plugin": true
     },
-    "optimize-autoloader": true
+    "optimize-autoloader": true,
+    "platform": {
+      "php": "8.4.1"
+    }
   },
   "require-dev": {
     "pestphp/pest": "^4.7"

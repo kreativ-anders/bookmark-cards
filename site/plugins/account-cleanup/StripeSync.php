@@ -24,7 +24,7 @@ class StripeSync
 
   public static function client(): StripeClient
   {
-    return new StripeClient(option('kreativ-anders.memberkit.secretKey'));
+    return Memberkit::stripe();
   }
 
   public static function mode(): string

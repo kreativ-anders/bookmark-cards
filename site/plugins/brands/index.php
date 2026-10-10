@@ -24,6 +24,9 @@ class BrandLogos
     /** @var array<string, string>|null token => file name */
     protected static array|null $logos = null;
 
+    /** @var array<string, string|null> per request: header and grid ask for the same bookmarks */
+    protected static array $urls = [];
+
     /** Lowercase a-z only, e.g. "Ernsting's Family" -> "ernstingsfamily" */
     public static function token(string $value): string
     {
@@ -142,8 +145,14 @@ class BrandLogos
 
     public static function url(string $title, string $link = ''): string|null
     {
-        $token = static::find($title, $link);
-        return $token !== null ? static::fileUrl(static::all()[$token]) : null;
+        $key = $title . "\n" . $link;
+
+        if (!array_key_exists($key, static::$urls)) {
+            $token = static::find($title, $link);
+            static::$urls[$key] = $token !== null ? static::fileUrl(static::all()[$token]) : null;
+        }
+
+        return static::$urls[$key];
     }
 
     public static function fileUrl(string $file): string
@@ -155,6 +164,7 @@ class BrandLogos
     public static function reset(): void
     {
         static::$logos = null;
+        static::$urls  = [];
     }
 }
 

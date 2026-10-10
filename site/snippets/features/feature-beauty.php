@@ -8,5 +8,8 @@
     <dd>Missing a brand? Contribute a logo on <a href="https://github.com/kreativ-anders/bookmark-cards/tree/main/assets/brand-names">GitHub</a> or open an issue.</dd>
   </dl>
   <p><small>Bookmark.cards is not affiliated with the brands shown; logos are used for visual styling only.</small></p>
-  <img src="/assets/images/feature-brands.png" width="1280" height="720" loading="lazy" alt="Grid of bookmark cards showing brand logos like GitHub, Kirby, Stripe and Notion">
+  <picture>
+    <source srcset="/assets/images/feature-brands.webp" type="image/webp">
+    <img src="/assets/images/feature-brands.png" width="1280" height="720" loading="lazy" alt="Grid of bookmark cards showing brand logos like GitHub, Kirby, Stripe and Notion">
+  </picture>
 </section>

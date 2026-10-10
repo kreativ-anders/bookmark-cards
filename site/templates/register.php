@@ -14,7 +14,7 @@
       <label for="email">
         Email
         <input type="email" id="email" name="email" value="<?= esc(is_array($data) ? ($data['email'] ?? '') : '', 'attr') ?>" autocomplete="email" aria-describedby="email-help" required autofocus>
-        <small id="email-help">The email address is used for authentification and payments (later).</small>
+        <small id="email-help">The email address is used for login and payments.</small>
       </label>
       <label for="password">
         Password
@@ -25,7 +25,6 @@
         <input type="checkbox" id="tos" name="tos" required>
         I accept the <a href="<?= url('terms') ?>" target="_blank">Terms</a> and have read the <a href="<?= url('privacy') ?>" target="_blank">Privacy policy</a>.
       </label>
-      <!-- honeypot: hidden from humans, bots fill it in -->
       <div aria-hidden="true" style="position: absolute; left: -10000px;">
         <label for="bc_hp">Leave this field empty <input type="text" id="bc_hp" name="bc_hp" tabindex="-1" autocomplete="off"></label>
       </div>

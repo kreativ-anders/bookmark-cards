@@ -1,20 +1,11 @@
 <?php
 
-/**
- * The config file is optional. It accepts a return array with config options
- * Note: Never include more than one return statement, all options go within this single return array
- * In this example, we set debugging to true, so that errors are displayed onscreen. 
- * This setting must be set to false in production.
- * All config options: https://getkirby.com/docs/reference/system/options
- */
+// host specific settings (debug, secrets, Stripe keys) live in the git-ignored config.<host>.php
 return [
-  // Never enable debug mode in production; turn it on in the git-ignored config.<host>.php for local development
   'debug' => false,
   'panel' =>[
       'install' => false,
       'slug' => 'dashboard',
-      // "Bookmarks" (statistics) right below the site, "Users" also highlighted on Users › Statistics,
-      // see site/plugins/panel-stats
       'menu' => [
         'site',
         'bookmarks',
@@ -26,12 +17,11 @@ return [
       'viewButtons' => [
         'users' => ['create', 'statistics', 'stripe-sync']
       ],
-      // Vue 2 runtime without the template compiler: Panel plugins use render functions, never `template` strings
+      // Panel plugins use render functions, never `template` strings
       'vue' => [
         'compiler' => false
       ]
   ],
-  // content.salt and cookie.key must be long random secrets – set them in the git-ignored config.<host>.php
   'content' => [
     'uuid' => false
   ],
@@ -40,7 +30,7 @@ return [
   'noPremiumLink' => '#',
   'noPremiumTags' => 'NO LIMITS',
   'session' => [
-    'durationNormal' => 1209600, 
+    'durationNormal' => 1209600,
     'timeout'        => 604800,
   ],
   'routes' => [
@@ -73,16 +63,9 @@ return [
   'kreativ-anders.memberkit.successURL'    => '../success',
   'kreativ-anders.memberkit.cancelURL'     => '../cancel',
   'kreativ-anders.memberkit.tiers'         => [
-    // INDEX 0
-    [ 'name'  => 'Free'
-     ,'price' => null],
-    // INDEX 1
-    [ 'name'  => 'Basic'
-     ,'price' => 'price_xxxx'],
-    // INDEX 2
-    [ 'name'  => 'Premium'
-     ,'price' => 'price_xxxx'],
-    // INDEX X
+    ['name' => 'Free',    'price' => null],
+    ['name' => 'Basic',   'price' => 'price_xxxx'],
+    ['name' => 'Premium', 'price' => 'price_xxxx'],
   ],
   'migrate' => false,
 ];

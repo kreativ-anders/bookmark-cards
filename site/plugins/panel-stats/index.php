@@ -10,11 +10,14 @@
  */
 function panelStatsBookmarks(): array
 {
+    // every stat needs the bookmarks: parse each user's YAML once (an update creates a new user object)
+    static $parsed = null;
+    $parsed ??= new WeakMap();
     $all = [];
 
     foreach (kirby()->users() as $user) {
-        $bookmarks = $user->bookmarks()->yaml();
-        $all[$user->id()] = is_array($bookmarks) ? $bookmarks : [];
+        $parsed[$user] ??= is_array($bookmarks = $user->bookmarks()->yaml()) ? $bookmarks : [];
+        $all[$user->id()] = $parsed[$user];
     }
 
     return $all;
@@ -251,16 +254,7 @@ Kirby::plugin('kreativ-anders/panel-stats', [
             return site()->inactiveUsers() > 0 ? 'notice' : 'positive';
         },
         'totalBookmarks' => function () {
-            $totalBookmarks = 0;
-
-            foreach (kirby()->users() as $user) {
-                $bookmarks = $user->bookmarks()->yaml();
-                if (is_array($bookmarks)) {
-                    $totalBookmarks += count($bookmarks);
-                }
-            }
-
-            return $totalBookmarks;
+            return array_sum(array_map('count', panelStatsBookmarks()));
         },
         // average over users who saved bookmarks (the share of those users is in the activation chart)
         'bookmarksPerUser' => function () {
@@ -275,20 +269,17 @@ Kirby::plugin('kreativ-anders/panel-stats', [
         'totalTags' => function () {
             $allTags = [];
 
-            foreach (kirby()->users() as $user) {
-                $bookmarks = $user->bookmarks()->yaml();
-                if (is_array($bookmarks)) {
-                    foreach ($bookmarks as $bookmark) {
-                        if (!empty($bookmark['tags'])) {
-                            $tags = array_map('trim', explode(',', $bookmark['tags']));
-                            $allTags = array_merge($allTags, $tags);
+            foreach (panelStatsBookmarks() as $bookmarks) {
+                foreach ($bookmarks as $bookmark) {
+                    if (!empty($bookmark['tags'])) {
+                        foreach (explode(',', $bookmark['tags']) as $tag) {
+                            $allTags[strtolower(trim($tag))] = true;
                         }
                     }
                 }
             }
 
-            // Return count of unique tags (case-insensitive)
-            return count(array_unique(array_map('strtolower', $allTags)));
+            return count($allTags);
         },
         'taggedBookmarks' => function () {
             $tagged = 0;

@@ -1,9 +1,6 @@
 <?php
 
-/**
- * SEO routes: dynamic sitemap.xml and robots.txt.
- * Only the landing page is indexable (app and account pages send noindex, see header.php).
- */
+// only the landing page is indexable, app and account pages send noindex (header.php)
 Kirby::plugin('kreativ-anders/seo', [
     'routes' => [
         [
@@ -11,7 +8,8 @@ Kirby::plugin('kreativ-anders/seo', [
             'action'  => function () {
                 $site = site();
                 $home = $site->homePage();
-                $lastmod = max($home->modified(), $site->modified(), filemtime(kirby()->root('site') . '/snippets/hero.php'));
+                // content only: file times of templates change with every deploy
+                $lastmod = max($home->modified(), $site->modified());
 
                 $xml  = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
                 $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";

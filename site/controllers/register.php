@@ -13,17 +13,16 @@ return function ($kirby) {
 
 	if($kirby->request()->is('post') && get('register')) {
 
-    // REGISTRATIONS PER IP AND HOUR (EVERY ACCOUNT CREATES A FOLDER AND A STRIPE CUSTOMER)
+    // registrations per IP and hour: every account creates a folder and a Stripe customer
     $throttle = new FileCache(['root' => $kirby->root('cache') . '/registrations']);
     $visitor  = $kirby->visitor()->ip(hash: true);
     $attempts = (int)$throttle->get($visitor, 0);
 
-    // VALIDATE CSRF TOKEN
     if (csrf(get('csrf')) !== true) {
 
       $alert['error'] = 'Invalid CSRF token!';
 
-    // HONEYPOT: HIDDEN FIELD ONLY BOTS FILL IN
+    // honeypot: hidden field only bots fill in
     } elseif (get('bc_hp')) {
 
       $alert['error'] = 'Could not register user!';
@@ -51,21 +50,18 @@ return function ($kirby) {
       $messages = [
         'email'     => 'Please enter a valid email address',
         'password'  => 'Please enter a valid password',
-        'tos'       => 'Please check the box or close the browser window'
+        'tos'       => 'Please accept the terms to continue'
       ];
 
-      // INVALID DATA
       if($invalid = invalid($data, $rules, $messages)) {
 
         $alert = $invalid;
         $error = true;
 
-      // DATA IS GOOD
       } else {
 
         try {
 
-          // CREATE USER (IMPERSONATION IS RESET EVEN IF CREATION FAILS)
           // Raw values: Kirby validates the email and hashes the password.
           // esc() is for HTML output only — escaping here broke logins with &, <, > or quotes.
           $user = $kirby->impersonate('kirby', fn () => $kirby->users()->create([
@@ -89,7 +85,7 @@ return function ($kirby) {
           $error = true;
         }
 
-        // LOGIN USER (THE ACCOUNT EXISTS, SO A FAILED AUTO LOGIN LEADS TO THE LOGIN PAGE)
+        // the account exists, so a failed auto login leads to the login page
         if (isset($user)) {
 
           try {

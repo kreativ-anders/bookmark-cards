@@ -53,10 +53,6 @@ AddOutputFilterByType DEFLATE text/html
 AddOutputFilterByType DEFLATE text/css
 AddOutputFilterByType DEFLATE text/javascript
 AddOutputFilterByType DEFLATE image/svg+xml
-AddOutputFilterByType DEFLATE image/avif
-AddOutputFilterByType DEFLATE image/png
-AddOutputFilterByType DEFLATE image/webp
-AddOutputFilterByType DEFLATE image/gif
 AddOutputFilterByType DEFLATE application/json
 AddOutputFilterByType DEFLATE application/javascript
 AddOutputFilterByType DEFLATE application/x-javascript

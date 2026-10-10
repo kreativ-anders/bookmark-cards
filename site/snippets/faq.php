@@ -1,7 +1,5 @@
 <?php
-/**
- * FAQ (landing page) – rendered as HTML and as FAQPage structured data from the same list.
- */
+// rendered as HTML and as FAQPage structured data from the same list
 $faqs = [
   ['What is Bookmark.cards?',
    'Bookmark.cards is a free, web-based bookmark manager. You save links as cards, organize them with tags and find them again with an instant search, on any device with a browser.'],
@@ -12,7 +10,7 @@ $faqs = [
   ['Can I export my bookmarks?',
    'Yes. In your settings you can download all bookmarks as JSON or CSV at any time, for backups or to move them to another bookmark manager.'],
   ['How do the brand logos on the cards work?',
-   'When the title of a bookmark contains a known brand name, for example GitHub or Notion, the card shows the matching logo. The logo collection is open source and anyone can contribute.'],
+   'When the link or title of a bookmark matches a known brand, for example GitHub or Notion, the card shows its logo. The logo collection is open source and anyone can contribute.'],
   ['Does Bookmark.cards work offline?',
    'Yes. Logged-in users can install Bookmark.cards as a progressive web app. Your bookmarks stay available when you are offline.'],
 ];

@@ -1,31 +1,17 @@
 <?php
 
-/* 
-  OPTIONS 
-  ----
-  https://getkirby.com/docs/reference/plugins/extensions/options
-
-*/
-
 return [
-
+  'cache'         => true,
   'secretKey'     => 'sk_test_xxx',
   'publicKey'     => 'pk_test_xxx',
   'webhookSecret' => 'whsec_xxx',
+  'apiBase'       => null,
   'stripeURLSlug' => 'checkout',
   'successURL'    => '../success',
   'cancelURL'     => '../cancel',
   'tiers'         => [
-    // INDEX 0
-    [ 'name'  => 'Free'
-     ,'price' => null],
-    // INDEX 1
-    [ 'name'  => 'Basic'
-     ,'price' => 'price_xxxx'],
-    // INDEX 2
-    [ 'name'  => 'Premium'
-     ,'price' => 'price_xxxx'],
-    // INDEX X
-  ]
-
+    ['name' => 'Free',    'price' => null],
+    ['name' => 'Basic',   'price' => 'price_xxxx'],
+    ['name' => 'Premium', 'price' => 'price_xxxx'],
+  ],
 ];

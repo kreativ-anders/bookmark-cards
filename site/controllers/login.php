@@ -11,10 +11,8 @@ return function ($kirby) {
 
   if ($kirby->request()->is('POST') && get('login')) {
 
-    // VALIDATE CSRF TOKEN
     if (csrf(get('csrf')) === true) {
 
-      // GET FORM DATA
       $data = [
         'email'     => is_string(get('email')) ? trim(get('email')) : '',
         'password'  => is_string(get('password')) ? get('password') : ''
@@ -26,20 +24,17 @@ return function ($kirby) {
       ];
 
       $messages = [
-        'email'     => 'Please enter a valid email adress',
+        'email'     => 'Please enter a valid email address',
         'password'  => 'Please enter a password'
       ];
 
-      // VALIDATE FORM DATA
       if($invalid = invalid($data, $rules, $messages)) {
 
         $alert = $invalid;
         $error = true;
 
-      // VALID DATA
       } else {
 
-        // LOGIN USER
         try {
 
           try {
@@ -76,14 +71,12 @@ return function ($kirby) {
           }
         }
 
-        // SUCCESSFUL
         if (empty($alert) === true) {
 
           $data = [];
           go();
         }
       }
-    // INVALID CSRF TOKEN    
     } else {
 
       $alert['error'] = 'Invalid CSRF token!';

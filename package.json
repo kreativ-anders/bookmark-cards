@@ -1,7 +1,7 @@
 {
     "name": "bookmark.cards",
     "version": "1.0.0",
-    "description": "Bookmark.cards is a bookmarket collection tool in its simpliest form.",
+    "description": "Bookmark.cards is a bookmark collection tool in its simplest form.",
     "author": "kreativ-anders | Manuel Steinberg",
     "devDependencies": {
         "@fontsource-variable/geist": "^5.3.0",

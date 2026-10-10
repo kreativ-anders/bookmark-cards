@@ -8,5 +8,8 @@
     <dt>Privacy-first</dt>
     <dd>No ads, no selling of data, no tracking cookies. Your collection stays yours.</dd>
   </dl>
-  <img src="/assets/images/feature-export.png" width="1280" height="720" loading="lazy" alt="Account settings with export buttons for JSON and CSV">
+  <picture>
+    <source srcset="/assets/images/feature-export.webp" type="image/webp">
+    <img src="/assets/images/feature-export.png" width="1280" height="720" loading="lazy" alt="Account settings with export buttons for JSON and CSV">
+  </picture>
 </section>

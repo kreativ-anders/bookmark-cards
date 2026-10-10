@@ -1,6 +1,6 @@
 version: 2
 updates:
-  # Kirby CMS (getkirby/cms) and Stripe (stripe/stripe-php)
+  # Kirby CMS, Stripe, Pest – every PR runs the CI workflow (Pest, asset build, Cypress)
   - package-ecosystem: composer
     directory: /
     schedule:
@@ -8,13 +8,13 @@ updates:
     labels:
       - dependencies
     groups:
-      # Bundle minor/patch updates into one PR; major updates stay separate
+      # minor/patch updates in one PR, major updates stay separate
       composer-minor-patch:
         update-types:
           - minor
           - patch
 
-  # Pico CSS, esbuild, Cypress
+  # Fonts, esbuild, Cypress
   - package-ecosystem: npm
     directory: /
     schedule:
@@ -27,3 +27,14 @@ updates:
         update-types:
           - minor
           - patch
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - '*'

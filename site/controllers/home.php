@@ -1,31 +1,15 @@
 <?php
 
-/**
- * Home controller
- *
- * Serves the bookmarks and handles add/update/delete via POST.
- * Exactly one action per request; validation and storage helpers live in
- * site/plugins/bookmarks. Successful POSTs redirect (POST/REDIRECT/GET),
- * so a reload never submits the form twice.
- *
- * @param \Kirby\Cms\App $kirby
- * @param \Kirby\Cms\Page $page
- * @return array
- */
 return function ($kirby, $page) {
 
   $error = null;
   $event = null;
+  $user  = $kirby->user();
 
-  // current user (if logged in)
-  $user = $kirby->user();
-
-  // last visit, for the inactive accounts clean-up in the Panel (site/plugins/account-cleanup)
   if ($user) {
     AccountActivity::touch($user);
   }
 
-  // POST actions (add/update/delete) for authenticated users, require a valid CSRF token
   if ($user && $kirby->request()->is('POST')) {
 
     if (csrf(get('csrf')) !== true) {
@@ -34,12 +18,10 @@ return function ($kirby, $page) {
 
     } else {
 
-      $tiers       = option('kreativ-anders.memberkit.tiers', []);
-      $isFree      = isset($tiers[0]['name']) && $tiers[0]['name'] === $user->tier()->toString();
+      $isFree      = $user->isFreeTier();
       $freeLimit   = (int)option('noPremiumLimit');
       $placeholder = option('noPremiumTitle');
 
-      // validated entry from the create (c_*) or update (u_*) form
       $entry = function (string $prefix) use (&$error): array|null {
         $title = Bookmarks::input($prefix . '_title') ?? '';
         $link  = is_string(get($prefix . '_link')) ? get($prefix . '_link') : '';
@@ -66,9 +48,8 @@ return function ($kirby, $page) {
 
       try {
 
-        $user = Bookmarks::modify($user, function (array $bookmarks) use ($entry, $isFree, $freeLimit, $placeholder, &$error, &$event) {
+        $user = Bookmarks::modify($user, function (array $bookmarks) use ($user, $entry, $isFree, $freeLimit, $placeholder, &$error, &$event) {
 
-          // UpdateBookmark: expects u_id (index), optional u_hash (fingerprint), u_title and u_link
           if (get('u_id') !== null) {
 
             $index = Bookmarks::find($bookmarks, Bookmarks::input('u_id'), Bookmarks::input('u_hash'));
@@ -78,8 +59,7 @@ return function ($kirby, $page) {
               return null;
             }
 
-            // same rule as the edit button in snippets/bookmarks.php
-            if ($isFree && (count($bookmarks) > $freeLimit || ($bookmarks[$index]['title'] ?? null) === $placeholder)) {
+            if (!Bookmarks::editable($user, $bookmarks, $bookmarks[$index])) {
               $error = 'Please become premium to edit your bookmarks.';
               return null;
             }
@@ -92,7 +72,6 @@ return function ($kirby, $page) {
             return $bookmarks;
           }
 
-          // AddBookmark: expects c_title and c_link
           if (get('c_title') !== null || get('c_link') !== null) {
 
             if (($data = $entry('c')) === null) {
@@ -104,17 +83,16 @@ return function ($kirby, $page) {
               return null;
             }
 
-            // analytics: no titles, links or tags, only what helps to understand usage
+            // no titles, links or tags in analytics
             $event = ['Add Bookmark Completed', [
               'plan'       => $isFree ? 'Free' : 'Premium',
               'tags'       => count(Str::split($data['tags'], ',')),
-              'brand_logo' => site()->brandLogo($data['title']) ? 'yes' : 'no'
+              'brand_logo' => site()->brandLogo($data['title'], $data['link']) ? 'yes' : 'no'
             ]];
 
-            // free tier: past the limit the "become premium" card is added instead
             if ($isFree && count($bookmarks) >= $freeLimit) {
               $event = ['Free Limit Reached', []];
-              $data = [
+              $data  = [
                 'title' => $placeholder,
                 'link'  => option('noPremiumLink'),
                 'tags'  => option('noPremiumTags')
@@ -125,7 +103,6 @@ return function ($kirby, $page) {
             return $bookmarks;
           }
 
-          // DeleteBookmark: expects d_bookmark (index) and optional d_hash (fingerprint)
           if (get('d_bookmark') !== null) {
 
             $index = Bookmarks::find($bookmarks, Bookmarks::input('d_bookmark'), Bookmarks::input('d_hash'));
@@ -146,7 +123,7 @@ return function ($kirby, $page) {
         $error = option('debug') ? 'Your bookmarks could not be saved: ' . $e->getMessage() : 'Your bookmarks could not be saved!';
       }
 
-      // SUCCESSFUL: POST/REDIRECT/GET (no duplicate bookmark on reload)
+      // POST/REDIRECT/GET: a reload never adds the bookmark twice
       if ($error === null) {
         if ($event !== null) {
           Analytics::track(...$event);
@@ -156,12 +133,10 @@ return function ($kirby, $page) {
     }
   }
 
-  // choose bookmarks from user (if exists) otherwise from page
   $bookmarks = $user ? $user->bookmarks()->yaml() : $page->bookmarks()->yaml();
-  $bookmarks = is_array($bookmarks) ? array_values($bookmarks) : [];
 
   return [
-    'error' => $error,
-    'bookmarks' => $bookmarks
+    'error'     => $error,
+    'bookmarks' => is_array($bookmarks) ? array_values($bookmarks) : []
   ];
 };

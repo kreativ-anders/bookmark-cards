@@ -1,37 +1,24 @@
 <?php
 
-/*
-  USER-METHODS
-  ----
-  https://getkirby.com/docs/reference/plugins/extensions/user-methods
-*/
-
 return [
 
-  // RETURN STRIPE SUBSCRIPTION CANCEL URL ---------------------------------------------------------------------------------
   'getStripeCancelURL' => function () {
 
     if ($this->stripe_subscription()->isEmpty()) {
-
       throw new Exception('No subscription to cancel!');
     }
 
-    // BUILD URL => STRIPE SLUG / ACTION NAME (CANCEL) / TYPE NAME (SUBSCRIPTION)
-    $url =  Str::lower(option('kreativ-anders.memberkit.stripeURLSlug'));
-    $url .= '/cancel/subscription';   
-
-    return $url;
+    return Str::lower(option('kreativ-anders.memberkit.stripeURLSlug')) . '/cancel/subscription';
   },
-  // RETURN STRIPE WEBHOOK URL
+
   'getStripeWebhookURL' => function () {
-
-    // BUILD URL => STRIPE SLUG / ACTION NAME (WEBHOOK)
-    $url =  Str::lower(option('kreativ-anders.memberkit.stripeURLSlug'));
-    $url .= '/webhook';
-
-    return $url;
+    return Str::lower(option('kreativ-anders.memberkit.stripeURLSlug')) . '/webhook';
   },
-  // RETURN A VALID STRIPE CUSTOMER ID - RECREATES A CUSTOMER THAT WAS DELETED OR IS UNKNOWN IN STRIPE (E.G. TEST MODE RESET) ---
+
+  /**
+   * Valid Stripe customer id, recreates a customer that was deleted
+   * or is unknown in Stripe (e.g. test mode reset)
+   */
   'ensureStripeCustomer' => function (\Stripe\StripeClient $stripe) {
 
     $id = $this->stripe_customer()->toString();
@@ -43,7 +30,7 @@ return [
           return $id;
         }
       } catch (\Stripe\Exception\InvalidRequestException $e) {
-        // UNKNOWN CUSTOMER => RECREATE BELOW
+        // unknown customer: recreated below
       }
     }
 
@@ -57,136 +44,92 @@ return [
 
     return $customer->id;
   },
-  // RETURN STRIPE SUBSCRIPTION CHECKOUT URL FOR TIER X (NAME AS PARAMETER) -----------------------------------------------------
+
   'getStripeCheckoutURL' => function ($tier) {
 
-    // SEARCH TIER NAME AND CHECK FOR EXISTENCE
-    $tierIndex = array_search($tier, array_column(option('kreativ-anders.memberkit.tiers'), 'name'), false);
-    if (!$tierIndex || $tierIndex < 1) {
+    $tiers     = option('kreativ-anders.memberkit.tiers');
+    $tierIndex = array_search($tier, array_column($tiers, 'name'), false);
 
+    if (!$tierIndex || $tierIndex < 1) {
       throw new Exception('Tier does not exist!');
     }
 
-    // BUILD URL => STRIPE SLUG / ACTION NAME (SUBSCRIBE) / STRIPE TIER NAME (RAWURLENCODED)
-    $url  = Str::lower(option('kreativ-anders.memberkit.stripeURLSlug'));
-    $url .= '/subscribe';
-    $url .= '/' . rawurlencode(Str::lower(Str::trim(option('kreativ-anders.memberkit.tiers')[$tierIndex]['name'])));
-
-    return $url;
+    return Str::lower(option('kreativ-anders.memberkit.stripeURLSlug'))
+      . '/subscribe/'
+      . rawurlencode(Str::lower(Str::trim($tiers[$tierIndex]['name'])));
   },
-  // RETURN STRIPE CUSTOMER PORTAL URL -------------------------------------------------------------------------------------------
+
   'getStripePortalURL' => function () {
-
-    // BUILD URL => STRIPE SLUG / ACTION NAME (PORTAL)
-    $url  = Str::lower(option('kreativ-anders.memberkit.stripeURLSlug'));
-    $url .= '/portal';
-
-    return $url;
+    return Str::lower(option('kreativ-anders.memberkit.stripeURLSlug')) . '/portal';
   },
-  // RETRIEVE STRIPE CUSTOMER (WITH SUBSCRIPTIONS) -------------------------------------------------------------------------------
+
   'retrieveStripeCustomer' => function () {
 
     if (!option('debug')) {
-
       throw new Exception('Retrieve stripe customer is only available in debug mode!');
     }
 
-    $stripe = new \Stripe\StripeClient(option('kreativ-anders.memberkit.secretKey'));
-    $customer = null;
-
     try {
-
-      // RETRIEVE STRIPE CUSTOMER
-      $customer = $stripe->customers->retrieve(
-        $this->stripe_customer(),
-        ['expand' => ['subscriptions']]
-      );
-
-    } catch(Exception $e) {
-        
-      // LOG ERROR SOMEWHERE !!!
-      throw new Exception('Retrieve stripe customer failed!');
+      return Memberkit::stripe()->customers->retrieve($this->stripe_customer(), ['expand' => ['subscriptions']]);
+    } catch (Exception $e) {
+      throw new Exception('Retrieve stripe customer failed!', previous: $e);
     }
-
-    return $customer;
   },
-  // MERGE STRIPE CUSTOMER WITH KIRBY USER ----------------------------------------------------------------------------------------
+
   'mergeStripeCustomer' => function () {
 
-    $stripe = new \Stripe\StripeClient(option('kreativ-anders.memberkit.secretKey'));
-    $customer = null;
-
     try {
-
-      // RETRIEVE STRIPE CUSTOMER
-      $customer = $stripe->customers->retrieve(
-        $this->stripe_customer(),
-        ['expand' => ['subscriptions']]
-      );
-
-    } catch(Exception $e) {
-        
-      // LOG ERROR SOMEWHERE !!!
-      throw new Exception('Retrieve stripe customer failed!');
-    }   
+      $customer = Memberkit::stripe()->customers->retrieve($this->stripe_customer(), ['expand' => ['subscriptions']]);
+    } catch (Exception $e) {
+      throw new Exception('Retrieve stripe customer failed!', previous: $e);
+    }
 
     $subscription = $customer->subscriptions['data'][0];
+    $price        = $subscription->items['data'][0]->price->id;
+    $tiers        = option('kreativ-anders.memberkit.tiers');
+    $priceIndex   = array_search($price, array_column($tiers, 'price'), false);
 
-    // DETERMINE TIER NAME BY STRIPE PRICE ID
-    $price = $subscription->items['data'][0]->price->id;
-    $priceIndex = array_search($price, array_column(option('kreativ-anders.memberkit.tiers'), 'price'), false);
-    $tier = option('kreativ-anders.memberkit.tiers')[$priceIndex]['name'];
-    
     try {
-
-      // UPDATE KIRBY USER
       $this->update([
         'stripe_subscription' => $subscription->id,
-        'stripe_status' => $subscription->status,
-        'tier' => $tier
+        'stripe_status'       => $subscription->status,
+        'tier'                => $tiers[$priceIndex]['name']
       ]);
 
       $this->changeEmail($customer->email);
 
       return true;
-
     } catch (Exception $e) {
-
-      // LOG ERROR SOMEWHERE !!!
-      throw new Exception('Update kirby user failed!');
+      throw new Exception('Update kirby user failed!', previous: $e);
     }
-
-    return false;
   },
-  // CHECK USER PRIVILEGES BASED ON TIER (INDEX) -----------------------------------------------------------------------------
+
+  /**
+   * Active subscription of the given tier or a higher one (by index)
+   */
   'isAllowed' => function ($tier) {
 
-    $userTier = $this->tier()->toString();
-
-    // GET INDEX FROM USER AND TIER NAME
-    $userIndex = array_search($userTier, array_column(option('kreativ-anders.memberkit.tiers'), 'name'), false);
-    $tierIndex = array_search($tier, array_column(option('kreativ-anders.memberkit.tiers'), 'name'), false);
- 
-    // NO SUBSCRIPTION OR NON-ACTIVE SUBSCRIPTION
-    if ($this->tier()->isEmpty() || $this->stripe_subscription()->isEmpty() || $this->stripe_status()->isEmpty() || $this->stripe_status()->toString() != 'active') {
-
+    if ($this->tier()->isEmpty() || $this->stripe_subscription()->isEmpty() || $this->stripe_status()->toString() !== 'active') {
       return false;
     }
 
-    // REQUESTED TIER MATCHES USER TIER
+    $userTier = $this->tier()->toString();
+
     if ($userTier === $tier) {
-
       return true;
     }
 
-    // USER TIER IS HIGHER (PRIO) THAN REQUESTED TIER
-    if ($userIndex >= $tierIndex) {
+    $names = array_column(option('kreativ-anders.memberkit.tiers'), 'name');
 
-      return true;
-    }
+    return array_search($userTier, $names, false) >= array_search($tier, $names, false);
+  },
 
-    // DEFAULT
-    return false;
-  }, 
+  'isFreeTier' => function (): bool {
+    return $this->tier()->toString() === (option('kreativ-anders.memberkit.tiers')[0]['name'] ?? null);
+  },
+
+  'isPremium' => function (): bool {
+    return $this->isAllowed(option('kreativ-anders.memberkit.tiers')[1]['name'] ?? null);
+  },
 
 ];

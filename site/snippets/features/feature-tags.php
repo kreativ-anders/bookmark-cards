@@ -8,5 +8,8 @@
     <dt>Quick discovery</dt>
     <dd>Combine tags with search to find a saved link in seconds.</dd>
   </dl>
-  <img src="/assets/images/active-tag.png" width="1280" height="720" loading="lazy" alt="Bookmark grid filtered by the tag dev, with the selected tag highlighted">
+  <picture>
+    <source srcset="/assets/images/active-tag.webp" type="image/webp">
+    <img src="/assets/images/active-tag.png" width="1280" height="720" loading="lazy" alt="Bookmark grid filtered by the tag dev, with the selected tag highlighted">
+  </picture>
 </section>

@@ -1,12 +1,12 @@
 # Bookmarks.cards
 
-Bookmark.cards is a bookmarket collection tool in its simpliest form.
+Bookmark.cards is a bookmark collection tool in its simplest form.
 
 Built with [Kirby CMS](https://getkirby.com) 5, a small custom stylesheet (no CSS framework) and Stripe (via the local `memberkit` plugin).
 
 ## Setup
 
-Requirements: PHP 8.3+ (8.2+ for production), Composer, Node.js
+Requirements: PHP 8.4+ (Composer resolves dependencies for PHP 8.4, see `config.platform`), Composer, Node.js
 
 ```bash
 git clone https://github.com/kreativ-anders/bookmark-cards.git
@@ -73,6 +73,8 @@ Cypress uses `http://bookmark-cards.localhost` by default. Override it with `CYP
 php -S bookmark-cards.localhost:8000 kirby/router.php
 CYPRESS_BASE_URL=http://bookmark-cards.localhost:8000 npm run cy:test
 ```
+
+CI (`.github/workflows/ci.yml`) runs on every pull request, including Dependabot: Pest on PHP 8.4 and 8.5, a check that the committed `*.min.*` files match `npm run build`, and the Cypress suite against PHP's built-in server with [stripe-mock](https://github.com/stripe/stripe-mock) instead of Stripe (option `kreativ-anders.memberkit.apiBase`), so no secrets are needed.
 
 In VS Code's integrated terminal run `env -u ELECTRON_RUN_AS_NODE npm run cy:test` (VS Code sets `ELECTRON_RUN_AS_NODE=1`, which prevents Cypress from starting). Kirby blocks an IP after 10 failed logins per hour — when running the suite often, raise `'auth' => ['trials' => 100]` in your local config.
 

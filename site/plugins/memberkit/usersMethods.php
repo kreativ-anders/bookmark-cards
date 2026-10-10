@@ -1,57 +1,40 @@
 <?php
 
-/*
-  USERS-METHODS
-  ----
-  https://getkirby.com/docs/reference/plugins/extensions/users-methods
-*/
-
 return [
 
-  // MAKE NON-STRIPE KIRBY USERS TO STRIPE CUSTOMERS --------------------------------------------------------------------------
+  /**
+   * Creates Stripe customers for Kirby users without one (admin task, errors are not caught)
+   */
   'migrateStripeCustomers' => function () {
 
-    $users = kirby()->users();
+    if (!kirby()->user()->isAdmin()) {
+      throw new Exception('This is an admin task!');
+    }
+
+    $kirby   = kirby();
+    $users   = $kirby->users();
+    $stripe  = Memberkit::stripe();
     $counter = 0;
 
-    // THIS IS A TASK FOR THE ADMIN
-    if (kirby()->user()->isAdmin()) {
+    foreach ($users as $user) {
 
-      $stripe = new \Stripe\StripeClient(option('kreativ-anders.memberkit.secretKey'));
-
-      // NO TRY CATCH BLOCK - LET EXCEPTION ARISE
-      foreach($users as $user) {
-
-        if ($user->stripe_customer()->isEmpty()) {
-
-          // CREATE STRIPE CUSTOMER
-          $customer = $stripe->customers->create([
-            'email' => $user->email()
-          ]);
-
-          // UPDATE KIRBY USER - ROOT TIER (INDEX=0)
-          $kirby = kirby();
-          $kirby->impersonate('kirby');
-
-          $kirby->user($user->email())->update([
-            'stripe_customer' => $customer->id,
-            'tier' => option('kreativ-anders.memberkit.tiers')[0]['name']
-          ]);
-
-          $kirby->impersonate();  
-
-          $counter++; 
-        }
+      if ($user->stripe_customer()->isNotEmpty()) {
+        continue;
       }
-  
-    } else {
 
-      throw new Exception('This is an admin task!');
-    }     
+      $customer = $stripe->customers->create(['email' => $user->email()]);
+
+      $kirby->impersonate('kirby', fn () => $kirby->user($user->email())->update([
+        'stripe_customer' => $customer->id,
+        'tier'            => option('kreativ-anders.memberkit.tiers')[0]['name']
+      ]));
+
+      $counter++;
+    }
 
     return [
-      'users'       => count($users),
-      'migrations'  => $counter
+      'users'      => count($users),
+      'migrations' => $counter
     ];
   }
 ];

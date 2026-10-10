@@ -1,10 +1,10 @@
 <?php
 /**
- * @var float|null $price   yearly Premium price in EUR (resolved once in home.php), null if Stripe is unreachable
- * @var float|null $monthly monthly Premium price in EUR (what the checkout buttons book), null if Stripe is unreachable
+ * @var float|null $price   yearly Premium price in EUR, null if Stripe is unreachable
+ * @var float|null $monthly monthly Premium price in EUR, null if Stripe is unreachable
  */
-$price   = $price ?? null;
-$monthly = $monthly ?? null;
+$price   ??= null;
+$monthly ??= null;
 ?>
 <section class="container" id="pricing" style="text-align: center;">
   <h2>Simple pricing</h2>
@@ -12,7 +12,7 @@ $monthly = $monthly ?? null;
   <div class="grid">
     <article>
       <header>
-        <h3>Basic</h3>
+        <h3>Free</h3>
       </header>
       <p class="price">0€ <small>/ month</small></p>
       <p>Try Bookmark.cards for free — store up to <?= option('noPremiumLimit'); ?> bookmarks and use all core features.</p>

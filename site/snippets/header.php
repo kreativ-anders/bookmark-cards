@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
   <?php
-    // SEO: only the landing page is indexable; app/account pages are noindex
+    // only the landing page is indexable
     $isHome      = $page->isHomePage();
     $indexable   = $isHome && !$kirby->user();
     $siteName    = 'Bookmark.cards';
@@ -37,47 +37,59 @@
   <meta property="og:image:alt" content="Bookmark.cards logo and branded bookmark cards">
   <meta name="twitter:card" content="summary_large_image">
 
-  <!-- Color theme chosen by the user (main.js theme toggle); runs before CSS to avoid a flash -->
+  <!-- stored color theme, applied before the CSS to avoid a flash -->
   <script>try{var t=localStorage.getItem('bookmark.cards.theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
   <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#101012" media="(prefers-color-scheme: dark)">
 
-  <link rel="dns-prefetch" href="//bookmark.cards">
-  <link rel="preconnect" href="//bookmark.cards">
+  <link rel="preconnect" href="https://api.pirsch.io">
 
-  <?php if ($kirby->user()): ?>
+  <?php
+    $asset = fn (string $path) => '/' . $path . '?v=' . (@filemtime($kirby->root('index') . '/' . $path) ?: 0);
+  ?>
+  <?php if ($user = $kirby->user()): ?>
   <link rel="manifest" href="manifest.json">
-  <!-- UpUp.js --> 
   <script src="/upup.min.js"></script>
   <?php
-    // brand logos of the user's own bookmarks, so offline.html shows them too (absolute URLs like brands.json)
+    $offlineFiles = [
+      'favicon.ico',
+      'favicon.svg',
+      'assets/css/main.min.css',
+      'assets/css/fonts/geist-latin-wght-normal.woff2',
+      'assets/css/fonts/instrument-serif-latin-400-italic.woff2',
+      'assets/images/kreativ-anders.svg',
+      'offline.min.js',
+      'assets/js/main.min.js',
+    ];
     $offlineLogos = [];
-    foreach ((array) $kirby->user()->bookmarks()->yaml() as $bookmark) {
-      if ($logo = $site->brandLogo((string) ($bookmark['title'] ?? ''), (string) ($bookmark['link'] ?? ''))) $offlineLogos[$logo] = true;
+    foreach ((array)$user->bookmarks()->yaml() as $bookmark) {
+      if ($logo = $site->brandLogo((string)($bookmark['title'] ?? ''), (string)($bookmark['link'] ?? ''))) {
+        $offlineLogos[$logo] = true;
+      }
     }
+    $offlineAssets = array_merge($offlineFiles, ['brands.json', 'brands-rules.json', 'user.json'], array_keys($offlineLogos));
+    $offlineStamps = array_map(fn ($path) => @filemtime($kirby->root('index') . '/' . $path), [...$offlineFiles, 'offline.html', 'assets/brand-names', 'site/plugins/brands/index.php']);
+    $offlineVersion = substr(md5(json_encode([$offlineAssets, $offlineStamps, $user->id(), $user->modified()])), 0, 12);
   ?>
   <script>
-  UpUp.start({
-    'cache-version': Date.now(),
-    'content-url': 'offline.html',
-    'assets': [
-      'favicon.ico', 
-      'favicon.svg', 
-      'brands.json', 
-      'brands-rules.json', 
-      'assets/css/main.min.css', 
-      'assets/css/fonts/geist-latin-wght-normal.woff2', 
-      'assets/css/fonts/instrument-serif-latin-400-italic.woff2', 
-      'assets/images/kreativ-anders.svg', 
-      'offline.min.js', 
-      'user.json', 
-      'assets/js/main.min.js'].concat(<?= json_encode(array_keys($offlineLogos), JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) ?>),
-    'service-worker-url': '/upup.sw.min.js'
-  });
+  // the service worker re-downloads every asset whenever UpUp starts, so only when something changed
+  (function (version, assets) {
+    if (!window.UpUp) return;
+    try {
+      if (navigator.serviceWorker.controller && localStorage.getItem('bookmark.cards.offline') === version) return;
+      localStorage.setItem('bookmark.cards.offline', version);
+    } catch (e) {}
+    UpUp.start({
+      'cache-version': version,
+      'content-url': 'offline.html',
+      'assets': assets,
+      'service-worker-url': '/upup.sw.min.js'
+    });
+  })(<?= json_encode($offlineVersion) ?>, <?= json_encode($offlineAssets, JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) ?>);
   </script>
-  <?php endif; ?>
+  <?php endif ?>
 
-  <script defer src="/assets/js/main.min.js"></script>
+  <script defer src="<?= $asset('assets/js/main.min.js') ?>"></script>
 
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -86,7 +98,7 @@
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 
   <link rel="preload" href="/assets/css/fonts/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/assets/css/main.min.css">
+  <link rel="stylesheet" href="<?= $asset('assets/css/main.min.css') ?>">
 
   <script defer src="https://api.pirsch.io/pa.js"
     id="pianjs"
@@ -105,10 +117,11 @@
             <?php snippet('logo') ?>
             <span class="brand-name">Bookmark<span class="accent">.cards</span></span>
           </a>
-          <?php if (option('debug') || ($kirby->user() && $kirby->user()->isAllowed(option('kreativ-anders.memberkit.tiers')[1]['name']))): ?>
+          <?php $isPremium = $user && $user->isPremium() ?>
+          <?php if (option('debug') || $isPremium): ?>
           <p class="brand-meta">
             <?= e(option('debug'), "Kirby v" . Kirby::version() . " PHP " . phpversion())?>
-            <?php if ($kirby->user() && $kirby->user()->isAllowed(option('kreativ-anders.memberkit.tiers')[1]['name'])): ?>
+            <?php if ($isPremium): ?>
             <span class="premium-badge">Premium</span>
             <?php endif; ?>
           </p>
@@ -116,7 +129,7 @@
         </li>
       </ul>
       <ul>
-        <?php  if(!$kirby->user()): ?>
+        <?php if (!$user): ?>
         <?php if ($isHome): ?>
         <li class="nav-anchor"><a class="nav-link" href="#features">Features</a></li>
         <li class="nav-anchor"><a class="nav-link" href="#pricing">Pricing</a></li>
@@ -125,13 +138,13 @@
         <li><?php snippet('theme-toggle') ?></li>
         <li>
           <a id="login" href="<?= url('login') ?>" role="button" class="contrast outline" data-pirsch-event="Open Login Modal">Login</a>
-        </li>  
+        </li>
         <li>
           <a id="register" href="<?= url('register') ?>" role="button" data-pirsch-event="Open Register Modal" data-pirsch-meta-source="Header">Register</a>
         </li>
         <?php endif; ?>
 
-        <?php  if($kirby->user()): ?>
+        <?php if ($user): ?>
         <?php if (!$isHome): ?>
         <li>
           <a id="nav-bookmarks" href="<?= $site->url() ?>" role="button" class="secondary outline">
@@ -140,7 +153,6 @@
           </a>
         </li>
         <?php endif ?>
-        <!-- Top Tags (filled by main.js topTags) -->
         <li class="top-tags">
           <ul aria-label="Top tags">
             <li id="top-tags-placeholder"></li>
@@ -152,17 +164,15 @@
             Settings
           </a>
         </li>
-        
-        <?php
-          $url = $kirby->user()->getStripeCheckoutURL(option('kreativ-anders.memberkit.tiers')[1]['name']);                            
-          if (!$kirby->user()->isAllowed(option('kreativ-anders.memberkit.tiers')[1]['name'])): 
-        ?>
+
+        <?php if (!$isPremium): ?>
         <li>
-        <?= snippet( 'stripe-checkout-button', [ 'id'      => 'premium-checkout-button'
-                    ,'classes' => 'pirsch-event=Open+Stripe+Checkout pirsch-meta-source=Header'
-                    ,'text'    => 'Premium'
-                    ,'url'     => $url]);
-                  ?>
+          <?php snippet('stripe-checkout-button', [
+            'id'      => 'premium-checkout-button',
+            'classes' => 'pirsch-event=Open+Stripe+Checkout pirsch-meta-source=Header',
+            'text'    => 'Premium',
+            'url'     => $user->getStripeCheckoutURL(option('kreativ-anders.memberkit.tiers')[1]['name'])
+          ]) ?>
         </li>
         <?php endif ?>
 

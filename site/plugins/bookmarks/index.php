@@ -7,10 +7,6 @@ use Kirby\Data\Yaml;
 use Kirby\Filesystem\Dir;
 use Kirby\Toolkit\Str;
 
-/**
- * Shared helpers for the bookmark CRUD in controllers/home.php
- * and the output in snippets/bookmarks.php.
- */
 class Bookmarks
 {
   // generous, only against abuse: existing bookmarks must stay editable
@@ -18,9 +14,7 @@ class Bookmarks
   public const MAX_LINK  = 8192;
   public const MAX_TAGS  = 2000;
 
-  /**
-   * Request value as trimmed string; arrays (e.g. `c_title[]=x`) count as missing
-   */
+  // arrays (e.g. `c_title[]=x`) count as missing
   public static function input(string $key): string|null
   {
     $value = get($key);
@@ -28,10 +22,6 @@ class Bookmarks
     return is_string($value) ? trim($value) : null;
   }
 
-  /**
-   * Returns the submitted link unchanged (as before), unless it is empty
-   * or uses a script scheme (javascript:, vbscript:, data:)
-   */
   public static function link(string $link): string|null
   {
     if ($link === '' || static::isSafe($link) === false) {
@@ -41,10 +31,7 @@ class Bookmarks
     return $link;
   }
 
-  /**
-   * Browsers ignore whitespace and control characters inside the scheme,
-   * so "java\tscript:" must be caught as well
-   */
+  // browsers ignore whitespace and control characters inside the scheme ("java\tscript:")
   public static function isSafe(string $link): bool
   {
     $scheme = preg_replace('/[\x00-\x20]+/', '', $link);
@@ -52,9 +39,7 @@ class Bookmarks
     return preg_match('/^(javascript|vbscript|data):/i', $scheme) !== 1;
   }
 
-  /**
-   * href for output: neutralizes unsafe links that were stored before validation existed
-   */
+  // neutralizes unsafe links that were stored before validation existed
   public static function href(string $link): string
   {
     // the "become premium" card links to the trusted config value (live: a javascript: checkout click)
@@ -65,9 +50,7 @@ class Bookmarks
     return static::isSafe($link) ? $link : '#';
   }
 
-  /**
-   * Comma separated tags, trimmed and deduped case-insensitively (first spelling wins)
-   */
+  // deduped case-insensitively, the first spelling wins
   public static function tags(string $tags): string
   {
     $unique = [];
@@ -79,19 +62,13 @@ class Bookmarks
     return implode(', ', $unique);
   }
 
-  /**
-   * Identifies a bookmark independent of its index, so a stale index
-   * (e.g. a second tab) never hits the wrong bookmark
-   */
+  // identifies a bookmark independent of its index, so a stale index (second tab) never hits the wrong one
   public static function fingerprint(array $bookmark): string
   {
     return substr(hash('sha256', ($bookmark['title'] ?? '') . "\n" . ($bookmark['link'] ?? '') . "\n" . ($bookmark['tags'] ?? '')), 0, 16);
   }
 
-  /**
-   * Resolves the submitted index (+ optional fingerprint) to the current index.
-   * Without fingerprint (pages rendered before it existed) the index is trusted.
-   */
+  // without fingerprint (pages rendered before it existed) the index is trusted
   public static function find(array $bookmarks, string|null $index, string|null $fingerprint): int|null
   {
     // main.js changeData() sends '' for index 0
@@ -121,8 +98,21 @@ class Bookmarks
   }
 
   /**
-   * Read-modify-write of the user's bookmarks under an exclusive lock,
-   * so concurrent requests don't overwrite each other.
+   * Free users may edit up to the limit (never the upsell card), premium users always
+   */
+  public static function editable(User $user, array $bookmarks, array $bookmark): bool
+  {
+    if ($user->isPremium()) {
+      return true;
+    }
+
+    return $user->isFreeTier()
+      && count($bookmarks) <= (int)option('noPremiumLimit')
+      && ($bookmark['title'] ?? null) !== option('noPremiumTitle');
+  }
+
+  /**
+   * Read-modify-write under an exclusive lock, so concurrent requests don't overwrite each other.
    * $callback receives the fresh bookmarks and returns the new list (or null for no change).
    */
   public static function modify(User $user, callable $callback): User
@@ -140,8 +130,7 @@ class Bookmarks
     }
 
     try {
-      // drop content read earlier in this request, another request may have written since
-      // (VersionCache is @unstable in Kirby 5, so only if available)
+      // another request may have written since this one read the content (VersionCache is @unstable in Kirby 5)
       if (method_exists(VersionCache::class, 'reset')) {
         VersionCache::reset();
       }

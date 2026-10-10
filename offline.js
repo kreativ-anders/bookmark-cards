@@ -1,10 +1,6 @@
-console.log("You are Offline!");
-
 let user = null;
 
-// Brand logos (token => URL) and matching rules from /brands.json and /brands-rules.json,
-// cached by the service worker. Same rules as BrandLogos::find() in site/plugins/brands:
-// a domain label of the link first, then whole words of the title, the longest token wins.
+// same matching as BrandLogos::find() in site/plugins/brands, data from /brands.json and /brands-rules.json
 let brandLogos = {};
 let brandRules = { aliases: {}, domainOnly: [] };
 function loadJson(url) {
@@ -24,7 +20,6 @@ function brandToken(value) {
   return value.toLowerCase().replace(/[^a-z]+/g, '');
 }
 
-// longest candidate with a logo, the first one on a tie
 function longestBrand(candidates) {
   let match = '';
   for (const token of candidates) {
@@ -66,15 +61,12 @@ function brandLogo(title, link) {
   return match ? brandLogos[match] : null;
 }
 
-// Same rule as Bookmarks::isSafe(): javascript:, vbscript: and data: links never become a live href
+// same rule as Bookmarks::isSafe()
 function safeHref(link) {
   return /^(javascript|vbscript|data):/i.test(link.replace(/[\x00-\x20]+/g, '')) ? '#' : link;
 }
 
-/**
- * Load user JSON: network (the service worker answers from its cache when offline),
- * then Cache API, then localStorage. Resolves null when nothing is available.
- */
+// network (the service worker answers from its cache), then Cache API, then localStorage
 function loadUser() {
   return fetch('/user.json')
     .then(response => {
@@ -100,10 +92,7 @@ function loadUser() {
     });
 }
 
-/**
- * main.js (search, tag filter, theme toggle) and the same init the footer runs online.
- * main.js is loaded after the cards exist, its search caches the cards on init.
- */
+// loaded after the cards exist, because its search reads the cards on init
 function loadMain() {
   const script = document.createElement('script');
   script.src = '/assets/js/main.min.js';
@@ -133,7 +122,6 @@ Promise.all([loadUser(), brandsLoaded]).then(function(results) {
     user = results[0];
     const bookmarks = (user && Array.isArray(user.Bookmarks)) ? user.Bookmarks : [];
 
-    // Premium badge like the online header (every tier except the free one)
     const subscription = user && user.User ? String(user.User.Subscription || '') : '';
     const premium = document.getElementById('premium-meta');
     if (premium && subscription && subscription !== 'Free') premium.hidden = false;
@@ -145,26 +133,21 @@ Promise.all([loadUser(), brandsLoaded]).then(function(results) {
   });
 });
 
-/**
- * Renders the cards like site/snippets/bookmarks.php, without edit/delete (needs the server).
- * @param {*} bookmarks array
- */
+// cards like site/snippets/bookmarks.php, without edit and delete
 function printBookmarks(bookmarks) {
   if (!bookmarks || !bookmarks.length) return;
 
   const container = document.getElementById('bookmarks');
   if (!container) return;
 
-  // Build nodes in a fragment to reduce layout thrashing
   const frag = document.createDocumentFragment();
 
   const l = bookmarks.length;
   for (let i = 0; i < l; ++i) {
     const bookmark = bookmarks[i] || {};
 
-    // Bookmark Wrapper
     const article = document.createElement('article');
-    article.classList.add('bookmark', 'card-background', 'lazy');
+    article.classList.add('bookmark', 'card-background');
     const title = (bookmark.title || '').toString().trim();
     const link = (bookmark.link || '').toString();
     const tags = (bookmark.tags || '').toString();
@@ -174,7 +157,6 @@ function printBookmarks(bookmarks) {
     const logo = (title || link) ? brandLogo(title, link) : null;
     if (logo) article.style.backgroundImage = "url('" + logo + "')";
 
-    // Bookmark Header
     const header = document.createElement('header');
     const header_anker = document.createElement('a');
     header_anker.classList.add('card-title');
@@ -184,7 +166,6 @@ function printBookmarks(bookmarks) {
     header_anker.textContent = title || link || 'Untitled';
     header.appendChild(header_anker);
 
-    // Bookmark Middle
     const middle_anker = document.createElement('a');
     middle_anker.rel = 'noopener noreferrer';
     middle_anker.target = '_self';
@@ -194,7 +175,6 @@ function printBookmarks(bookmarks) {
     middle_anker_span.classList.add('card-spanner');
     middle_anker.appendChild(middle_anker_span);
 
-    // Bookmark Footer: tags (filter via main.js toggleTag, keyboard access added by main.js)
     const footer = document.createElement('footer');
     const grid = document.createElement('div');
     grid.classList.add('grid', 'card-grid');
