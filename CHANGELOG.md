@@ -2,6 +2,8 @@
 
 ### Changes in the last 365 days
 
+- Upgrade to Kirby 5, Composer/npm dependencies and automated tests (#47) (Manuel Steinberg, 2026-10-10)
+- 📝 update CHANGELOG (github-actions[bot], 2026-07-12)
 - Add llms.txt (#46) (Copilot, 2026-07-12)
 - 📝 update CHANGELOG (github-actions[bot], 2026-05-13)
 - Bump postcss from 8.5.6 to 8.5.14 (#44) (dependabot[bot], 2026-05-13)
