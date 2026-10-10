@@ -55,6 +55,8 @@ uses()
         ]);
     })
     ->afterEach(function () {
+        // Kirby writes changed sessions on shutdown, when the temp folder is long gone
+        kirby()->session()->commit();
         ApiRequestor::setHttpClient(null);
         Dir::remove($this->tmp);
     })

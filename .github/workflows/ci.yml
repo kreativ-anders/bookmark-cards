@@ -101,6 +101,20 @@ jobs:
           ];
           PHP
 
+      # Kirby never deletes the last user: without a second account the first e2e test could not delete its own
+      - name: Seed admin account
+        run: |
+          php -r '
+            require "kirby/bootstrap.php";
+            $kirby = new Kirby\Cms\App(["options" => [
+              "kreativ-anders.memberkit.secretKey" => "sk_test_123",
+              "kreativ-anders.memberkit.apiBase"   => "http://localhost:12111",
+            ]]);
+            $kirby->impersonate("kirby", fn () => $kirby->users()->create([
+              "email" => "ci-admin@example.com", "role" => "admin", "password" => bin2hex(random_bytes(16)),
+            ]));
+          '
+
       - name: Start PHP server
         run: |
           PHP_CLI_SERVER_WORKERS=4 php -S localhost:8000 kirby/router.php > php-server.log 2>&1 &

@@ -39,7 +39,7 @@
 
     <section>
       <h3>Subscription</h3>
-      <a role="button" class="contrast" data-pirsch-event="Manage Subscription" href="<?= url($user->getStripePortalURL()) ?>">Manage Subscriptions</a>
+      <a role="button" class="contrast" data-no-instant data-pirsch-event="Manage Subscription" href="<?= url($user->getStripePortalURL()) ?>">Manage Subscriptions</a>
     </section>
 
     <section>

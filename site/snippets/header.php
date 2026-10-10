@@ -178,7 +178,7 @@
 
         <li><?php snippet('theme-toggle') ?></li>
         <li>
-          <a id="logout" href="<?= url('logout') ?>" class="secondary outline" data-pirsch-event="Logout">Logout</a>
+          <a id="logout" href="<?= url('logout') ?>" data-no-instant class="secondary outline" data-pirsch-event="Logout">Logout</a>
         </li>
         <?php endif; ?>
       </ul>
