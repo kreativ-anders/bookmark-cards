@@ -39,6 +39,9 @@
 
     <section>
       <h3>Subscription</h3>
+      <?php if ($user->stripe_subscription()->isNotEmpty() && $user->stripe_cancel_at()->isNotEmpty()): ?>
+      <p>Canceled. <?= esc($user->tier()) ?> stays active until <strong><?= $user->stripe_cancel_at()->toDate('F j, Y') ?></strong>, then your account becomes <?= esc($tiers[0]['name']) ?>. Changed your mind? Renew it under <em>Manage Subscriptions</em>.</p>
+      <?php endif ?>
       <a role="button" class="contrast" data-no-instant data-pirsch-event="Manage Subscription" href="<?= url($user->getStripePortalURL()) ?>">Manage Subscriptions</a>
     </section>
 

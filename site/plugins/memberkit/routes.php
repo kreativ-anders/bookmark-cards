@@ -70,6 +70,7 @@ return function ($kirby) {
           kirby()->user($user->email())->update([
             'stripe_subscription' => null,
             'stripe_status'       => null,
+            'stripe_cancel_at'    => null,
             'tier'                => option('kreativ-anders.memberkit.tiers')[0]['name']
           ]);
         } catch (Exception $e) {

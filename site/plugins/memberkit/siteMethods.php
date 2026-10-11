@@ -71,6 +71,7 @@ return [
       kirby()->impersonate('kirby', fn () => $user->update([
         'stripe_subscription' => $subscription->id,
         'stripe_status'       => $subscription->status,
+        'stripe_cancel_at'    => Memberkit::cancelAt($subscription),
         'tier'                => option('kreativ-anders.memberkit.tiers')[$priceIndex]['name']
       ]));
     } catch (Exception $e) {
@@ -91,6 +92,7 @@ return [
       kirby()->impersonate('kirby', fn () => $user->update([
         'stripe_subscription' => null,
         'stripe_status'       => null,
+        'stripe_cancel_at'    => null,
         'tier'                => option('kreativ-anders.memberkit.tiers')[0]['name']
       ]));
     } catch (Exception $e) {

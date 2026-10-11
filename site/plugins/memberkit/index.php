@@ -52,6 +52,15 @@ class Memberkit
   {
     kirby()->cache('kreativ-anders.memberkit')->remove('prices');
   }
+
+  /**
+   * When a canceled subscription ends (end of the paid period), null while it renews.
+   * Stripe keeps it active until then and sends customer.subscription.deleted afterwards.
+   */
+  public static function cancelAt($subscription): ?string
+  {
+    return empty($subscription->cancel_at) ? null : gmdate('c', $subscription->cancel_at);
+  }
 }
 
 Kirby::plugin('kreativ-anders/memberkit', [

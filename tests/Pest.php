@@ -102,13 +102,15 @@ function freshUser(string $email): ?User
 }
 
 /** Builds a Stripe subscription object like the ones sent in webhooks */
-function stripeSubscription(string $customer, string $price, string $status = 'active', string $id = 'sub_fake_1'): Stripe\Subscription
+function stripeSubscription(string $customer, string $price, string $status = 'active', string $id = 'sub_fake_1', array $extra = []): Stripe\Subscription
 {
-    return Stripe\Subscription::constructFrom([
+    return Stripe\Subscription::constructFrom($extra + [
         'id'       => $id,
         'object'   => 'subscription',
         'customer' => $customer,
         'status'   => $status,
         'items'    => ['object' => 'list', 'data' => [['id' => 'si_fake', 'object' => 'subscription_item', 'price' => ['id' => $price, 'object' => 'price']]]],
+        'cancel_at' => null,
+        'cancel_at_period_end' => false,
     ]);
 }

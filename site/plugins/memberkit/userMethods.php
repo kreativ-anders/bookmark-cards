@@ -93,6 +93,7 @@ return [
       $this->update([
         'stripe_subscription' => $subscription->id,
         'stripe_status'       => $subscription->status,
+        'stripe_cancel_at'    => Memberkit::cancelAt($subscription),
         'tier'                => $tiers[$priceIndex]['name']
       ]);
 
