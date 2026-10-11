@@ -90,14 +90,18 @@ return [
     $priceIndex   = array_search($price, array_column($tiers, 'price'), false);
 
     try {
-      $this->update([
+      // Kirby 5 models are immutable: keep working on the returned instance,
+      // a change on the stale $this would delete the content file (bookmarks, customer id)
+      $user = $this->update([
         'stripe_subscription' => $subscription->id,
         'stripe_status'       => $subscription->status,
         'stripe_cancel_at'    => Memberkit::cancelAt($subscription),
         'tier'                => $tiers[$priceIndex]['name']
       ]);
 
-      $this->changeEmail($customer->email);
+      if (!empty($customer->email) && Str::lower($customer->email) !== Str::lower($user->email())) {
+        $user->changeEmail($customer->email);
+      }
 
       return true;
     } catch (Exception $e) {

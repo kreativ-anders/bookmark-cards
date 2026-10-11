@@ -148,6 +148,28 @@ describe('mergeStripeCustomer (checkout success)', function () {
             ->and($user->stripe_subscription()->value())->toBe('sub_999')
             ->and($user->stripe_status()->value())->toBe('active');
     });
+
+    it('keeps bookmarks and the customer id on disk', function (string $stripeEmail) {
+        $this->kirby->impersonate('kirby');
+        freshUser('jane@example.com')->update(['Bookmarks' => "- url: https://example.com\n"]);
+
+        $this->stripe->respond('GET', "/v1/customers/{$this->customer}", [
+            'id'            => $this->customer,
+            'object'        => 'customer',
+            'email'         => $stripeEmail,
+            'subscriptions' => ['object' => 'list', 'data' => [stripeSubscription($this->customer, 'price_premium', 'active', 'sub_1')->toArray()]],
+        ]);
+
+        // logged-in user on /checkout/success
+        $this->kirby->impersonate('jane@example.com');
+        kirby()->user()->mergeStripeCustomer();
+
+        // in-memory models can hide a deleted content file, so read it from disk
+        $content = file_get_contents(freshUser($stripeEmail)->root() . '/user.txt');
+        expect($content)->toContain('https://example.com')
+            ->toContain($this->customer)
+            ->toContain('Tier: Premium');
+    })->with(['jane@example.com', 'jane.billing@example.com']);
 });
 
 describe('checkout URLs', function () {
