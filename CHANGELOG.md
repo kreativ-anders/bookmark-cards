@@ -3,6 +3,9 @@
 ### Changes in the last 365 days
 
 - Merge branch 'main' of https://github.com/kreativ-anders/bookmark-cards (Manuel Steinberg, 2026-10-11)
+- 🚸 Add cancel subscription page and coverage (Manuel Steinberg, 2026-10-11)
+- 📝 update CHANGELOG (github-actions[bot], 2026-10-11)
+- Merge branch 'main' of https://github.com/kreativ-anders/bookmark-cards (Manuel Steinberg, 2026-10-11)
 - 🚑️ Handle expired Stripe cancellations as free tier (Manuel Steinberg, 2026-10-11)
 - 📝 update CHANGELOG (github-actions[bot], 2026-10-11)
 - Merge branch 'main' of https://github.com/kreativ-anders/bookmark-cards (Manuel Steinberg, 2026-10-11)
