@@ -2,6 +2,8 @@
 
 ### Changes in the last 365 days
 
+- Track Stripe cancel-at for end-period downgrades (Manuel Steinberg, 2026-10-11)
+- 📝 update CHANGELOG (github-actions[bot], 2026-10-10)
 - Merge branch 'main' of https://github.com/kreativ-anders/bookmark-cards (Manuel Steinberg, 2026-10-10)
 - 🔍️ Improve brand matching and SEO metadata (Manuel Steinberg, 2026-10-10)
 - 💄 add more brands (Manuel Steinberg, 2026-10-10)
