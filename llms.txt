@@ -18,7 +18,7 @@
 - **Frontend**: Vanilla JS, custom CSS (no framework, light/dark, WCAG AA), self-hosted Geist + Instrument Serif fonts, esbuild for build
 - **Analytics**: Pirsch (privacy-friendly, no cookies)
 - **Testing**: Pest (Stripe integration, brand logos, panel stats) and Cypress (end-to-end: auth, settings, bookmarks)
-- **CI**: GitHub Actions (changelog), Dependabot (Composer, npm)
+- **CI**: GitHub Actions (tests), Dependabot (Composer, npm)
 
 ## Repository structure
 
@@ -27,7 +27,7 @@
 - `assets/` — CSS and JS sources and builds, brand logos (`assets/brand-names`)
 - `tests/` — Pest tests
 - `cypress/` — End-to-end test specs
-- `.github/` — Changelog workflow, Dependabot config
+- `.github/` — CI workflow, Dependabot config
 
 ## Key design decisions
 
