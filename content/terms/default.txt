@@ -16,7 +16,7 @@ Unlimited bookmarks. Price and billing period are shown under (link: /#pricing t
 
 ### Cancel anytime
 
-In your settings under *Manage Subscriptions*. Premium stays active until the end of the period you already paid for, then your account becomes Free. Until then you can undo the cancellation.
+In your settings under *Manage Subscriptions*, see (link: cancel text: Cancel subscription). Forgot your login? Write us through the (link: https://kreativ-anders.de/kontakt text: contact form target: _blank). Premium stays active until the end of the period you already paid for, then your account becomes Free. Until then you can undo the cancellation.
 
 ### Delete your account
 
