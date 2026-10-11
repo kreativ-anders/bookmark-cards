@@ -2,6 +2,9 @@
 
 ### Changes in the last 365 days
 
+- Merge branch 'main' of https://github.com/kreativ-anders/bookmark-cards (Manuel Steinberg, 2026-10-11)
+- Fix immutable user update in Stripe merge (Manuel Steinberg, 2026-10-11)
+- 📝 update CHANGELOG (github-actions[bot], 2026-10-11)
 - Track Stripe cancel-at for end-period downgrades (Manuel Steinberg, 2026-10-11)
 - 📝 update CHANGELOG (github-actions[bot], 2026-10-10)
 - Merge branch 'main' of https://github.com/kreativ-anders/bookmark-cards (Manuel Steinberg, 2026-10-10)
