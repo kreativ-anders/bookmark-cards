@@ -28,7 +28,9 @@ describe('webhook: customer.subscription.updated', function () {
 
         site()->updateStripeSubscriptionWebhook(stripeSubscription($this->customer, 'price_basic', 'past_due'));
 
-        expect(freshUser('jane@example.com')->stripe_status()->value())->toBe('past_due');
+        expect(freshUser('jane@example.com')->stripe_status()->value())->toBe('past_due')
+            ->and(freshUser('jane@example.com')->isPremium())->toBeFalse()
+            ->and(freshUser('jane@example.com')->isFreeTier())->toBeTrue();
     });
 
     it('fails when no Kirby user belongs to the customer', function () {
@@ -59,15 +61,16 @@ describe('webhook: customer.subscription.updated', function () {
 
 describe('cancel at end of billing period', function () {
 
-    $canceled = ['cancel_at' => 1794398400, 'cancel_at_period_end' => true]; // 2026-11-11 12:00 UTC
+    $end      = strtotime('+1 month 12:00 UTC');
+    $canceled = ['cancel_at' => $end, 'cancel_at_period_end' => true];
 
-    it('keeps the tier and stores when the paid period ends', function () use ($canceled) {
+    it('keeps the tier and stores when the paid period ends', function () use ($canceled, $end) {
         site()->updateStripeSubscriptionWebhook(stripeSubscription($this->customer, 'price_premium', 'active', 'sub_123', $canceled));
 
         $user = freshUser('jane@example.com');
         expect($user->tier()->value())->toBe('Premium')
             ->and($user->isAllowed('Premium'))->toBeTrue()
-            ->and($user->stripe_cancel_at()->toDate('Y-m-d'))->toBe('2026-11-11');
+            ->and($user->stripe_cancel_at()->toDate('U'))->toBe((string)$end);
     });
 
     it('clears the end date when the cancellation is undone', function () use ($canceled) {
@@ -75,6 +78,15 @@ describe('cancel at end of billing period', function () {
         site()->updateStripeSubscriptionWebhook(stripeSubscription($this->customer, 'price_premium', 'active', 'sub_123'));
 
         expect(freshUser('jane@example.com')->stripe_cancel_at()->isEmpty())->toBeTrue();
+    });
+
+    it('applies free limits once the period is over, even without the deleted webhook', function () {
+        site()->updateStripeSubscriptionWebhook(stripeSubscription($this->customer, 'price_premium', 'active', 'sub_123', ['cancel_at' => time() - 60, 'cancel_at_period_end' => true]));
+
+        $user = freshUser('jane@example.com');
+        expect($user->tier()->value())->toBe('Premium')
+            ->and($user->isPremium())->toBeFalse()
+            ->and($user->isFreeTier())->toBeTrue();
     });
 
     it('resets to the free tier once the period is over', function () use ($canceled) {

@@ -118,6 +118,11 @@ return [
       return false;
     }
 
+    // canceled and the paid period is over, even if customer.subscription.deleted never arrived
+    if ($this->stripe_cancel_at()->isNotEmpty() && strtotime($this->stripe_cancel_at()->value()) <= time()) {
+      return false;
+    }
+
     $userTier = $this->tier()->toString();
 
     if ($userTier === $tier) {
@@ -129,8 +134,12 @@ return [
     return array_search($userTier, $names, false) >= array_search($tier, $names, false);
   },
 
+  /**
+   * Free limits apply to everyone without an active paid subscription
+   * (free tier, failed payment, paid period over) — not only to the free tier name
+   */
   'isFreeTier' => function (): bool {
-    return $this->tier()->toString() === (option('kreativ-anders.memberkit.tiers')[0]['name'] ?? null);
+    return !$this->isPremium();
   },
 
   'isPremium' => function (): bool {
