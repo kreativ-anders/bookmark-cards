@@ -58,6 +58,8 @@ Logos live in `assets/brand-names/*.svg` (see its README for the SVG guideline).
 
 New SVGs in `assets/brand-names` are picked up automatically.
 
+`npm run logos` optimizes them (SVGO, embedded raster images → downscaled WebP); pass file names to optimize only new ones, e.g. `npm run logos -- github.svg`.
+
 Brand coverage (logos available, bookmarks without logo, suggested file names) is shown in the panel under **Site → Brands**.
 
 ## Test

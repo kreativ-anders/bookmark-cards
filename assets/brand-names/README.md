@@ -1,12 +1,15 @@
 # Brand Names
 
-Brand logos shown on bookmark cards (391 SVGs). Formerly the standalone repo [kreativ-anders/brand-names](https://github.com/kreativ-anders/brand-names), now maintained here.
+Brand logos shown on bookmark cards (397 SVGs). Formerly the standalone repo [kreativ-anders/brand-names](https://github.com/kreativ-anders/brand-names), now maintained here.
+
+Besides brands that users bookmarked, the collection follows the most visited websites worldwide (e.g. [Similarweb](https://www.similarweb.com/blog/research/market-research/most-visited-websites/), [Traffic Lens](https://trafficlens.io/top-100-websites/)), so popular bookmarks get a logo out of the box — adult sites included.
 
 ## Adding a logo
 
 1. Name the file after the brand: lowercase, letters only is safest, e.g. `github.svg`, `buymeacoffee.svg`
 2. Follow the SVG format guideline below
 3. Drop it into this folder — no build step. The `brands` plugin (`site/plugins/brands`) matches bookmark titles to file names (letters a-z only; the longest file name contained in the title wins)
+4. Optimize it: `npm run logos -- <file>.svg` (or `npm run logos` for all logos)
 
 The panel (**Site → Brands**) lists bookmark titles without a logo and the suggested file name.
 
@@ -19,35 +22,10 @@ All `.svg` files follow this guideline (based on [Inkscape](https://inkscape.org
 3. Transform size to 250px width.
 4. Scale Page with the factor 1.2.
 5. Align brand/selection to center.
-6. Compress svg file (with any tool you prefer, e.g. [SVGOMG](https://jakearchibald.github.io/svgomg/))
+6. Compress the file with `npm run logos` (`optimize-logos.mjs`): [SVGO](https://github.com/svg/svgo) minifies the markup, embedded PNG/JPEG images are downscaled to 750px width and re-encoded as WebP. Prefer vector logos — embedded raster images stay much larger.
 
-## Legal & Disclaimer
+## Trademarks
 
-### ⚠️ Important Legal Notice
+Logos only identify the website a user bookmarked. All brand names, logos and trademarks are the property of their respective owners; we are not affiliated with, endorsed by or sponsored by any of them.
 
-**This repository is provided for decoration and educational purposes only.**
-
-- **No Affiliation**: The creator and maintainers of this repository are **not affiliated, associated, authorized, endorsed by, or in any way officially connected** with any of the brands represented in this collection.
-- **Trademark Rights**: All brand names, logos, and trademarks are the property of their respective owners. Use of these logos does not imply any endorsement or partnership.
-- **Use at Your Own Risk**: Before using any logo in a commercial project, ensure you have the legal right to do so and comply with the brand's usage guidelines and trademark policies.
-- **No Warranty**: This collection is provided "as is" without any warranty or guarantee of accuracy, completeness, or fitness for a particular purpose.
-
-### Responsible Usage
-
-- Always check the official brand guidelines before using any logo
-- Respect trademark laws and intellectual property rights
-- Use these logos responsibly and ethically
-- Do not use them in ways that could be misleading or cause confusion about affiliation
-
-### Update/Removal of Brands
-
-If you are an authorized representative of a brand and wish to request an update or removal of your brand's logo, please contact: **brand-names at kreativ-anders dot de** with:
-- Your affiliation with the company
-- The specific brand/logo in question
-- Your request and reasons
-
-We will respond promptly to all legitimate requests.
-
-## Notes
-
-This repository is just for decoration purposes. Brand names may have different licenses. Use with caution.
+Brand owners who want their logo updated or removed can contact **brand-names at kreativ-anders dot de**.
