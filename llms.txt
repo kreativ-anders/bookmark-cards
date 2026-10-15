@@ -9,7 +9,7 @@
 - Detects duplicate URLs when adding a new bookmark
 - Displays bookmarks as cards; if the title contains a known brand name, the card shows that brand's logo
 - Exports bookmarks as JSON or CSV
-- Works offline via a service worker (UpUp.js) that caches the bookmark list locally
+- Works offline via a service worker that caches the bookmark list locally
 
 ## Tech stack
 

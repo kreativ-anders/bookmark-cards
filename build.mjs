@@ -2,6 +2,7 @@
 // - CSS: assets/css/main.css -> assets/css/main.min.css, self-hosted fonts (node_modules/@fontsource*) -> assets/css/fonts/
 // - JS:  assets/js/pico-modal.js + assets/js/main.js -> assets/js/main.min.js
 //        offline.js -> offline.min.js (offline page)
+//        offline-cache.js + offline-sw.js -> *.min.js (service worker for offline mode)
 //        Plain concatenation (no bundling), so top-level functions stay global for inline handlers.
 import { build, transform } from 'esbuild';
 import { readFile, writeFile } from 'node:fs/promises';
@@ -11,12 +12,14 @@ const css = { entry: 'assets/css/main.css', out: 'assets/css/main.min.css' };
 const scripts = [
   { sources: ['assets/js/pico-modal.js', 'assets/js/main.js'], out: 'assets/js/main.min.js' },
   { sources: ['offline.js'], out: 'offline.min.js' },
+  { sources: ['offline-cache.js'], out: 'offline-cache.min.js' },
+  { sources: ['offline-sw.js'], out: 'offline-sw.min.js' },
 ];
 
 async function buildCSS() {
   await build({
     entryPoints: [css.entry], outfile: css.out, bundle: true, minify: true, logLevel: 'warning',
-    loader: { '.woff2': 'file' }, assetNames: 'fonts/[name]', // stable names, cached offline by UpUp (header.php)
+    loader: { '.woff2': 'file' }, assetNames: 'fonts/[name]', // stable names, cached offline by offline-sw.js (header.php)
   });
   console.log(`✔ ${css.out}`);
 }

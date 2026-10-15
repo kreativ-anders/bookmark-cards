@@ -49,7 +49,7 @@
   ?>
   <?php if ($user = $kirby->user()): ?>
   <link rel="manifest" href="manifest.json">
-  <script src="/upup.min.js"></script>
+  <script src="<?= $asset('offline-cache.min.js') ?>"></script>
   <?php
     $offlineFiles = [
       'favicon.ico',
@@ -68,24 +68,40 @@
       }
     }
     $offlineAssets = array_merge($offlineFiles, ['brands.json', 'brands-rules.json', 'user.json'], array_keys($offlineLogos));
-    $offlineStamps = array_map(fn ($path) => @filemtime($kirby->root('index') . '/' . $path), [...$offlineFiles, 'offline.html', 'assets/brand-names', 'site/plugins/brands/index.php']);
+    $offlineStamps = array_map(fn ($path) => @filemtime($kirby->root('index') . '/' . $path), [...$offlineFiles, 'offline.html', 'offline-sw.min.js', 'assets/brand-names', 'site/plugins/brands/index.php']);
     $offlineVersion = substr(md5(json_encode([$offlineAssets, $offlineStamps, $user->id(), $user->modified()])), 0, 12);
   ?>
   <script>
-  // the service worker re-downloads every asset whenever UpUp starts, so only when something changed
+  // the service worker re-downloads every asset on each start, so only when something changed or another
+  // worker (UpUp) still controls the page; the version is stored only after the worker cached everything
   (function (version, assets) {
-    if (!window.UpUp) return;
+    if (!window.OfflineCache) return;
+    var key = 'bookmark.cards.offline';
+    var controller = navigator.serviceWorker.controller;
     try {
-      if (navigator.serviceWorker.controller && localStorage.getItem('bookmark.cards.offline') === version) return;
-      localStorage.setItem('bookmark.cards.offline', version);
+      if (controller && /\/offline-sw\.min\.js$/.test(controller.scriptURL) && localStorage.getItem(key) === version) return;
     } catch (e) {}
-    UpUp.start({
-      'cache-version': version,
-      'content-url': 'offline.html',
-      'assets': assets,
-      'service-worker-url': '/upup.sw.min.js'
+    OfflineCache.start({ version: version, offlinePage: '/offline.html', assets: assets }).then(function (ok) {
+      try { if (ok) localStorage.setItem(key, version); } catch (e) {}
     });
   })(<?= json_encode($offlineVersion) ?>, <?= json_encode($offlineAssets, JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) ?>);
+  </script>
+  <?php else: ?>
+  <script>
+  // logged out: drop the offline worker and its caches, they hold the previous user's bookmarks (user.json)
+  (function () {
+    var sw = navigator.serviceWorker;
+    if (!sw) return;
+    sw.getRegistrations().then(function (registrations) {
+      registrations.forEach(function (registration) { registration.unregister(); });
+    });
+    if (window.caches) caches.keys().then(function (names) {
+      names.forEach(function (name) {
+        if (name.indexOf('bookmark-cards-offline-') === 0 || name.indexOf('upup-cache') === 0) caches.delete(name);
+      });
+    });
+    try { localStorage.removeItem('bookmark.cards.offline'); } catch (e) {}
+  })();
   </script>
   <?php endif ?>
 

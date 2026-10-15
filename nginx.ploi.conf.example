@@ -6,7 +6,7 @@
 #
 # Kirby runs from the repository root (Ploi "web directory": /), so the rules below keep
 # content/, site/, kirby/, dotfiles and tooling files (composer.json, README.md, …) private
-# while root-level icons, manifest.json, upup*.js and offline.* are served as files.
+# while root-level icons, manifest.json, offline*.js and offline.html are served as files.
 
 # Ploi Webserver Configuration, do not remove!
 include /etc/nginx/ploi/bookmark.cards/before/*;
@@ -58,12 +58,12 @@ server {
     }
 
     # Service worker, manifest and offline page must update promptly
-    location ~ ^/(upup\.sw\.min\.js|upup\.min\.js|manifest\.json|offline\.html|offline\.min\.js)$ {
+    location ~ ^/(offline-sw\.min\.js|offline-cache\.min\.js|manifest\.json|offline\.html|offline\.min\.js)$ {
         expires -1;
         try_files $uri =404;
     }
 
-    # Static files (same lifetimes as .htaccess); missing files fall back to Kirby (media/ thumbs)
+    # Static files (1 year); missing files fall back to Kirby (media/ thumbs)
     location ~* \.(?:ico|png|jpe?g|gif|webp|avif|svg|woff2)$ {
         expires 1y;
         access_log off;

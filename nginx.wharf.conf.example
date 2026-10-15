@@ -4,7 +4,7 @@
 # Keep every {{…}} placeholder: Wharf fills them in on each start.
 #
 # Same access rules as nginx.ploi.conf.example. Wharf's "kirby" template rewrites every root-level
-# file to index.php, so favicon.ico, the icons, manifest.json, upup*.js and offline.* would 404.
+# file to index.php, so favicon.ico, the icons, manifest.json, offline*.js and offline.html would 404.
 # No caching headers here, so CSS/JS changes show up on reload.
 
 server {
