@@ -57,6 +57,7 @@ describe('BrandLogos', function () {
         'Notebook',           // not notebooklm.svg
         'Medium rare steak',  // medium.svg via link only
         'UI kit for designers', // kit.svg via link only
+        'Night at the opera',   // opera.svg via link only
     ]);
 
     it('matches the domain of the link first', function (string $title, string $link, string $logo) {
@@ -71,6 +72,9 @@ describe('BrandLogos', function () {
         ['Tickets', 'https://www.bahn.de/', 'deutschebahn.svg'],          // alias
         ['Kirby', 'https://getkirby.com', 'kirby.svg'],                   // alias
         ['Router', 'http://fritz.box', 'fritzbox.svg'],                   // alias without TLD label
+        ['Mail', 'https://outlook.office.com/mail/', 'microsoft.svg'],    // alias
+        ['News', 'https://www.nytimes.com', 'newyorktimes.svg'],          // alias
+        ['Chat', 'https://t.me/durov', 'telegram.svg'],                   // alias
         ['GitHub', 'https://example.org', 'github.svg'],                  // unknown domain -> title
     ]);
 
