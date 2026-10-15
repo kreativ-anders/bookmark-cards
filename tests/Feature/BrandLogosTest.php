@@ -35,7 +35,6 @@ describe('BrandLogos', function () {
     it('prefers the longest matching logo', function (string $title, string $logo) {
         expect(BrandLogos::all()[BrandLogos::find($title)])->toBe($logo);
     })->with([
-        ['Buy me a coffee', 'buymeacoffee.svg'],   // not coffee.svg
         ['SimiliarWeb', 'similiarweb.svg'],        // not web.svg
         ['Bing webmaster', 'bing.svg'],            // not web.svg
         ['DEVK', 'devk.svg'],                      // not dev.svg
@@ -57,6 +56,7 @@ describe('BrandLogos', function () {
         'Webmaster',          // not web.svg
         'Notebook',           // not notebooklm.svg
         'Medium rare steak',  // medium.svg via link only
+        'UI kit for designers', // kit.svg via link only
     ]);
 
     it('matches the domain of the link first', function (string $title, string $link, string $logo) {
@@ -70,6 +70,7 @@ describe('BrandLogos', function () {
         ['Docs', 'https://developer.apple.com', 'apple.svg'],
         ['Tickets', 'https://www.bahn.de/', 'deutschebahn.svg'],          // alias
         ['Kirby', 'https://getkirby.com', 'kirby.svg'],                   // alias
+        ['Router', 'http://fritz.box', 'fritzbox.svg'],                   // alias without TLD label
         ['GitHub', 'https://example.org', 'github.svg'],                  // unknown domain -> title
     ]);
 

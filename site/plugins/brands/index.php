@@ -54,26 +54,36 @@ class BrandLogos
     /** Domains whose name differs from the logo token, domain => token (subdomains included) */
     public const ALIASES = [
         'amzn.to'          => 'amazon',
+        'atlantic.vc'      => 'atlanticlabs',
+        'avm.de'           => 'fritzbox',
         'bahn.de'          => 'deutschebahn',
         'chat.openai.com'  => 'chatgpt',
+        'convertkit.com'   => 'kit',
+        'dvinci-hr.com'    => 'dvinci',
         'fb.com'           => 'facebook',
+        'fritz.box'        => 'fritzbox',
+        'fritz.com'        => 'fritzbox',
         'getkirby.com'     => 'kirby',
         'getpocket.com'    => 'pocket',
         'ing.de'           => 'ingdiba',
+        'myfritz.net'      => 'fritzbox',
         'redd.it'          => 'reddit',
         'steampowered.com' => 'steam',
+        'ui.vision'        => 'uivision',
         'w3.org'           => 'wc',
         'wa.me'            => 'whatsapp',
+        'wbs-law.de'       => 'wbs',
+        'wbs.legal'        => 'wbs',
         'x.com'            => 'twitter',
         'youtu.be'         => 'youtube',
     ];
 
     /** Tokens that are everyday words: matched via the link only, never via the title */
     public const DOMAIN_ONLY = [
-        'absence', 'acquire', 'bild', 'brave', 'buffer', 'bunch', 'canny', 'carbon', 'chip', 'circle', 'coffee',
-        'copy', 'coworker', 'dev', 'gamma', 'ghost', 'heap', 'intuit', 'kicker', 'linear', 'liner',
-        'loaded', 'lumen', 'medium', 'moss', 'napkin', 'notion', 'ohm', 'otto', 'pocket', 'signal',
-        'steam', 'threads', 'uber', 'wave', 'wbs', 'wc', 'web', 'wise', 'wlw', 'zoom',
+        'absence', 'acquire', 'bild', 'brave', 'buffer', 'bunch', 'canny', 'carbon', 'chip', 'circle',
+        'copy', 'coworker', 'dev', 'favicon', 'gamma', 'ghost', 'heap', 'intuit', 'kicker', 'kit', 'lemonade',
+        'linear', 'liner', 'loaded', 'lumen', 'medium', 'moss', 'napkin', 'notion', 'ohm', 'otto', 'pocket',
+        'rows', 'shuffle', 'signal', 'steam', 'threads', 'uber', 'wave', 'wbs', 'wc', 'web', 'wise', 'wlw', 'zoom',
     ];
 
     /** Token of the best matching logo for a bookmark (link first, then title), or null */

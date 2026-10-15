@@ -53,7 +53,7 @@ npm run watch   # rebuild on change
 Logos live in `assets/brand-names/*.svg` (see its README for the SVG guideline). The `brands` plugin (`site/plugins/brands`) matches them to bookmarks server-side — no CSS generation needed:
 
 - Bookmark title and file names are normalized to lowercase `a-z`
-- The **longest** file name contained in the title wins (`Buy me a coffee` → `buymeacoffee.svg`, not `coffee.svg`)
+- The **longest** file name contained in the title wins (`DEVK` → `devk.svg`, not `dev.svg`)
 - `site()->brandLogo($title)` returns the logo URL, `/brands.json` serves all logos for the offline page
 
 New SVGs in `assets/brand-names` are picked up automatically.
