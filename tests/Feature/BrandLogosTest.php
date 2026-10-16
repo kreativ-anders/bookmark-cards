@@ -13,7 +13,11 @@ describe('BrandLogos', function () {
     })->with([
         ['GitHub', 'github'],
         ["Ernsting's Family", 'ernstingsfamily'],
-        ['Foo & Bär 123', 'foobr'],
+        ['Foo & Bär 123', 'foobaer'],              // umlauts spelled out
+        ['Sinnesräuber', 'sinnesraeuber'],
+        ['HÜMMER', 'huemmer'],
+        ['Straße', 'strasse'],
+        ['Café Crème', 'cafecreme'],               // accents removed
         ['', ''],
     ]);
 

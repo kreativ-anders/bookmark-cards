@@ -16,8 +16,14 @@ const brandsLoaded = Promise.all([loadJson('/brands.json'), loadJson('/brands-ru
     if (rules) brandRules = { aliases: rules.aliases || {}, domainOnly: rules.domainOnly || [] };
   });
 
+// same rule as BrandLogos::lower(): "Sinnesräuber" -> "sinnesraeuber"
+function brandLower(value) {
+  const umlauts = { 'ä': 'ae', 'ö': 'oe', 'ü': 'ue', 'ß': 'ss' };
+  return value.toLowerCase().replace(/[äöüß]/g, c => umlauts[c]).normalize('NFD').replace(/\p{M}/gu, '');
+}
+
 function brandToken(value) {
-  return value.toLowerCase().replace(/[^a-z]+/g, '');
+  return brandLower(value).replace(/[^a-z]+/g, '');
 }
 
 function longestBrand(candidates) {
@@ -44,7 +50,7 @@ function brandFromLink(link) {
 }
 
 function brandFromTitle(title) {
-  const words = title.replace(/(\p{Ll})(?=\p{Lu})/gu, '$1 ').toLowerCase().split(/[^a-z]+/).filter(Boolean);
+  const words = brandLower(title.replace(/(\p{Ll})(?=\p{Lu})/gu, '$1 ')).split(/[^a-z]+/).filter(Boolean);
   const max = Math.max(0, ...Object.keys(brandLogos).map(token => token.length));
   const runs = [];
   for (let i = 0; i < words.length; i++) {

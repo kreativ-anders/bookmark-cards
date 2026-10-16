@@ -30,7 +30,13 @@ class BrandLogos
     /** Lowercase a-z only, e.g. "Ernsting's Family" -> "ernstingsfamily" */
     public static function token(string $value): string
     {
-        return preg_replace('/[^a-z]+/', '', Str::lower($value));
+        return preg_replace('/[^a-z]+/', '', static::lower($value));
+    }
+
+    /** Lowercase with German umlauts spelled out and accents removed, e.g. "Sinnesräuber" -> "sinnesraeuber" */
+    public static function lower(string $value): string
+    {
+        return Str::ascii(strtr(Str::lower($value), ['ä' => 'ae', 'ö' => 'oe', 'ü' => 'ue', 'ß' => 'ss']));
     }
 
     /** @return array<string, string> token => file name, sorted by token */
@@ -53,57 +59,67 @@ class BrandLogos
 
     /** Domains whose name differs from the logo token, domain => token (subdomains included) */
     public const ALIASES = [
-        'amzn.to'          => 'amazon',
-        'archive.org'      => 'internetarchive',
-        'atlantic.vc'      => 'atlanticlabs',
-        'auone.jp'         => 'au',
-        'avm.de'           => 'fritzbox',
-        'bahn.de'          => 'deutschebahn',
-        'blogspot.com'     => 'blogger',
-        'chat.openai.com'  => 'chatgpt',
-        'cloud.microsoft'  => 'microsoft',
-        'convertkit.com'   => 'kit',
-        'discord.gg'       => 'discord',
-        'dvinci-hr.com'    => 'dvinci',
-        'fb.com'           => 'facebook',
-        'fritz.box'        => 'fritzbox',
-        'fritz.com'        => 'fritzbox',
-        'getkirby.com'     => 'kirby',
-        'getpocket.com'    => 'pocket',
-        'icloud.com'       => 'apple',
-        'ing.de'           => 'ingdiba',
-        'live.com'         => 'microsoft',
-        'mail.ru'          => 'mailru',
-        'max.com'          => 'hbomax',
-        'myfritz.net'      => 'fritzbox',
-        'namu.wiki'        => 'namuwiki',
-        'nyti.ms'          => 'newyorktimes',
-        'nytimes.com'      => 'newyorktimes',
-        'office.com'       => 'microsoft',
-        'ok.ru'            => 'odnoklassniki',
-        'outlook.com'      => 'microsoft',
-        'redd.it'          => 'reddit',
-        'steampowered.com' => 'steam',
-        't.me'             => 'telegram',
-        'ui.vision'        => 'uivision',
-        'vkvideo.ru'       => 'vk',
-        'w3.org'           => 'wc',
-        'wa.me'            => 'whatsapp',
-        'wbs-law.de'       => 'wbs',
-        'wbs.legal'        => 'wbs',
-        'weather.com'      => 'weatherchannel',
-        'x.com'            => 'twitter',
-        'ya.ru'            => 'yandex',
-        'youtu.be'         => 'youtube',
+        'amzn.to'                => 'amazon',
+        'archive.org'            => 'internetarchive',
+        'atlantic.vc'            => 'atlanticlabs',
+        'auone.jp'               => 'au',
+        'avm.de'                 => 'fritzbox',
+        'bahn.de'                => 'deutschebahn',
+        'blogspot.com'           => 'blogger',
+        'chat.openai.com'        => 'chatgpt',
+        'cloud.microsoft'        => 'microsoft',
+        'convertkit.com'         => 'kit',
+        'desk.ly'                => 'deskly',
+        'discord.gg'             => 'discord',
+        'dvinci-hr.com'          => 'dvinci',
+        'endoflife.date'         => 'eol',
+        'fb.com'                 => 'facebook',
+        'firma.de'               => 'firmade',
+        'fritz.box'              => 'fritzbox',
+        'fritz.com'              => 'fritzbox',
+        'getkirby.com'           => 'kirby',
+        'getoutline.com'         => 'outline',
+        'getpocket.com'          => 'pocket',
+        'home-one.com'           => 'cabinone',
+        'icloud.com'             => 'apple',
+        'icon.kitchen'           => 'iconkitchen',
+        'ing.de'                 => 'ingdiba',
+        'lda.bayern.de'          => 'ldabayern',
+        'literatureandlatte.com' => 'scrivener',
+        'live.com'               => 'microsoft',
+        'mail.ru'                => 'mailru',
+        'max.com'                => 'hbomax',
+        'myfritz.net'            => 'fritzbox',
+        'namu.wiki'              => 'namuwiki',
+        'nomads.com'             => 'nomadlist',
+        'nyti.ms'                => 'newyorktimes',
+        'nytimes.com'            => 'newyorktimes',
+        'office.com'             => 'microsoft',
+        'ok.ru'                  => 'odnoklassniki',
+        'outlook.com'            => 'microsoft',
+        'redd.it'                => 'reddit',
+        'steampowered.com'       => 'steam',
+        't.me'                   => 'telegram',
+        'ui.vision'              => 'uivision',
+        'vkvideo.ru'             => 'vk',
+        'w3.org'                 => 'wc',
+        'wa.me'                  => 'whatsapp',
+        'wbs-law.de'             => 'wbs',
+        'wbs.legal'              => 'wbs',
+        'weather.com'            => 'weatherchannel',
+        'x.com'                  => 'twitter',
+        'ya.ru'                  => 'yandex',
+        'youtu.be'               => 'youtube',
     ];
 
     /** Tokens that are everyday words: matched via the link only, never via the title */
     public const DOMAIN_ONLY = [
         'absence', 'acquire', 'au', 'bild', 'brave', 'buffer', 'bunch', 'canny', 'carbon', 'chip',
-        'circle', 'copy', 'coworker', 'dev', 'fandom', 'favicon', 'gamma', 'ghost', 'globo', 'heap',
-        'indeed', 'intuit', 'kicker', 'kit', 'lemonade', 'linear', 'liner', 'loaded', 'lumen', 'marca',
-        'medium', 'moss', 'napkin', 'notion', 'ohm', 'opera', 'otto', 'pocket', 'rows', 'shuffle',
-        'signal', 'steam', 'threads', 'uber', 'wave', 'wbs', 'wc', 'web', 'wise', 'wlw', 'zoom',
+        'circle', 'copy', 'coworker', 'dev', 'eol', 'fandom', 'favicon', 'frameshift', 'gamma', 'ghost',
+        'globo', 'heap', 'indeed', 'intuit', 'kicker', 'kit', 'lemonade', 'linear', 'liner', 'loaded',
+        'lumen', 'marca', 'medium', 'moss', 'napkin', 'notion', 'ohm', 'opera', 'otto', 'outline',
+        'palmo', 'pocket', 'rows', 'sandstorm', 'shuffle', 'signal', 'steam', 'threads', 'uber',
+        'wattstunde', 'wave', 'wbs', 'wc', 'web', 'wise', 'wlw', 'wormhole', 'zoom',
     ];
 
     /** Token of the best matching logo for a bookmark (link first, then title), or null */
@@ -144,7 +160,7 @@ class BrandLogos
     public static function fromTitle(string $title): string|null
     {
         // words of letters, camel case split ("GitHub" -> git hub), so tokens can span words
-        $words = preg_split('/[^a-z]+/', Str::lower(preg_replace('/(?<=\p{Ll})(?=\p{Lu})/u', ' ', $title)), -1, PREG_SPLIT_NO_EMPTY);
+        $words = preg_split('/[^a-z]+/', static::lower(preg_replace('/(?<=\p{Ll})(?=\p{Lu})/u', ' ', $title)), -1, PREG_SPLIT_NO_EMPTY);
         $max   = max(array_map('strlen', array_keys(static::all())) ?: [0]);
         $runs  = [];
 
