@@ -80,7 +80,6 @@ class BrandLogos
         'getkirby.com'           => 'kirby',
         'getoutline.com'         => 'outline',
         'getpocket.com'          => 'pocket',
-        'home-one.com'           => 'cabinone',
         'icloud.com'             => 'apple',
         'icon.kitchen'           => 'iconkitchen',
         'ing.de'                 => 'ingdiba',
