@@ -54,3 +54,7 @@ assets/css/prepros.config
 /cypress/screenshots
 /cypress/videos
 /.phpunit.cache
+
+# Claude Code reads skills from .claude/skills: local junction to .agents/skills (not committed)
+# PowerShell: New-Item -ItemType Junction -Path .claude\skillsrand-logos -Target .agents\skillsrand-logos
+/.claude/skills/brand-logos

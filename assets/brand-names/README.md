@@ -1,6 +1,6 @@
 # Brand Names
 
-Brand logos shown on bookmark cards (450 SVGs). Formerly the standalone repo [kreativ-anders/brand-names](https://github.com/kreativ-anders/brand-names), now maintained here.
+Brand logos shown on bookmark cards (451 SVGs). Formerly the standalone repo [kreativ-anders/brand-names](https://github.com/kreativ-anders/brand-names), now maintained here.
 
 Besides brands that users bookmarked, the collection follows the most visited websites worldwide (e.g. [Similarweb](https://www.similarweb.com/blog/research/market-research/most-visited-websites/), [Traffic Lens](https://trafficlens.io/top-100-websites/)), so popular bookmarks get a logo out of the box — adult sites included.
 
