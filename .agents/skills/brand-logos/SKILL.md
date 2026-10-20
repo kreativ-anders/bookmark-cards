@@ -29,7 +29,7 @@ Never add matching rules (ALIASES, DOMAIN_ONLY, special cases) just to make a si
 Scripts in `scripts/` (run them from a scratch directory, `puppeteer-core` is not a project dependency):
 
 ```bash
-cp .claude/skills/brand-logos/scripts/*.mjs <scratch>/tool/ && cd <scratch>/tool
+cp .agents/skills/brand-logos/scripts/*.mjs <scratch>/tool/ && cd <scratch>/tool
 npm init -y && npm i puppeteer-core@23.11.1          # uses the installed Chrome (CHROME_PATH to override)
 node grab.mjs <scratch>/out token=https://site ...    # token=url|css-selector when the automatic pick is wrong
 node sheet.mjs <scratch>/out <scratch>/sheet.png       # contact sheet on the card background -> look at it
