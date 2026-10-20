@@ -49,7 +49,8 @@ for (const file of files) {
     const source = fs.readFileSync(target, 'utf8');
 
     // SVGO merges transform attributes and ignores CSS transforms, which shifts those shapes
-    if (/style="[^"]*transform:/.test(source)) {
+    // (not text-transform)
+    if (/style="(?:[^"]*;)?\s*transform:/.test(source)) {
         console.warn(`${file}: skipped, move the CSS transform in style="" to a transform attribute first`);
         before += source.length;
         after += source.length;

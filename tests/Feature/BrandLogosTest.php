@@ -166,10 +166,10 @@ describe('panel brand stats', function () {
             ['title' => 'Trapped in Transformative Agreements? An Analysis of >1,000 Contracts', 'link' => 'https://arxiv.org/abs/2409.0001', 'tags' => ''],
             ['title' => 'Sprite Generator', 'link' => 'https://codeshack.io/images-sprite-sheet-generator/', 'tags' => ''],
             ['title' => 'Without link', 'link' => '', 'tags' => ''],
-            ['title' => 'NomadList', 'link' => 'https://nomadlist.com', 'tags' => ''],
+            ['title' => 'FrobNicator', 'link' => 'https://frobnicator.io', 'tags' => ''],
         ])]);
 
-        expect(array_column(site()->missingBrandsList(), 'suggested'))->toBe(['nomadlist']);
+        expect(array_column(site()->missingBrandsList(), 'suggested'))->toBe(['frobnicator']);
     });
 
     it('groups missing logos by file name and ranks by number of users', function () {
