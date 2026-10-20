@@ -136,7 +136,7 @@ describe('delete', function () {
         $this->kirby->impersonate('admin@example.com');
         $result = AccountActivity::delete([$id]);
 
-        expect($result)->toBe(['deleted' => ['jane@example.com'], 'failed' => []])
+        expect($result)->toBe(['deleted' => ['jane@example.com'], 'failed' => [], 'remaining' => 0])
             ->and(freshUser('jane@example.com'))->toBeNull()
             ->and($this->stripe->requestsTo('DELETE', "/v1/customers/$customer"))->toHaveCount(1);
     });
@@ -155,7 +155,7 @@ describe('delete', function () {
             'unknown',
         ]);
 
-        expect($result)->toBe(['deleted' => [], 'failed' => []])
+        expect($result)->toBe(['deleted' => [], 'failed' => [], 'remaining' => 0])
             ->and(freshUser('active@example.com'))->not->toBeNull()
             ->and(freshUser('paid@example.com'))->not->toBeNull()
             ->and($this->stripe->requestsTo('DELETE', '/v1/customers/*'))->toBeEmpty();
@@ -172,8 +172,21 @@ describe('delete', function () {
         $this->kirby->impersonate('admin@example.com');
         $result = AccountActivity::delete([$jane, $john]);
 
-        expect($result)->toBe(['deleted' => ['john@example.com'], 'failed' => ['jane@example.com' => 'Could not delete stripe customer!']])
+        expect($result)->toBe(['deleted' => ['john@example.com'], 'failed' => ['jane@example.com' => 'Could not delete stripe customer!'], 'remaining' => 0])
             ->and(freshUser('jane@example.com'))->not->toBeNull();
+    });
+
+    it('stops after the time budget and reports the rest', function () {
+        registerUser('jane@example.com');
+        registerUser('john@example.com');
+        $jane = ageUser('jane@example.com', strtotime('-2 years'))->id();
+        $john = ageUser('john@example.com', strtotime('-2 years'))->id();
+
+        $result = AccountActivity::delete([$jane, $john], 0);
+
+        expect($result)->toBe(['deleted' => [], 'failed' => [], 'remaining' => 2])
+            ->and(freshUser('jane@example.com'))->not->toBeNull()
+            ->and(freshUser('john@example.com'))->not->toBeNull();
     });
 });
 

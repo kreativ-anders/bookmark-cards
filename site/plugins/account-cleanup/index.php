@@ -114,15 +114,31 @@ class AccountActivity
   }
 
   /**
-   * Deletes the given users if they are (still) inactive.
-   * Returns ['deleted' => [emails], 'failed' => [email => message]]
+   * Seconds one Panel request may spend deleting. Every deletion calls Stripe, so a large
+   * selection would run into the PHP/proxy timeout; the Panel then shows the raw dialog JSON.
    */
-  public static function delete(array $ids): array
+  public static function budget(): int
+  {
+    return max(1, (int)option('inactiveAccountsDeleteSeconds', 20));
+  }
+
+  /**
+   * Deletes the given users if they are (still) inactive, stops after the time budget.
+   * Returns ['deleted' => [emails], 'failed' => [email => message], 'remaining' => count not processed]
+   */
+  public static function delete(array $ids, int|null $budget = null): array
   {
     $kirby  = Kirby::instance();
-    $result = ['deleted' => [], 'failed' => []];
+    $ids    = array_values(array_unique($ids));
+    $result = ['deleted' => [], 'failed' => [], 'remaining' => 0];
+    $until  = microtime(true) + ($budget ?? static::budget());
 
-    foreach (array_unique($ids) as $id) {
+    foreach ($ids as $index => $id) {
+      if (microtime(true) >= $until) {
+        $result['remaining'] = count($ids) - $index;
+        break;
+      }
+
       $user = $kirby->users()->find($id);
 
       // gone, became active or paying since the list was loaded => skip
@@ -259,6 +275,12 @@ Kirby::plugin('bookmark-cards/account-cleanup', [
               }
 
               throw new Exception('Deleted ' . $deleted . ' accounts. Could not delete: ' . implode(', ', $failed));
+            }
+
+            // keeps the dialog open with the selection, submitting again continues (deleted ones are skipped)
+            if ($result['remaining'] > 0) {
+              throw new Exception('Deleted ' . $deleted . ' accounts, ' . $result['remaining'] .
+                                  ' selected accounts are left. Click "Delete selected" again to continue.');
             }
 
             return [
