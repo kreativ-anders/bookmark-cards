@@ -82,6 +82,23 @@ describe('BrandLogos', function () {
         ['GitHub', 'https://example.org', 'github.svg'],                  // unknown domain -> title
     ]);
 
+    it('suggests a new logo when title and domain name the same brand', function (string $title, string $link, string|null $token) {
+        expect(BrandLogos::suggest($title, $link))->toBe($token);
+    })->with([
+        ['NomadList', 'https://nomadlist.com', 'nomadlist'],                         // camel case
+        ['Page2API', 'https://www.page2api.com', 'pageapi'],
+        ['Tiny House Manufaktur', 'https://tinyhouse-manufaktur.de', 'tinyhousemanufaktur'],
+        ['Hümmer Fenster', 'https://huemmer.de/fenster', 'huemmer'],                 // part of the title
+        ['Kirby', 'https://getkirby.com', 'kirby'],                                  // domain affix
+        ['Alianz X', 'https://allianzx.com', 'allianzx'],                            // typo, domain wins
+        ['Bookmark-Cards', 'https://shop.bookmark-cards.de', 'bookmarkcards'],
+        ['Trapped in Transformative Agreements?', 'https://arxiv.org/abs/1', null],  // paper on another site
+        ['Email Obfuscator', 'https://jane.dev/tools/email', null],                  // tool page on a blog
+        ['Blog', 'https://blog.jane.dev', null],                                     // generic subdomain
+        ['NomadList', '', null],                                                     // no link
+        ['', 'https://nomadlist.com', null],
+    ]);
+
     it('returns null without a matching logo', function (string $title) {
         expect(BrandLogos::find($title))->toBeNull()
             ->and(site()->brandLogo($title))->toBeNull();
@@ -120,8 +137,8 @@ describe('panel brand stats', function () {
         freshUser('jane@example.com')->update(['bookmarks' => Kirby\Data\Yaml::encode([
             ['title' => 'GitHub', 'link' => 'https://github.com', 'tags' => ''],
             ['title' => 'Buy me a coffee', 'link' => 'https://buymeacoffee.com', 'tags' => ''],
-            ['title' => 'Xyzzy Tool', 'link' => 'https://example.org', 'tags' => ''],
-            ['title' => 'Xyzzy Tool', 'link' => 'https://example.org/2', 'tags' => ''],
+            ['title' => 'Xyzzy Tool', 'link' => 'https://xyzzytool.com', 'tags' => ''],
+            ['title' => 'Xyzzy Tool', 'link' => 'https://www.xyzzy-tool.de/2', 'tags' => ''],
         ])]);
     });
 
@@ -137,26 +154,37 @@ describe('panel brand stats', function () {
 
     it('lists missing logos with usage count and suggested file name', function () {
         expect(site()->missingBrandsList())->toBe([
-            ['title' => 'Xyzzy Tool', 'count' => 2, 'suggested' => 'xyzzytool', 'users' => 1],
+            ['title' => 'Xyzzy Tool', 'domain' => 'xyzzytool.com', 'count' => 2, 'suggested' => 'xyzzytool', 'users' => 1],
         ]);
+    });
+
+    it('lists only bookmarks whose title and domain name the same brand', function () {
+        freshUser('jane@example.com')->update(['bookmarks' => Kirby\Data\Yaml::encode([
+            ['title' => 'Trapped in Transformative Agreements? An Analysis of >1,000 Contracts', 'link' => 'https://arxiv.org/abs/2409.0001', 'tags' => ''],
+            ['title' => 'Sprite Generator', 'link' => 'https://codeshack.io/images-sprite-sheet-generator/', 'tags' => ''],
+            ['title' => 'Without link', 'link' => '', 'tags' => ''],
+            ['title' => 'NomadList', 'link' => 'https://nomadlist.com', 'tags' => ''],
+        ])]);
+
+        expect(array_column(site()->missingBrandsList(), 'suggested'))->toBe(['nomadlist']);
     });
 
     it('groups missing logos by file name and ranks by number of users', function () {
         registerUser('john@example.com');
         $this->kirby->impersonate('kirby');
         freshUser('john@example.com')->update(['bookmarks' => Kirby\Data\Yaml::encode([
-            ['title' => 'Frobnicator', 'link' => 'https://example.org', 'tags' => ''],
-            ['title' => 'xyzzy-tool', 'link' => 'https://example.org', 'tags' => ''],
+            ['title' => 'Frobnicator', 'link' => 'https://frobnicator.io', 'tags' => ''],
+            ['title' => 'xyzzy-tool', 'link' => 'https://xyzzytool.com', 'tags' => ''],
         ])]);
 
         expect(site()->missingBrandsList())->toBe([
-            ['title' => 'Xyzzy Tool', 'count' => 3, 'suggested' => 'xyzzytool', 'users' => 2],
-            ['title' => 'Frobnicator', 'count' => 1, 'suggested' => 'frobnicator', 'users' => 1],
+            ['title' => 'Xyzzy Tool', 'domain' => 'xyzzytool.com', 'count' => 3, 'suggested' => 'xyzzytool', 'users' => 2],
+            ['title' => 'Frobnicator', 'domain' => 'frobnicator.io', 'count' => 1, 'suggested' => 'frobnicator', 'users' => 1],
         ]);
     });
 
     it('copies missing logos as plain text via an actionstats button', function () {
-        expect(site()->missingBrandsClipboard())->toBe('Xyzzy Tool -> xyzzytool.svg (2×, 1 user)');
+        expect(site()->missingBrandsClipboard())->toBe('Xyzzy Tool (xyzzytool.com) -> xyzzytool.svg (2×, 1 user)');
 
         $section = new Kirby\Cms\Section('actionstats', [
             'model'   => site(),
@@ -177,11 +205,11 @@ describe('panel brand stats', function () {
 
     it('shows missing logos as panel stat reports without evaluating queries in titles', function () {
         freshUser('jane@example.com')->update(['bookmarks' => Kirby\Data\Yaml::encode([
-            ['title' => 'Evil {{ site.title }}', 'link' => 'https://example.org', 'tags' => ''],
+            ['title' => 'Evil {{ site.title }}', 'link' => 'https://evil.example.org', 'tags' => ''],
         ])]);
 
         expect(site()->missingBrandsReports())->toBe([
-            ['label' => 'add evilsitetitle.svg', 'value' => 'Evil { { site.title } }', 'info' => '1× · 1 user', 'icon' => 'image'],
+            ['label' => 'add evil.svg', 'value' => 'Evil { { site.title } }', 'info' => 'evil.example.org · 1× · 1 user', 'icon' => 'image'],
         ]);
     });
 

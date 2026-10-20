@@ -18,6 +18,8 @@ use Kirby\Toolkit\Str;
  *    Everyday words in DOMAIN_ONLY match via the link only ("Brave New World" -> no brave.svg)
  *
  * The longest token wins, the first one on a tie (subdomain before domain, e.g. "gemini.google.com").
+ *
+ * suggest() names the logo still missing for a bookmark, but only if title and domain agree on a brand.
  */
 class BrandLogos
 {
@@ -158,20 +160,80 @@ class BrandLogos
 
     public static function fromTitle(string $title): string|null
     {
-        // words of letters, camel case split ("GitHub" -> git hub), so tokens can span words
+        $max  = max(array_map('strlen', array_keys(static::all())) ?: [0]);
+        $runs = array_filter(static::runs($title, $max), fn ($run) => !in_array($run, static::DOMAIN_ONLY, true));
+
+        return static::longest($runs);
+    }
+
+    /**
+     * Consecutive title words joined, up to $max letters, so tokens can span words
+     * ("Buy me a coffee" -> buy, buyme, buymea, ...); camel case is split ("GitHub" -> git hub)
+     *
+     * @return array<int, string>
+     */
+    protected static function runs(string $title, int $max): array
+    {
         $words = preg_split('/[^a-z]+/', static::lower(preg_replace('/(?<=\p{Ll})(?=\p{Lu})/u', ' ', $title)), -1, PREG_SPLIT_NO_EMPTY);
-        $max   = max(array_map('strlen', array_keys(static::all())) ?: [0]);
         $runs  = [];
 
         foreach ($words as $i => $word) {
             for ($j = $i, $run = ''; $j < count($words) && strlen($run .= $words[$j]) <= $max; $j++) {
-                if (!in_array($run, static::DOMAIN_ONLY, true)) {
-                    $runs[] = $run;
+                $runs[] = $run;
+            }
+        }
+
+        return $runs;
+    }
+
+    /** Pre- and suffixes of brand domains that are not part of the name ("getkirby.com", "notionhq.com") */
+    public const DOMAIN_AFFIXES = ['get', 'go', 'join', 'my', 'try', 'use', 'app', 'hq', 'hub'];
+
+    /**
+     * Token for a new logo, when title and domain name the same brand
+     * ("NomadList" on nomadlist.com -> nomadlist, "Kirby" on getkirby.com -> kirby).
+     * Null for anything else, e.g. a paper on arxiv.org or a tool page on someone's blog.
+     */
+    public static function suggest(string $title, string $link): string|null
+    {
+        // every label but the top-level domain, e.g. "www.tiny-house.de" -> www, tinyhouse
+        $labels = array_map(static::token(...), array_slice(explode('.', static::host($link)), 0, -1));
+        $names  = [];
+
+        foreach ($labels as $label) {
+            $names[] = $label;
+            foreach (static::DOMAIN_AFFIXES as $affix) {
+                if (str_starts_with($label, $affix)) {
+                    $names[] = substr($label, strlen($affix));
+                }
+                if (str_ends_with($label, $affix)) {
+                    $names[] = substr($label, 0, -strlen($affix));
                 }
             }
         }
 
-        return static::longest($runs);
+        // generic subdomains name no brand ("blog.jane.dev" titled "Blog")
+        $names = array_filter($names, fn ($name) => strlen($name) >= 3
+            && !in_array($name, ['www', 'app', 'blog', 'docs', 'help', 'mail', 'shop', 'store', 'support'], true));
+        if ($names === []) {
+            return null;
+        }
+
+        $runs  = static::runs($title, max(array_map('strlen', $names)) + 1);
+        $match = null;
+
+        foreach ($names as $name) {
+            foreach ($runs as $run) {
+                // same words, or one typo in a longer name ("Alianz X" on allianzx.com)
+                $same = $run === $name || (strlen($name) >= 6 && levenshtein($run, $name) <= 1);
+
+                if ($same && strlen($name) > strlen($match ?? '')) {
+                    $match = $name;
+                }
+            }
+        }
+
+        return $match;
     }
 
     /** Longest candidate with a logo, the first one on a tie */

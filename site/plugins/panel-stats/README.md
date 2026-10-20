@@ -26,7 +26,7 @@ The plugin adds the following site methods that can be used in panel blueprints:
 - `site.totalAvailableBrands()` - Returns the count of available brand logos
 - `site.bookmarksWithoutBrands()` - Returns count of bookmarks without matching brand logos
 - `site.brandCoveragePercentage()` - Returns brand coverage percentage as formatted string (e.g., "85.5%")
-- `site.missingBrandsList()` - Returns detailed array of bookmarks without brands
+- `site.missingBrandsList()` - Bookmarks without logo whose title and domain name the same brand (`BrandLogos::suggest()`), with domain and suggested file name
 - `site.missingBrandsText()` - Returns formatted text list of all missing brands for display
 - `site.missingBrandsReports()` - Missing brands as stat reports (grouped by suggested file name, most users first)
 - `site.brandsInUse()` / `brandsInUseInfo()` - Number of different logos used by bookmarks
@@ -135,9 +135,9 @@ Bookmarks are matched against available brands using the bookmark's link and tit
 
 The panel shows:
 - Brand coverage statistics (count and percentage)
-- Complete list of all bookmark titles without brands (sorted by usage frequency)
+- Bookmarks without logo whose title matches the domain (sorted by users, then usage)
 - Usage count for each missing brand
-- Suggested brand name (lowercase, no spaces)
+- Domain and suggested file name (from the domain, lowercase a-z)
 
 ### Improving Brand Coverage
 

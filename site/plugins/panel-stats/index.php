@@ -376,29 +376,30 @@ Kirby::plugin('kreativ-anders/panel-stats', [
         'totalAvailableBrands' => function () {
             return count(site()->availableBrands());
         },
+        // logos worth adding: title and domain name the same brand, e.g. "NomadList" on nomadlist.com
         'missingBrandsList' => function () {
             $missingBrands = [];
 
             foreach (panelStatsBookmarks() as $userId => $bookmarks) {
                 foreach ($bookmarks as $bookmark) {
-                    if (empty($bookmark['title']) || BrandLogos::find($bookmark['title'], (string)($bookmark['link'] ?? '')) !== null) {
+                    $title = (string)($bookmark['title'] ?? '');
+                    $link  = (string)($bookmark['link'] ?? '');
+
+                    // file name that would match: assets/brand-names/<suggested>.svg
+                    if (BrandLogos::find($title, $link) !== null || ($suggested = BrandLogos::suggest($title, $link)) === null) {
                         continue;
                     }
 
-                    // file name that would match: assets/brand-names/<suggested>.svg
-                    $suggested = BrandLogos::token($bookmark['title']);
-
                     // "Spotify" and "spotify" need the same logo => group by token
-                    $key = $suggested !== '' ? $suggested : $bookmark['title'];
-
-                    $missingBrands[$key] ??= [
-                        'title'     => $bookmark['title'],
+                    $missingBrands[$suggested] ??= [
+                        'title'     => $title,
+                        'domain'    => preg_replace('/^www\./', '', BrandLogos::host($link)),
                         'count'     => 0,
                         'suggested' => $suggested,
                         'users'     => [],
                     ];
-                    $missingBrands[$key]['count']++;
-                    $missingBrands[$key]['users'][$userId] = true;
+                    $missingBrands[$suggested]['count']++;
+                    $missingBrands[$suggested]['users'][$userId] = true;
                 }
             }
 
@@ -414,16 +415,16 @@ Kirby::plugin('kreativ-anders/panel-stats', [
         },
         // plain text for the clipboard (section "actionstats"): one line per missing logo
         'missingBrandsClipboard' => function () {
-            return implode("\n", array_map(fn ($item) => $item['title']
-                . ($item['suggested'] !== '' ? ' -> ' . $item['suggested'] . '.svg' : '')
+            return implode("\n", array_map(fn ($item) => $item['title'] . ' (' . $item['domain'] . ')'
+                . ' -> ' . $item['suggested'] . '.svg'
                 . ' (' . $item['count'] . '×, ' . $item['users'] . ($item['users'] === 1 ? ' user' : ' users') . ')',
                 site()->missingBrandsList()));
         },
         'missingBrandsReports' => function () {
             return array_map(fn ($item) => [
-                'label' => $item['suggested'] !== '' ? 'add ' . $item['suggested'] . '.svg' : 'no letters in title',
+                'label' => 'add ' . $item['suggested'] . '.svg',
                 'value' => panelStatsLabel($item['title']),
-                'info'  => $item['count'] . '× · ' . $item['users'] . ($item['users'] === 1 ? ' user' : ' users'),
+                'info'  => panelStatsLabel($item['domain']) . ' · ' . $item['count'] . '× · ' . $item['users'] . ($item['users'] === 1 ? ' user' : ' users'),
                 'icon'  => 'image',
             ], site()->missingBrandsList());
         },
@@ -531,7 +532,7 @@ Kirby::plugin('kreativ-anders/panel-stats', [
 
             // Show all missing brands (no limit)
             foreach ($missing as $item) {
-                $text .= "• **{$item['title']}** (used {$item['count']}x)\n";
+                $text .= "• **{$item['title']}** ({$item['domain']}, used {$item['count']}x)\n";
                 $text .= "  Suggested brand name: `{$item['suggested']}`\n\n";
             }
 

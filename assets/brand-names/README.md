@@ -11,7 +11,7 @@ Besides brands that users bookmarked, the collection follows the most visited we
 3. Drop it into this folder — no build step. The `brands` plugin (`site/plugins/brands`) matches bookmark titles to file names (letters a-z only, umlauts spelled out: `sinnesraeuber.svg`; the longest file name contained in the title wins)
 4. Optimize it: `npm run logos -- <file>.svg` (or `npm run logos` for all logos)
 
-The panel (**Site → Brands**) lists bookmark titles without a logo and the suggested file name.
+The panel (**Site → Brands**) lists bookmarks without a logo whose title and domain name the same brand ("NomadList" on nomadlist.com), with domain and suggested file name. Pages on other sites (a paper on arxiv.org) are left out.
 
 ## SVG format guideline
 
