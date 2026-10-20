@@ -92,6 +92,9 @@ describe('BrandLogos', function () {
         ['Kirby', 'https://getkirby.com', 'kirby'],                                  // domain affix
         ['Alianz X', 'https://allianzx.com', 'allianzx'],                            // typo, domain wins
         ['Bookmark-Cards', 'https://shop.bookmark-cards.de', 'bookmarkcards'],
+        ['LDA Bayern', 'https://www.lda.bayern.de', 'ldabayern'],                   // labels joined
+        ['Firma.de', 'https://www.firma.de', 'firmade'],                             // alias without logo yet
+        ['Scrivenor', 'https://www.literatureandlatte.com/scrivener', 'scrivener'], // alias, title irrelevant
         ['Trapped in Transformative Agreements?', 'https://arxiv.org/abs/1', null],  // paper on another site
         ['Email Obfuscator', 'https://jane.dev/tools/email', null],                  // tool page on a blog
         ['Blog', 'https://blog.jane.dev', null],                                     // generic subdomain

@@ -143,19 +143,28 @@ class BrandLogos
 
     public static function fromLink(string $link): string|null
     {
-        $host  = static::host($link);
-        $logos = static::all();
+        $host = static::host($link);
 
-        foreach (static::ALIASES as $domain => $token) {
-            if (($host === $domain || str_ends_with($host, '.' . $domain)) && isset($logos[$token])) {
-                return $token;
-            }
+        if (($token = static::alias($host)) !== null && isset(static::all()[$token])) {
+            return $token;
         }
 
         // every label but the top-level domain, e.g. "developer.apple.com" -> developer, apple
         $labels = array_slice(explode('.', $host), 0, -1);
 
         return static::longest(array_map(static::token(...), $labels));
+    }
+
+    /** Token of ALIASES for a host (subdomains included), or null */
+    protected static function alias(string $host): string|null
+    {
+        foreach (static::ALIASES as $domain => $token) {
+            if ($host === $domain || str_ends_with($host, '.' . $domain)) {
+                return $token;
+            }
+        }
+
+        return null;
     }
 
     public static function fromTitle(string $title): string|null
@@ -196,9 +205,23 @@ class BrandLogos
      */
     public static function suggest(string $title, string $link): string|null
     {
-        // every label but the top-level domain, e.g. "www.tiny-house.de" -> www, tinyhouse
-        $labels = array_map(static::token(...), array_slice(explode('.', static::host($link)), 0, -1));
-        $names  = [];
+        $host = static::host($link);
+
+        // the domain is already known to name a brand, only its logo is missing ("literatureandlatte.com")
+        if (($token = static::alias($host)) !== null) {
+            return $token;
+        }
+
+        // every label but the top-level domain and neighbours joined,
+        // e.g. "www.lda.bayern.de" -> www, lda, bayern, wwwlda, ldabayern, wwwldabayern
+        $parts  = array_map(static::token(...), array_slice(explode('.', $host), 0, -1));
+        $labels = [];
+        foreach ($parts as $i => $part) {
+            for ($j = $i, $label = ''; $j < count($parts); $j++) {
+                $labels[] = $label .= $parts[$j];
+            }
+        }
+        $names = [];
 
         foreach ($labels as $label) {
             $names[] = $label;
