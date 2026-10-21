@@ -26,6 +26,9 @@ server {
     charset utf-8;
     # unknown file types are served as plain text (hardens against malicious uploads)
     default_type text/plain;
+    # PHP down (e.g. PHP-FPM stopped for an update): offline.html with 503 instead of "Bad Gateway", so search
+    # engines retry later; offline.js shows the cached bookmarks of logged-in users or a short notice
+    error_page 502 503 504 =503 /offline.html;
 
     # Ploi Configuration, do not remove!
     include /etc/nginx/ploi/bookmark.cards/server/*;

@@ -132,12 +132,35 @@ Promise.all([loadUser(), brandsLoaded]).then(function(results) {
     const premium = document.getElementById('premium-meta');
     if (premium && subscription && subscription !== 'Free') premium.hidden = false;
 
+    // nginx (error_page) and the service worker also show this page when PHP is down, not only offline
+    const serverDown = navigator.onLine !== false;
+    if (serverDown) {
+      document.getElementById('offline-label').textContent = 'Unavailable';
+      document.getElementById('offline-status').textContent = bookmarks.length
+        ? 'Bookmark.cards is temporarily unavailable. These are your bookmarks from your last visit: search and tag filters work, adding and editing bookmarks is back shortly.'
+        : 'Bookmark.cards is temporarily unavailable. Please try again in a few minutes, this page reloads by itself once it is back.';
+    }
+
     if (bookmarks.length) printBookmarks(bookmarks);
+    else if (serverDown) document.getElementById('offline-search').hidden = true;
     else showNotice('No bookmarks available offline.');
 
     loadMain();
+    reloadWhenBack();
   });
 });
+
+// the page keeps the URL it failed on (except /offline.html itself): reload it once the server answers again.
+// The probe is no navigation and no HTML request, so the service worker passes the server's status through.
+function reloadWhenBack() {
+  if (location.pathname === '/offline.html') return;
+  setInterval(function() {
+    if (navigator.onLine === false) return;
+    fetch(location.href, { cache: 'no-store', headers: { accept: '*/*' } })
+      .then(response => { if (response.status < 500) location.reload(); })
+      .catch(() => {});
+  }, 30000);
+}
 
 // cards like site/snippets/bookmarks.php, without edit and delete
 function printBookmarks(bookmarks) {

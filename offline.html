@@ -44,7 +44,7 @@
             </svg>
             <span class="brand-name">Bookmark<span class="accent">.cards</span></span>
           </a>
-          <p class="brand-meta"><span id="premium-meta" hidden><span class="premium-badge">Premium</span> · </span><strong>Offline</strong></p>
+          <p class="brand-meta"><span id="premium-meta" hidden><span class="premium-badge">Premium</span> · </span><strong id="offline-label">Offline</strong></p>
         </li>
       </ul>
       <ul>
@@ -71,10 +71,11 @@
     <h1 class="visually-hidden">My bookmarks (offline)</h1>
     <section id="jumbotron" class="container">
       <div class="alert alert-offline" role="status">
-        <p>You are offline. Search and tag filters work, adding and editing bookmarks is back once you are online.</p>
+        <!-- offline.js swaps the text when the server is down instead of the device being offline -->
+        <p id="offline-status">You are offline. Search and tag filters work, adding and editing bookmarks is back once you are online.</p>
       </div>
       <!-- search only: main.js filters the cards, nothing is submitted offline -->
-      <form method="POST" onsubmit="return false">
+      <form id="offline-search" method="POST" onsubmit="return false">
         <fieldset role="group" aria-label="Search bookmarks">
           <input id="s_title" type="search" name="c_title" placeholder="Title / Brand" aria-label="Search title or brand" maxlength="200" autocomplete="off">
           <input id="s_link" type="url" name="c_link" placeholder="Web Link (https://)" aria-label="Web link" maxlength="255" disabled>

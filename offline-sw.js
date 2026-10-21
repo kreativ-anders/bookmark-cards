@@ -1,8 +1,11 @@
 // Offline service worker for logged-in users (registered by offline-cache.js, replaces UpUp.js).
-// Network first for same-origin GET requests; when the network fails, answer from the cache and
-// fall back to the offline page for navigations. What to cache comes from the page via postMessage.
+// Network first for same-origin GET requests; when the network fails or the server is down (502–504),
+// answer from the cache and fall back to the offline page for navigations. What to cache comes from
+// the page via postMessage.
 
 const CACHE_PREFIX = 'bookmark-cards-offline-';
+// nginx answers these when PHP is down (e.g. stopped for an update)
+const SERVER_DOWN = [502, 503, 504];
 const LEGACY_PREFIX = 'upup-cache';
 // cache key of the offline page, stored apart from its real URL
 const OFFLINE_KEY = '/__offline-page';
@@ -21,10 +24,13 @@ self.addEventListener('fetch', event => {
   const url = new URL(request.url);
   if (request.method !== 'GET' || url.origin !== self.location.origin || BYPASS.test(url.pathname) || request.headers.has('range')) return;
 
-  event.respondWith(fetch(request).catch(err => fromCache(request).then(response => {
-    if (response) return response;
-    throw err;
-  })));
+  event.respondWith(fetch(request).then(
+    response => SERVER_DOWN.includes(response.status) ? fromCache(request).then(cached => cached || response) : response,
+    err => fromCache(request).then(response => {
+      if (response) return response;
+      throw err;
+    })
+  ));
 });
 
 function fromCache(request) {

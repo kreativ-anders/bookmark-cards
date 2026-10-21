@@ -19,6 +19,8 @@ server {
   error_log "{{log_dir}}/error.log";
 
   default_type text/plain;
+  # PHP down: offline.html with 503 instead of "Bad Gateway" (see nginx.ploi.conf.example)
+  error_page 502 503 504 =503 /offline.html;
   server_tokens off;
   add_header X-Content-Type-Options "nosniff" always;
   add_header X-Frame-Options "SAMEORIGIN" always;
