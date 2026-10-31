@@ -21,7 +21,7 @@ $user      = $kirby->user();
       class="bookmark card-background"
       data-search="<?= esc($title . ';' . $link . ';' . $tags) ?>"
       data-tags="<?= esc($tags) ?>"
-      <?php if ($logo): ?>style="background-image: url('<?= esc($logo) ?>')"<?php endif ?>>
+      <?php if ($logo): ?>style="--logo: url('<?= esc($logo) ?>')"<?php endif ?>>
 
       <header>
         <a class="card-title" rel="noopener noreferrer" target="_self" href="<?= esc($href) ?>"><?= esc($title) ?></a>

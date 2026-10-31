@@ -195,17 +195,14 @@ function generateBackgroundColors() {
   try { cache = JSON.parse(localStorage.getItem(BRAND_COLORS_KEY)) || {}; } catch (e) {}
 
   var cards = Array.from(document.querySelectorAll('div#bookmarks article'));
-  var base = null;
 
   function apply(card, colors) {
     card.style.setProperty('--glow', colors.glow ? colors.glow.join(' ') : '142 142 147');
     var color = colors.color;
     // neutral (black/grey) logos keep the plain card surface
     if (Math.max.apply(null, color) - Math.min.apply(null, color) < 48) return;
-    // opaque 20 % mix over the light card surface keeps card text at >= 4.5:1 (WCAG AA) in both themes
-    base = base || String(window.getComputedStyle(card).getPropertyValue('--card-rgb') || '255 255 255').trim().split(/\s+/).map(Number);
-    var mix = color.map(function(c, i) { return Math.round((base[i] || 255) + (c - (base[i] || 255)) * 0.2); });
-    card.style.backgroundColor = 'rgb(' + mix.join(',') + ')';
+    // main.css mixes --brand into card and logo stage per theme (contrast checked for WCAG AA)
+    card.style.setProperty('--brand', color.join(' '));
   }
 
   function analyse(img) {
@@ -221,15 +218,14 @@ function generateBackgroundColors() {
 
   cards.forEach(function(card) {
     try {
-      var backgroundImage = card.style.backgroundImage || window.getComputedStyle(card).backgroundImage;
-      var match = backgroundImage && backgroundImage.match(/url\(["']?(.*?)["']?\)/);
+      var logo = card.style.getPropertyValue('--logo');
+      var match = logo && logo.match(/url\(["']?(.*?)["']?\)/);
       var src = match && match[1];
 
       if (!src) {
-        var tint = randomBgColor();
-        card.style.setProperty('--glow', tint.replace(/,/g, ''));
-        card.style.backgroundImage = 'linear-gradient(to bottom, rgba(' + tint + ', 0) 0%, rgba(' + tint + ', .4) 100%)';
-        card.style.backgroundSize = '100% 100%';
+        var tint = randomBgColor().replace(/,/g, '');
+        card.style.setProperty('--glow', tint);
+        card.style.setProperty('--wash', tint);
         return;
       }
 

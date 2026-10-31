@@ -184,7 +184,7 @@ function printBookmarks(bookmarks) {
     article.dataset.search = title + ';' + link + ';' + tags;
     article.dataset.tags = tags;
     const logo = (title || link) ? brandLogo(title, link) : null;
-    if (logo) article.style.backgroundImage = "url('" + logo + "')";
+    if (logo) article.style.setProperty('--logo', "url('" + logo + "')");
 
     const header = document.createElement('header');
     const header_anker = document.createElement('a');

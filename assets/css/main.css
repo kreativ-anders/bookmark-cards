@@ -73,11 +73,22 @@
   --shadow: 0 1px 2px rgba(0, 0, 0, .05), 0 6px 18px -8px rgba(0, 0, 0, .14);
   --shadow-hover: 0 1px 2px rgba(0, 0, 0, .06), 0 14px 30px -12px rgba(0, 0, 0, .28);
 
-  /* bookmark cards stay light in both themes, so brand logos remain legible */
+  /* bookmark cards: --brand (rgb triple from main.js) is mixed into the card surface;
+     the logo sits on the stage, which only differs from the card in dark mode */
   --card-rgb: 255 255 255;
+  --card-tint: 20%;
   --card-fg: #1d1d1f;
   --card-muted: #3d3d41;
   --card-accent: #763600;
+  --card-danger: #c4001a;
+  --card-header: rgba(255, 255, 255, .55);
+  --card-divider: rgba(0, 0, 0, .06);
+  --card-hover: rgba(255, 255, 255, .6);
+  --wash-alpha: .4;
+  --stage-rgb: 255 255 255;
+  --stage-tint: 20%;
+  --stage-inset: 0px;
+  --stage-radius: 0px;
 
   --radius-s: 8px;
   --radius: 12px;
@@ -111,7 +122,21 @@
     --glow-b: rgba(64, 156, 255, .07);
     --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -10px rgba(0, 0, 0, .7);
     --shadow-hover: 0 1px 2px rgba(0, 0, 0, .4), 0 16px 34px -12px rgba(0, 0, 0, .85);
-    --card-rgb: 236 236 240;
+    /* dark card, the logo keeps a dimmed light stage so dark logos stay legible */
+    --card-rgb: 36 36 40;
+    --card-tint: 12%;
+    --card-fg: #f5f5f7;
+    --card-muted: #c7c7cc;
+    --card-accent: #ffb340;
+    --card-danger: #ff9f9a;
+    --card-header: rgba(255, 255, 255, .04);
+    --card-divider: rgba(255, 255, 255, .08);
+    --card-hover: rgba(255, 255, 255, .1);
+    --wash-alpha: .2;
+    --stage-rgb: 196 196 202;
+    --stage-tint: 15%;
+    --stage-inset: .5rem;
+    --stage-radius: 10px;
     --glow-alpha: .7;
     color-scheme: dark;
   }
@@ -138,7 +163,21 @@
   --glow-b: rgba(64, 156, 255, .07);
   --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -10px rgba(0, 0, 0, .7);
   --shadow-hover: 0 1px 2px rgba(0, 0, 0, .4), 0 16px 34px -12px rgba(0, 0, 0, .85);
-  --card-rgb: 236 236 240;
+  /* dark card, the logo keeps a dimmed light stage so dark logos stay legible */
+  --card-rgb: 36 36 40;
+  --card-tint: 12%;
+  --card-fg: #f5f5f7;
+  --card-muted: #c7c7cc;
+  --card-accent: #ffb340;
+  --card-danger: #ff9f9a;
+  --card-header: rgba(255, 255, 255, .04);
+  --card-divider: rgba(255, 255, 255, .08);
+  --card-hover: rgba(255, 255, 255, .1);
+  --wash-alpha: .2;
+  --stage-rgb: 196 196 202;
+  --stage-tint: 15%;
+  --stage-inset: .5rem;
+  --stage-radius: 10px;
   --glow-alpha: .7;
   color-scheme: dark;
 }
@@ -1071,7 +1110,6 @@ article.bookmark,
   padding: 0;
   overflow: hidden;
   color: var(--card-fg);
-  color-scheme: light;
   border-radius: 14px;
   border: 1px solid var(--line);
   box-shadow: var(--shadow);
@@ -1079,11 +1117,30 @@ article.bookmark,
 }
 
 .card-background {
-  --card-bg: rgb(var(--card-rgb));
+  --card-bg: color-mix(in srgb, rgb(var(--brand, var(--card-rgb))) var(--card-tint), rgb(var(--card-rgb)));
+  --stage-bg: color-mix(in srgb, rgb(var(--brand, var(--stage-rgb))) var(--stage-tint), rgb(var(--stage-rgb)));
   background-color: var(--card-bg);
-  background-position: center 55%;
+  /* cards without a logo: soft gradient in the random --wash color from main.js (no --wash, no gradient) */
+  background-image: linear-gradient(to bottom, rgb(var(--wash) / 0), rgb(var(--wash) / var(--wash-alpha)));
+}
+
+/* logo stage: --logo is set inline (bookmarks.php, offline.js) */
+.card-background > a,
+.hero-fan .card-background {
+  background-color: var(--stage-bg);
+  background-image: var(--logo, none);
+  background-position: center;
   background-repeat: no-repeat;
   background-size: min(250px, 80%) auto;
+}
+
+.card-background > a {
+  margin: var(--stage-inset) var(--stage-inset) 0;
+  border-radius: var(--stage-radius);
+}
+
+.card-background:not([style*="--logo"]) > a {
+  background-color: transparent;
 }
 
 /* Hover glow: --glow is the ColorThief brand color set by main.js (rgb triple), neutral fallback otherwise */
@@ -1103,10 +1160,8 @@ div#bookmarks article header {
   margin: 0;
   padding: .65rem .9rem;
   border: 0;
-  border-bottom: 1px solid rgba(0, 0, 0, .06);
-  background: rgba(255, 255, 255, .55);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--card-divider);
+  background: var(--card-header);
 }
 
 article.bookmark a {
@@ -1139,6 +1194,7 @@ article.bookmark a:focus-visible {
 
 article.bookmark > a {
   flex: 1 1 auto;
+  width: auto;
 }
 
 div#bookmarks article footer {
@@ -1173,12 +1229,12 @@ div#bookmarks article footer button {
 }
 
 div#bookmarks article footer button:hover {
-  background: rgba(255, 255, 255, .6);
+  background: var(--card-hover);
   color: var(--card-fg);
 }
 
 div#bookmarks article footer button.delete:hover {
-  color: #c4001a;
+  color: var(--card-danger);
 }
 
 div#bookmarks article footer button:focus-visible {
@@ -1341,18 +1397,14 @@ span.tag:focus-visible {
   padding: .6rem .85rem;
   font-weight: 600;
   font-size: .9rem;
-  background: rgba(255, 255, 255, .55);
-  border-bottom: 1px solid rgba(0, 0, 0, .06);
+  /* the hero card itself is the stage, the header gets the card surface */
+  background: linear-gradient(var(--card-header), var(--card-header)), var(--card-bg);
+  border-bottom: 1px solid var(--card-divider);
 }
 
 .hero-fan .bookmark:nth-child(1) { left: 0; top: 2rem; transform: rotate(-7deg); }
 .hero-fan .bookmark:nth-child(2) { left: 19%; top: .5rem; transform: rotate(-1deg); z-index: 1; }
 .hero-fan .bookmark:nth-child(3) { left: 38%; top: 2.5rem; transform: rotate(6deg); z-index: 2; }
-
-/* same 20 % brand mix as generateBackgroundColors() in main.js, without ColorThief on the landing page */
-.hero-fan .bookmark.card-background[style*="--tint"] {
-  background-color: color-mix(in srgb, rgb(var(--tint)) 20%, var(--card-bg));
-}
 
 /* Landing: features ------------------------------------------------------- */
 
