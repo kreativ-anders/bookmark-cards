@@ -57,7 +57,7 @@ for (const file of files) {
         console.warn(`${file}: skipped, move the CSS transform in style="" to a transform attribute first`);
         before += source.length;
         after += source.length;
-        writeDarkVariant(file, source);
+        await writeDarkVariant(file, source);
         continue;
     }
 
@@ -73,7 +73,7 @@ for (const file of files) {
         after += source.length;
     }
 
-    writeDarkVariant(file, result.length < source.length ? result : source);
+    await writeDarkVariant(file, result.length < source.length ? result : source);
 }
 
 console.log(`${files.length} logos: ${(before / 1024).toFixed(0)} KB -> ${(after / 1024).toFixed(0)} KB`);
