@@ -201,7 +201,7 @@ function generateBackgroundColors() {
     var color = colors.color;
     // neutral (black/grey) logos keep the plain card surface
     if (Math.max.apply(null, color) - Math.min.apply(null, color) < 48) return;
-    // main.css mixes --brand into card and logo stage per theme (contrast checked for WCAG AA)
+    // main.css mixes --brand into the card surface per theme (contrast checked for WCAG AA)
     card.style.setProperty('--brand', color.join(' '));
   }
 

@@ -26,8 +26,11 @@ class BrandLogos
     /** @var array<string, string>|null token => file name */
     protected static array|null $logos = null;
 
+    /** @var array<string, true>|null file names with a variant for dark cards in brand-names/dark */
+    protected static array|null $dark = null;
+
     /** @var array<string, string|null> per request: header and grid ask for the same bookmarks */
-    protected static array $urls = [];
+    protected static array $tokens = [];
 
     /** Lowercase a-z only, e.g. "Ernsting's Family" -> "ernstingsfamily" */
     public static function token(string $value): string
@@ -275,14 +278,17 @@ class BrandLogos
 
     public static function url(string $title, string $link = ''): string|null
     {
-        $key = $title . "\n" . $link;
+        $token = static::cachedFind($title, $link);
 
-        if (!array_key_exists($key, static::$urls)) {
-            $token = static::find($title, $link);
-            static::$urls[$key] = $token !== null ? static::fileUrl(static::all()[$token]) : null;
-        }
+        return $token !== null ? static::fileUrl(static::all()[$token]) : null;
+    }
 
-        return static::$urls[$key];
+    /** Variant for dark cards (dark-logos.mjs), null without a logo or when the logo needs none */
+    public static function darkUrl(string $title, string $link = ''): string|null
+    {
+        $token = static::cachedFind($title, $link);
+
+        return $token !== null ? static::darkFileUrl(static::all()[$token]) : null;
     }
 
     public static function fileUrl(string $file): string
@@ -290,23 +296,49 @@ class BrandLogos
         return url('assets/brand-names/' . rawurlencode($file));
     }
 
-    /** Clears the in-memory list (tests) */
+    public static function darkFileUrl(string $file): string|null
+    {
+        static::$dark ??= array_fill_keys(Dir::files(kirby()->root('assets') . '/brand-names/dark'), true);
+
+        return isset(static::$dark[$file]) ? url('assets/brand-names/dark/' . rawurlencode($file)) : null;
+    }
+
+    /** find() once per title and link */
+    protected static function cachedFind(string $title, string $link): string|null
+    {
+        $key = $title . "\n" . $link;
+
+        if (!array_key_exists($key, static::$tokens)) {
+            static::$tokens[$key] = static::find($title, $link);
+        }
+
+        return static::$tokens[$key];
+    }
+
+    /** Clears the in-memory lists (tests) */
     public static function reset(): void
     {
-        static::$logos = null;
-        static::$urls  = [];
+        static::$logos  = null;
+        static::$dark   = null;
+        static::$tokens = [];
     }
 }
 
 Kirby::plugin('kreativ-anders/brands', [
     'siteMethods' => [
-        'brandLogo' => fn (string $title, string $link = ''): string|null => BrandLogos::url($title, $link),
+        'brandLogo'     => fn (string $title, string $link = ''): string|null => BrandLogos::url($title, $link),
+        'brandLogoDark' => fn (string $title, string $link = ''): string|null => BrandLogos::darkUrl($title, $link),
     ],
     'routes' => [
         [
             // token => logo URL, used by the offline page (offline.js)
             'pattern' => 'brands.json',
             'action'  => fn () => Response::json(array_map(BrandLogos::fileUrl(...), BrandLogos::all())),
+        ],
+        [
+            // token => URL of the dark card variant, only logos that have one (offline.js)
+            'pattern' => 'brands-dark.json',
+            'action'  => fn () => Response::json(array_filter(array_map(BrandLogos::darkFileUrl(...), BrandLogos::all()))),
         ],
         [
             // matching rules for the offline page, so it picks the same logo as the server

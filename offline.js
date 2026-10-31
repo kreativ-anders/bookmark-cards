@@ -1,7 +1,8 @@
 let user = null;
 
-// same matching as BrandLogos::find() in site/plugins/brands, data from /brands.json and /brands-rules.json
+// same matching as BrandLogos::find() in site/plugins/brands, data from /brands.json, /brands-dark.json and /brands-rules.json
 let brandLogos = {};
+let brandLogosDark = {};
 let brandRules = { aliases: {}, domainOnly: [] };
 function loadJson(url) {
   return fetch(url)
@@ -10,9 +11,10 @@ function loadJson(url) {
     .then(response => response ? response.json() : null)
     .catch(() => null);
 }
-const brandsLoaded = Promise.all([loadJson('/brands.json'), loadJson('/brands-rules.json')])
-  .then(([logos, rules]) => {
+const brandsLoaded = Promise.all([loadJson('/brands.json'), loadJson('/brands-dark.json'), loadJson('/brands-rules.json')])
+  .then(([logos, dark, rules]) => {
     brandLogos = logos || {};
+    brandLogosDark = dark || {};
     if (rules) brandRules = { aliases: rules.aliases || {}, domainOnly: rules.domainOnly || [] };
   });
 
@@ -62,9 +64,10 @@ function brandFromTitle(title) {
   return longestBrand(runs);
 }
 
+// { logo, dark } URLs, dark only for logos with a variant for dark cards
 function brandLogo(title, link) {
   const match = brandFromLink(link || '') || brandFromTitle(title || '');
-  return match ? brandLogos[match] : null;
+  return match ? { logo: brandLogos[match], dark: brandLogosDark[match] || null } : null;
 }
 
 // same rule as Bookmarks::isSafe()
@@ -184,7 +187,8 @@ function printBookmarks(bookmarks) {
     article.dataset.search = title + ';' + link + ';' + tags;
     article.dataset.tags = tags;
     const logo = (title || link) ? brandLogo(title, link) : null;
-    if (logo) article.style.setProperty('--logo', "url('" + logo + "')");
+    if (logo) article.style.setProperty('--logo', "url('" + logo.logo + "')");
+    if (logo && logo.dark) article.style.setProperty('--logo-dark', "url('" + logo.dark + "')");
 
     const header = document.createElement('header');
     const header_anker = document.createElement('a');

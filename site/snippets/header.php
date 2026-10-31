@@ -63,12 +63,17 @@
     ];
     $offlineLogos = [];
     foreach ((array)$user->bookmarks()->yaml() as $bookmark) {
-      if ($logo = $site->brandLogo((string)($bookmark['title'] ?? ''), (string)($bookmark['link'] ?? ''))) {
-        $offlineLogos[$logo] = true;
+      $title = (string)($bookmark['title'] ?? '');
+      $link  = (string)($bookmark['link'] ?? '');
+      // both variants: the theme can change while offline
+      foreach ([$site->brandLogo($title, $link), $site->brandLogoDark($title, $link)] as $logo) {
+        if ($logo) {
+          $offlineLogos[$logo] = true;
+        }
       }
     }
-    $offlineAssets = array_merge($offlineFiles, ['brands.json', 'brands-rules.json', 'user.json'], array_keys($offlineLogos));
-    $offlineStamps = array_map(fn ($path) => @filemtime($kirby->root('index') . '/' . $path), [...$offlineFiles, 'offline.html', 'offline-sw.min.js', 'assets/brand-names', 'site/plugins/brands/index.php']);
+    $offlineAssets = array_merge($offlineFiles, ['brands.json', 'brands-dark.json', 'brands-rules.json', 'user.json'], array_keys($offlineLogos));
+    $offlineStamps = array_map(fn ($path) => @filemtime($kirby->root('index') . '/' . $path), [...$offlineFiles, 'offline.html', 'offline-sw.min.js', 'assets/brand-names', 'assets/brand-names/dark', 'site/plugins/brands/index.php']);
     $offlineVersion = substr(md5(json_encode([$offlineAssets, $offlineStamps, $user->id(), $user->modified()])), 0, 12);
   ?>
   <script>

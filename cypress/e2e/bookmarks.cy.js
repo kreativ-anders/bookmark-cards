@@ -56,12 +56,22 @@ describe('Bookmarks', () => {
     cy.addBookmark('Buy me a coffee', 'https://buymeacoffee.com');
     cy.addBookmark('Xyzzy Tool', 'https://example.org');
 
-    cy.card('Buy me a coffee').children('a')
+    // the browser may follow a dark system theme
+    cy.get('html').invoke('attr', 'data-theme', 'light');
+    cy.card('Buy me a coffee')
       .should('have.css', 'background-image')
       .and('contain', '/assets/brand-names/buymeacoffee.svg');
-    // no logo: no stage image, main.js washes the card in a random color instead
-    cy.card('Xyzzy Tool').children('a')
-      .should('have.css', 'background-image', 'none');
+    // no logo: main.js washes the card in a random color instead
+    cy.card('Xyzzy Tool')
+      .should('have.css', 'background-image')
+      .and('not.contain', '/assets/brand-names/')
+      .and('contain', 'gradient');
+
+    // dark theme: the light variant from dark-logos.mjs
+    cy.get('html').invoke('attr', 'data-theme', 'dark');
+    cy.card('Buy me a coffee')
+      .should('have.css', 'background-image')
+      .and('contain', '/assets/brand-names/dark/buymeacoffee.svg');
   });
 
   it('rejects bookmark changes without CSRF token', () => {

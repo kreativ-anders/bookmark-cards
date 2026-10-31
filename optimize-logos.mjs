@@ -1,12 +1,15 @@
 // Shrinks brand logos in assets/brand-names: embedded raster images are downscaled
 // and re-encoded as WebP, then SVGO minifies the markup. A file is only rewritten when it gets smaller.
 //
+// Afterwards each logo gets its variant for dark cards (dark-logos.mjs).
+//
 // npm run logos                  -> all logos
 // npm run logos -- github.svg    -> only these files
 import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
 import { optimize } from 'svgo';
+import { writeDarkVariant } from './dark-logos.mjs';
 
 const dir = path.join(import.meta.dirname, 'assets/brand-names');
 
@@ -54,6 +57,7 @@ for (const file of files) {
         console.warn(`${file}: skipped, move the CSS transform in style="" to a transform attribute first`);
         before += source.length;
         after += source.length;
+        writeDarkVariant(file, source);
         continue;
     }
 
@@ -68,6 +72,8 @@ for (const file of files) {
     } else {
         after += source.length;
     }
+
+    writeDarkVariant(file, result.length < source.length ? result : source);
 }
 
 console.log(`${files.length} logos: ${(before / 1024).toFixed(0)} KB -> ${(after / 1024).toFixed(0)} KB`);

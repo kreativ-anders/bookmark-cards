@@ -11,8 +11,8 @@
 
   <div class="hero-fan" aria-hidden="true">
     <?php // last card sits in front, the rgb triple tints it like ColorThief does in the app
-    foreach (['PayPal' => '23 155 215', 'Amazon' => '255 153 0', 'Google' => null] as $brand => $tint): $logo = $site->brandLogo($brand); ?>
-    <div class="bookmark card-background" style="<?php if ($logo): ?>--logo: url('<?= esc($logo, 'attr') ?>');<?php endif ?><?php if ($tint): ?> --brand: <?= $tint ?>;<?php endif ?>">
+    foreach (['PayPal' => '23 155 215', 'Amazon' => '255 153 0', 'Google' => null] as $brand => $tint): $logo = $site->brandLogo($brand); $dark = $site->brandLogoDark($brand); ?>
+    <div class="bookmark card-background" style="<?php if ($logo): ?>--logo: url('<?= esc($logo, 'attr') ?>');<?php endif ?><?php if ($dark): ?> --logo-dark: url('<?= esc($dark, 'attr') ?>');<?php endif ?><?php if ($tint): ?> --brand: <?= $tint ?>;<?php endif ?>">
       <header><?= esc($brand) ?></header>
     </div>
     <?php endforeach ?>

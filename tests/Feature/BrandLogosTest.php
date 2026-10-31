@@ -111,6 +111,20 @@ describe('BrandLogos', function () {
         expect(site()->brandLogo('GitHub'))->toBe(url('assets/brand-names/github.svg'));
     });
 
+    it('returns the dark card variant via site()->brandLogoDark(), null when the logo needs none', function () {
+        expect(site()->brandLogoDark('GitHub'))->toBe(url('assets/brand-names/dark/github.svg'))
+            ->and(site()->brandLogoDark('Adobe'))->toBeNull()
+            ->and(site()->brandLogoDark('xyzzy'))->toBeNull();
+    });
+
+    it('serves token => dark URL as brands-dark.json, only logos with a variant', function () {
+        $json = json_decode($this->kirby->call('brands-dark.json')->body(), true);
+
+        expect($json['github'])->toBe(url('assets/brand-names/dark/github.svg'))
+            ->and($json)->not->toHaveKey('adobe')
+            ->and(count($json))->toBe(count(glob(kirby()->root('assets') . '/brand-names/dark/*.svg')));
+    });
+
     it('serves token => URL as brands.json for the offline page', function () {
         $response = $this->kirby->call('brands.json');
         $json     = json_decode($response->body(), true);

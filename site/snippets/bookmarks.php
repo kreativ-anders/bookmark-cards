@@ -16,12 +16,13 @@ $user      = $kirby->user();
       $href  = Bookmarks::href($link);
       $hash  = Bookmarks::fingerprint($bookmark);
       $logo  = $site->brandLogo($title, $link);
+      $dark  = $site->brandLogoDark($title, $link);
     ?>
     <article
       class="bookmark card-background"
       data-search="<?= esc($title . ';' . $link . ';' . $tags) ?>"
       data-tags="<?= esc($tags) ?>"
-      <?php if ($logo): ?>style="--logo: url('<?= esc($logo) ?>')"<?php endif ?>>
+      <?php if ($logo): ?>style="--logo: url('<?= esc($logo) ?>');<?php if ($dark): ?> --logo-dark: url('<?= esc($dark) ?>');<?php endif ?>"<?php endif ?>>
 
       <header>
         <a class="card-title" rel="noopener noreferrer" target="_self" href="<?= esc($href) ?>"><?= esc($title) ?></a>
