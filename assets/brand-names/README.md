@@ -13,9 +13,7 @@ Besides brands that users bookmarked, the collection follows the most visited we
 
 ## Dark cards
 
-`npm run logos` also writes a variant for dark cards to `dark/<file>.svg` (`dark-logos.mjs`, only for logos that need one): black and dark greys become light greys, brand colors too dark for the dark card get lighter in the same hue, logos with embedded raster images get a light rounded plate. Illustrations that recoloring breaks go into `KEEP_ORIGINAL` in `dark-logos.mjs`: no variant, the original logo on the dark card. `npm run logos:dark` rebuilds all variants without touching the logos.
-
-The panel (**Site → Brands**) lists bookmarks without a logo whose title and domain name the same brand ("NomadList" on nomadlist.com), with domain and suggested file name. Pages on other sites (a paper on arxiv.org) are left out.
+`npm run logos` also writes a variant for dark cards to `dark/<file>.svg` (`dark-logos.mjs`, only for logos that need one): black and dark greys become light greys, brand colors too dark for the dark card get lighter in the same hue, white paper around embedded raster images is cut out. Logos the rules can't handle get an entry in `OVERRIDES` in `dark-logos.mjs` (`original`, `unbox`, `backdrop`, `cutout`, `plate`). `npm run logos:dark` rebuilds all variants without touching the logos; the `dark-logos` skill (`.agents/skills/dark-logos`) audits them.
 
 ## SVG format guideline
 

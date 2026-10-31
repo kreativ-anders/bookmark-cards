@@ -60,9 +60,8 @@ cp <scratch>/final/<token>.svg assets/brand-names/
 npm run logos -- <token>.svg ...            # SVGO + WebP for embedded rasters + dark/<token>.svg
 ```
 
-- Check the dark card variant in `assets/brand-names/dark/` (light text on #242428). If recoloring
-  breaks the logo (illustrations with black outlines), add it to `KEEP_ORIGINAL` in `dark-logos.mjs`
-  and run `npm run logos:dark -- <token>.svg`
+- Check the dark card variant: run the `dark-logos` skill audit for the new files and fix what it flags
+  (override in `dark-logos.mjs`, then `npm run logos:dark -- <token>.svg`)
 
 - Update the count in `assets/brand-names/README.md` ("Brand logos shown on bookmark cards (N SVGs)")
 - Run the brand tests: `vendor/bin/pest tests/Feature/BrandLogosTest.php` (a test that uses a now

@@ -15,20 +15,31 @@ const dir = path.join(import.meta.dirname, 'assets/brand-names');
 const darkDir = path.join(dir, 'dark');
 
 // original: no variant, the logo works on the dark card as it is (illustrations with black outlines)
-// unbox:    drop the logo's own box or badge; white parts and holes take its color when it reads on the dark card
+// unbox:    drop the logo's own box or badge; what sat on it takes its color when that reads on the dark card
+// unbox-only: drop the box, keep every other color (details that must stay dark, e.g. a football)
+// backdrop: a dark box whose letters are holes: original colors, white behind the box (looks like on a light card)
 // cutout:   raster only, remove white inside the shapes too (white fills of an outlined drawing)
+// mono:     raster only, one light color, opacity by darkness (textured or thin dark logos)
 // plate:    original on a light plate (photos, recoloring breaks them)
 export const OVERRIDES = {
     'betterride.svg': 'unbox',
     'dev.svg': 'unbox',
-    'epicgames.svg': 'unbox',
+    'epicgames.svg': 'original',
     'faircode.svg': 'cutout',
-    'mozilla.svg': 'unbox',
-    'nolt.svg': 'original',
+    'mozilla.svg': 'backdrop',
+    'namuwiki.svg': 'unbox',
+    'nolt.svg': 'unbox',
+    'ntfy.svg': 'unbox',
     'onepiece.svg': 'original',
+    'pornhub.svg': 'unbox',
     'qq.svg': 'original',
+    'scrivener.svg': 'mono',
+    'sichersatt.svg': 'unbox',
     'sparneuwagen.svg': 'cutout',
-    'sportspar.svg': 'unbox',
+    'sportspar.svg': 'unbox-only',
+    'tinyhousemanufaktur.svg': 'mono',
+    'treegame.svg': 'unbox',
+    'vystem.svg': 'unbox',
     'wikingerreisen.svg': 'unbox',
 };
 
@@ -124,7 +135,7 @@ function unboxRaster(px, w, h, badge) {
     };
     for (let p = 0; p < w * h; p++) {
         const i = p * 4;
-        const isBadge = distance([px[i], px[i + 1], px[i + 2]], badge) <= 100;
+        const isBadge = distance([px[i], px[i + 1], px[i + 2]], badge) <= 60;
         if (out[p] || (isBadge && (px[i + 3] === 255 || nearOutside(p)))) {
             if (isBadge) px[i + 3] = 0;
         } else if (isBadge || px[i + 3] < 255) {
@@ -205,6 +216,28 @@ function cutOut(px, w, h, bg, fromBorder) {
     }
 }
 
+/** Light part of an unboxed badge -> badge color, lighter parts stay a bit lighter (white = badge color) */
+function shade(rgb, badge) {
+    const base = Math.min(...badge);
+    const whiteness = Math.min(1, Math.max(0, (Math.min(...rgb) - base) / (255 - base || 1)));
+    return badge.map((c) => c + (255 - c) * (1 - whiteness) * .55);
+}
+
+/** One light color, opacity by darkness: dark ink -> opaque, light parts -> transparent (a stamp) */
+function mono(px) {
+    const lum = (i) => luminance([px[i], px[i + 1], px[i + 2]]);
+    let darkest = 1;
+    for (let i = 0; i < px.length; i += 4) if (px[i + 3] > 128) darkest = Math.min(darkest, lum(i));
+
+    const light = parseHex(LIGHT);
+    for (let i = 0; i < px.length; i += 4) {
+        if (!px[i + 3]) continue;
+        const ink = Math.min(1, Math.max(0, (1 - lum(i)) / (1 - darkest || 1)));
+        [px[i], px[i + 1], px[i + 2]] = light;
+        px[i + 3] = Math.round(px[i + 3] * ink);
+    }
+}
+
 /** Dark variant of an embedded image (data URI), null when it needs no change */
 async function darkRaster(uri, override) {
     const { data: px, info } = await sharp(Buffer.from(uri.slice(uri.indexOf(',') + 1), 'base64'))
@@ -217,23 +250,27 @@ async function darkRaster(uri, override) {
     // white inside the shapes too (white fills of an outlined drawing)
     if (override === 'cutout') cutOut(px, w, h, paper ?? [255, 255, 255], false);
 
-    let tint = null;
-    if (override === 'unbox') {
-        const badge = dominantColor(px);
-        if (badge) {
-            unboxRaster(px, w, h, badge);
-            tint = contrast(badge) >= 3 ? badge : null;
+    if (override === 'mono') {
+        mono(px);
+    } else {
+        let tint = null;
+        if (override === 'unbox') {
+            const badge = dominantColor(px);
+            if (badge) {
+                unboxRaster(px, w, h, badge);
+                tint = contrast(badge) >= 3 ? badge : null;
+            }
         }
-    }
 
-    const cache = new Map();
-    for (let i = 0; i < px.length; i += 4) {
-        if (!px[i + 3]) continue;
-        const rgb = [px[i], px[i + 1], px[i + 2]];
-        const key = rgb.join();
-        if (!cache.has(key)) cache.set(key, tint && isWhite(rgb) ? tint : recolorRgb(rgb));
-        const out = cache.get(key);
-        if (out) [0, 1, 2].forEach((c) => px[i + c] = Math.round(out[c]));
+        const cache = new Map();
+        for (let i = 0; i < px.length; i += 4) {
+            if (!px[i + 3]) continue;
+            const rgb = [px[i], px[i + 1], px[i + 2]];
+            const key = rgb.join();
+            if (!cache.has(key)) cache.set(key, tint && Math.min(...rgb) >= 150 ? shade(rgb, tint) : recolorRgb(rgb));
+            const out = cache.get(key);
+            if (out) [0, 1, 2].forEach((c) => px[i + c] = Math.round(out[c]));
+        }
     }
 
     if (px.equals(before)) return null;
@@ -259,26 +296,125 @@ function plate(svg) {
     return svg.replace(open, `${open}<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${radius}" fill="${PLATE}"/>`);
 }
 
-/** Removes the first plain rectangle (the logo's box), white then takes its color if that reads on the dark card */
-function unboxVector(svg) {
-    const box = svg.match(/<rect\b[^>]*\/>|<path\b(?=[^>]*\sd="M\s*[-\d.]+[ ,][-\d.]+\s*h\s*[-\d.]+\s*v\s*[-\d.]+\s*(?:h\s*-[\d.]+|H\s*[-\d.]+)\s*z")[^>]*\/>/i)?.[0];
-    if (!box) return svg;
+/** Fill color of an element: hex, a gradient (mean of its stops) or the default black */
+function fillColor(svg, element) {
+    const hex = element.match(/fill[:=]"?\s*(#[0-9a-f]{3,6})\b/i)?.[1];
+    if (hex) return parseHex(hex);
 
-    const fill = box.match(/fill[:=]"?\s*(#[0-9a-f]{3,6})\b/i)?.[1];
-    const color = fill ? parseHex(fill) : [0, 0, 0];
-    let out = svg.replace(box, '');
+    let id = element.match(/fill[:=]"?\s*url\(#([^)]+)\)/i)?.[1];
+    // a gradient may only link the stops of another one
+    for (let hops = 0; id && hops < 3; hops++) {
+        const gradient = svg.match(new RegExp(`<(linear|radial)Gradient\\b[^>]*\\sid="${id}"[^>]*?(?:/>|>[\\s\\S]*?</\\1Gradient>)`))?.[0] ?? '';
+        const stops = [...gradient.matchAll(/stop-color[:=]"?\s*(#[0-9a-f]{3,6})\b/gi)].map((m) => parseHex(m[1]));
+        if (stops.length) return [0, 1, 2].map((c) => stops.reduce((sum, s) => sum + s[c], 0) / stops.length);
+        id = gradient.match(/href="#([^"]+)"/)?.[1];
+    }
+    return [0, 0, 0];
+}
+
+/**
+ * Removes the logo's box: the first plain rectangle, else the largest subpath of a compound path
+ * (letters as holes of the box then become filled letters). White and dark parts that sat on the box
+ * take its color if that reads on the dark card, else they get recolored like any other logo.
+ */
+function unboxVector(svg) {
+    let out = svg, color;
+    const box = svg.match(/<rect\b[^>]*\/>|<path\b(?=[^>]*\sd="M\s*[-\d.]+[ ,][-\d.]+\s*h\s*[-\d.]+\s*v\s*[-\d.]+\s*(?:h\s*-[\d.]+|H\s*[-\d.]+)\s*z")[^>]*\/>/i)?.[0];
+
+    if (box) {
+        color = fillColor(svg, box);
+        out = svg.replace(box, '');
+    } else {
+        let best = null;
+        for (const [element, d] of svg.matchAll(/<path\b[^>]*\sd="([^"]*)"[^>]*>/gi)) {
+            const subs = subpaths(d);
+            for (const sub of subs) if (subs.length > 1 && (!best || sub.area > best.area)) best = { element, subs, ...sub };
+        }
+        if (!best) return svg;
+        color = fillColor(svg, best.element);
+        const d = best.subs.filter((s) => s.text !== best.text).map((s) => s.text).join('');
+        out = svg.replace(best.element, best.element.replace(/\sd="[^"]*"/, ` d="${d}"`));
+    }
+
+    // other shapes in a colored box's color only fake holes in what sits on the box (ntfy): drop them as well
+    // (not for white or black boxes: white text on another part of the logo is real, Pornhub)
+    if (Math.max(...color) - Math.min(...color) > 40) {
+        for (const [element] of out.matchAll(/<(?:path|rect|circle|ellipse|polygon)\b[^>]*\sfill="(?:#[0-9a-f]{3,6}|url\(#[^)]+\))"[^>]*\/>/gi)) {
+            if (distance(fillColor(out, element), color) <= 40) out = out.replace(element, '');
+        }
+    }
+
     if (contrast(color) >= 3) {
-        out = out.replace(/((?:fill|stroke|stop-color)(?:="|:\s*))(?:#fff(?:fff)?|white)\b/gi, `$1${toHex(color)}`);
+        const onBox = (hex) => {
+            const rgb = parseHex(hex);
+            return isWhite(rgb) || (Math.max(...rgb) - Math.min(...rgb) <= 40 && (rgb[0] + rgb[1] + rgb[2]) / 3 <= 110);
+        };
+        out = out.replace(/((?:fill|stroke|stop-color|color)(?:="|:\s*))(#[0-9a-f]{6}\b|#[0-9a-f]{3}\b|white\b)/gi,
+            (m, attr, value) => value.toLowerCase() === 'white' || onBox(value) ? attr + toHex(color) : m);
     }
     return out;
+}
+
+/** Subpaths of a path's d with an absolute start and their rough bounding box area (control points included) */
+function subpaths(d) {
+    const tokens = d.match(/[a-z]|-?(?:\d+\.?\d*|\.\d+)(?:e-?\d+)?/gi) ?? [];
+    const arity = { m: 2, l: 2, h: 1, v: 1, c: 6, s: 4, q: 4, t: 2, a: 7, z: 0 };
+    const result = [];
+    let x = 0, y = 0, startX = 0, startY = 0, cmd = '', current = null, i = 0;
+
+    while (i < tokens.length) {
+        if (/[a-z]/i.test(tokens[i])) cmd = tokens[i++];
+        const lower = cmd.toLowerCase(), rel = cmd === lower;
+        if (lower === 'z') {
+            [x, y] = [startX, startY];
+            if (current) current.text += 'z';
+            continue;
+        }
+        const args = tokens.slice(i, i + arity[lower]).map(Number);
+        i += arity[lower];
+        const points = [];
+        if (lower === 'h') points.push([rel ? x + args[0] : args[0], y]);
+        else if (lower === 'v') points.push([x, rel ? y + args[0] : args[0]]);
+        else if (lower === 'a') points.push([rel ? x + args[5] : args[5], rel ? y + args[6] : args[6]]);
+        else for (let k = 0; k < args.length; k += 2) points.push([rel ? x + args[k] : args[k], rel ? y + args[k + 1] : args[k + 1]]);
+
+        if (lower === 'm') {
+            current = { text: '', box: [Infinity, Infinity, -Infinity, -Infinity] };
+            result.push(current);
+            [startX, startY] = points[0];
+            current.text = `M${startX} ${startY}`;
+            cmd = rel ? 'l' : 'L';
+        } else {
+            current.text += `${cmd}${args.join(' ')}`;
+        }
+        for (const [px, py] of points) {
+            current.box = [Math.min(current.box[0], px), Math.min(current.box[1], py), Math.max(current.box[2], px), Math.max(current.box[3], py)];
+        }
+        [x, y] = points[points.length - 1];
+    }
+    return result.map((s) => ({ text: s.text, area: (s.box[2] - s.box[0]) * (s.box[3] - s.box[1]) }));
+}
+
+/** White behind the largest subpath (the box whose letters are holes), same transform as its path */
+function backdrop(svg) {
+    let best = null;
+    for (const [element, d] of svg.matchAll(/<path\b[^>]*\sd="([^"]*)"[^>]*>/gi)) {
+        for (const sub of subpaths(d)) {
+            if (!best || sub.area > best.area) best = { element, ...sub };
+        }
+    }
+    if (!best) return null;
+
+    const transform = best.element.match(/\stransform="[^"]*"/)?.[0] ?? '';
+    return svg.replace(best.element, `<path fill="#fff"${transform} d="${best.text}"/>${best.element}`);
 }
 
 /** Shapes without a fill are black, unless a group, a style with fill or a stylesheet colors them (rough check) */
 function hasDefaultFill(svg) {
     const visible = svg.replace(/<(defs|clipPath|mask)\b[\s\S]*?<\/\1>/g, '');
-    // a class only colors something when the logo has a stylesheet
-    const colors = /<style\b/.test(svg) ? '(?:fill="|class="|style="[^"]*fill:)' : '(?:fill="|style="[^"]*fill:)';
-    return new RegExp(`<(path|rect|circle|ellipse|polygon|polyline|text)\\b(?![^>]*\\s${colors})`).test(visible)
+    // a class only colors something when the stylesheet sets a fill
+    const colors = /<style\b[^>]*>[^<]*fill\s*:/.test(svg) ? '(?:fill="|class="|style="[^"]*fill:)' : '(?:fill="|style="[^"]*fill:)';
+    return new RegExp(`<(path|rect|circle|ellipse|polygon|polyline|text|use)\\b(?![^>]*\\s${colors})`).test(visible)
         && !new RegExp(`<g\\b[^>]*\\s${colors}`).test(visible);
 }
 
@@ -302,6 +438,8 @@ export async function darkVariant(file, svg) {
     const override = OVERRIDES[file];
     if (override === 'original') return null;
     if (override === 'plate') return plate(svg);
+    if (override === 'backdrop') return backdrop(svg);
+    if (override === 'unbox-only') return unboxVector(svg);
 
     let out = override === 'unbox' ? unboxVector(svg) : svg;
     out = out.replace(/#[0-9a-f]{6}\b|#[0-9a-f]{3}\b/gi, (hex) => recolorHex(hex) ?? hex);
