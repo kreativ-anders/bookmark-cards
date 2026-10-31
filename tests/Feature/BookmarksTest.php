@@ -108,3 +108,47 @@ describe('Bookmarks::modify', function () {
         });
     });
 });
+
+describe('Bookmarks::import', function () {
+
+    it('imports a user.json export, validated like the add form', function () {
+        $user = registerUser();
+        $this->kirby->impersonate('kirby');
+
+        $result = Bookmarks::import($user, [
+            'User'      => ['Email' => 'old@example.com', 'Password' => '***', 'Subscription' => 'Premium'],
+            'Bookmarks' => [
+                ['title' => ' A ', 'link' => 'https://a.example', 'tags' => 'Dev, dev, Code'],
+                ['title' => 'Evil', 'link' => 'javascript:alert(1)', 'tags' => ''],
+                ['title' => 'No link', 'link' => '', 'tags' => ''],
+                ['title' => str_repeat('x', Bookmarks::MAX_TITLE + 1), 'link' => 'https://long.example', 'tags' => ''],
+                'garbage',
+            ],
+        ]);
+
+        expect($result['imported'])->toBe(1)
+            ->and(array_column($result['skipped'], 1))->toBe(['missing or unsafe link', 'missing or unsafe link', 'too long', 'missing or unsafe link'])
+            ->and(freshUser('jane@example.com')->bookmarks()->yaml())
+            ->toBe([['title' => 'A', 'link' => 'https://a.example', 'tags' => 'Dev, Code']]);
+    });
+
+    it('appends and skips duplicates, or replaces the existing bookmarks', function () {
+        $user = registerUser();
+        $this->kirby->impersonate('kirby');
+        $user = Bookmarks::modify($user, fn () => [['title' => 'Old', 'link' => 'https://old.example', 'tags' => '']]);
+
+        $list = [
+            ['title' => 'Old', 'link' => 'https://old.example', 'tags' => ''],
+            ['title' => 'New', 'link' => 'https://new.example', 'tags' => ''],
+            ['title' => 'New', 'link' => 'https://new.example', 'tags' => ''],
+        ];
+
+        $appended = Bookmarks::import($user, $list);
+        expect($appended['imported'])->toBe(1)
+            ->and(array_column(freshUser('jane@example.com')->bookmarks()->yaml(), 'title'))->toBe(['Old', 'New']);
+
+        $replaced = Bookmarks::import(freshUser('jane@example.com'), [['title' => 'Only', 'link' => 'https://only.example', 'tags' => '']], replace: true);
+        expect($replaced['imported'])->toBe(1)
+            ->and(array_column(freshUser('jane@example.com')->bookmarks()->yaml(), 'title'))->toBe(['Only']);
+    });
+});

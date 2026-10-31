@@ -151,6 +151,59 @@ class Bookmarks
       }
     }
   }
+
+  /**
+   * Imports a user.json export (or a plain list of bookmarks), validated like the add form.
+   * Not exposed in the frontend yet: run site/plugins/bookmarks/import.php from the CLI.
+   * Appends by default (exact duplicates are skipped), $replace drops the existing bookmarks first.
+   * Returns ['imported' => int, 'skipped' => list of [entry, reason]].
+   */
+  public static function import(User $user, array $export, bool $replace = false): array
+  {
+    $entries  = $export['Bookmarks'] ?? $export;
+    $imported = [];
+    $skipped  = [];
+
+    foreach (is_array($entries) ? $entries : [] as $entry) {
+      $title = is_array($entry) && is_string($entry['title'] ?? null) ? trim($entry['title']) : '';
+      $link  = is_array($entry) && is_string($entry['link'] ?? null) ? trim($entry['link']) : '';
+      $tags  = is_array($entry) && is_string($entry['tags'] ?? null) ? trim($entry['tags']) : '';
+
+      if (mb_strlen($title) > static::MAX_TITLE || mb_strlen($link) > static::MAX_LINK || mb_strlen($tags) > static::MAX_TAGS) {
+        $skipped[] = [$entry, 'too long'];
+        continue;
+      }
+
+      if (($link = static::link($link)) === null) {
+        $skipped[] = [$entry, 'missing or unsafe link'];
+        continue;
+      }
+
+      $imported[] = ['title' => $title, 'link' => $link, 'tags' => static::tags($tags)];
+    }
+
+    $count = 0;
+
+    static::modify($user, function (array $bookmarks) use ($imported, $replace, &$count, &$skipped) {
+      $bookmarks = $replace ? [] : $bookmarks;
+      $known     = array_flip(array_map(static::fingerprint(...), $bookmarks));
+
+      foreach ($imported as $bookmark) {
+        if (isset($known[$fingerprint = static::fingerprint($bookmark)])) {
+          $skipped[] = [$bookmark, 'duplicate'];
+          continue;
+        }
+
+        $known[$fingerprint] = true;
+        $bookmarks[]         = $bookmark;
+        $count++;
+      }
+
+      return $count > 0 || $replace ? $bookmarks : null;
+    });
+
+    return ['imported' => $count, 'skipped' => $skipped];
+  }
 }
 
 Kirby::plugin('bookmark-cards/bookmarks', []);
