@@ -39,5 +39,21 @@ Kirby::plugin('kreativ-anders/seo', [
                 return new Kirby\Cms\Response(implode("\n", $lines) . "\n", 'text/plain');
             }
         ],
+        [
+            // RFC 9116. A route, not a file: on the server .well-known/ belongs to root
+            // (Let's Encrypt), so a tracked file there makes git pull fail on deploy
+            'pattern' => '.well-known/security.txt',
+            'action'  => function () {
+                $lines = [
+                    'Contact: mailto:security@kreativ-anders.de',
+                    // rolling, so it never goes stale (RFC: less than a year ahead)
+                    'Expires: ' . gmdate('Y-m-d\T00:00:00.000\Z', strtotime('+180 days')),
+                    'Preferred-Languages: en, de',
+                    'Canonical: ' . site()->url() . '/.well-known/security.txt',
+                ];
+
+                return new Kirby\Cms\Response(implode("\n", $lines) . "\n", 'text/plain');
+            }
+        ],
     ],
 ]);
