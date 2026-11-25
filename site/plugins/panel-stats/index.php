@@ -80,7 +80,7 @@ function panelStatsDashboard(string $name): Kirby\Cms\Blueprint|null
         return null;
     }
 
-    return Kirby\Cms\Blueprint::factory('dashboard/' . $name, null, site());
+    return Kirby\Cms\Blueprint::factory(site(), 'dashboard/' . $name);
 }
 
 /**

@@ -33,6 +33,14 @@ uses()
     ->beforeEach(function () {
         $this->tmp = sys_get_temp_dir() . '/bookmark-cards-tests/' . uniqid('', true);
 
+        // Kirby 6: the very first user of an installation must be an admin.
+        // Seed one as a plain account file (no hooks, no Stripe customer),
+        // like the admin every real installation already has.
+        Dir::make($this->tmp . '/accounts/seedadmn');
+        file_put_contents($this->tmp . '/accounts/seedadmn/index.php', '<?php return ' . var_export([
+            'email' => 'seed-admin@example.com', 'role' => 'admin', 'language' => 'en',
+        ], true) . ';');
+
         $this->stripe = new FakeStripeClient();
         ApiRequestor::setHttpClient($this->stripe);
 

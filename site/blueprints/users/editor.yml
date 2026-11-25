@@ -3,7 +3,6 @@ permissions:
   access:
     panel: true
     site: true
-    settings: false
     users: false
   files:
     create: true
@@ -19,11 +18,9 @@ permissions:
     changeTitle: true
     changeSlug: true
     delete: false
-    hide: true
     sort: true
     update: true
   user:
-    create: false
     changeName: false
     changeEmail: false
     changeLanguage: true
