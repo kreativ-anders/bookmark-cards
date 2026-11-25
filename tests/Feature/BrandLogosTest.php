@@ -200,24 +200,15 @@ describe('panel brand stats', function () {
         ]);
     });
 
-    it('copies missing logos as plain text via an actionstats button', function () {
+    it('copies missing logos as plain text via a native dialog', function () {
         expect(site()->missingBrandsClipboard())->toBe('Xyzzy Tool (xyzzytool.com) -> xyzzytool.svg (2×, 1 user)');
 
-        $section = new Kirby\Cms\Section('actionstats', [
-            'model'   => site(),
-            'name'    => 'test',
-            'reports' => 'site.missingBrandsReports',
-            'buttons' => [
-                ['text' => 'Copy list', 'icon' => 'copy', 'copy' => 'site.missingBrandsClipboard'],
-                ['text' => 'Inactive accounts', 'icon' => 'trash', 'dialog' => 'inactive-accounts'],
-            ],
-        ]);
+        createAdmin();
+        kirby()->impersonate('admin@example.com');
+        $fields = new Kirby\Form\Fields(panelStatsDashboard('bookmarks')->fields(), site());
 
-        expect($section->toArray()['buttons'])->toBe([
-                ['text' => 'Copy list', 'icon' => 'copy', 'copy' => site()->missingBrandsClipboard(), 'dialog' => null],
-                ['text' => 'Inactive accounts', 'icon' => 'trash', 'copy' => null, 'dialog' => 'inactive-accounts'],
-            ])
-            ->and(array_column($section->toArray()['reports'], 'value'))->toBe(['Xyzzy Tool']);
+        expect($fields->find('missingBrandsActions')->props()['buttons'][0])->toMatchArray(['text' => 'Copy list', 'dialog' => 'missing-brands'])
+            ->and(array_column($fields->find('missingBrands')->props()['reports'], 'value'))->toBe(['Xyzzy Tool']);
     });
 
     it('shows missing logos as panel stat reports without evaluating queries in titles', function () {
@@ -226,7 +217,7 @@ describe('panel brand stats', function () {
         ])]);
 
         expect(site()->missingBrandsReports())->toBe([
-            ['label' => 'add evil.svg', 'value' => 'Evil { { site.title } }', 'info' => 'evil.example.org · 1× · 1 user', 'icon' => 'image'],
+            ['label' => 'add evil.svg', 'value' => 'Evil ｛｛ site.title ｝｝', 'info' => 'evil.example.org · 1× · 1 user', 'icon' => 'image'],
         ]);
     });
 
@@ -330,28 +321,61 @@ describe('panel charts', function () {
         ]);
     });
 
-    it('resolves the chart section data from a site method', function () {
-        $section = new Kirby\Cms\Section('chart', [
-            'model'  => site(),
-            'name'   => 'test',
-            'layout' => 'stack',
-            'data'   => 'site.brandCoverageChart',
-        ]);
+    it('turns chart data into native stat reports', function () {
+        expect(site()->chartReports('brandCoverageChart', 'image'))->toBe([
+                ['label' => 'Logo', 'value' => '2', 'info' => '66.7%', 'icon' => 'image', 'theme' => 'positive'],
+                ['label' => 'No logo', 'value' => '1', 'info' => '33.3%', 'icon' => 'image', 'theme' => 'negative'],
+            ])
+            ->and(site()->chartReports('topTagsChart', 'tag'))->toBe([
+                ['label' => 'dev', 'value' => '1', 'info' => 'user · 2×', 'icon' => 'tag', 'theme' => null],
+                ['label' => 'code', 'value' => '1', 'info' => 'user · 1×', 'icon' => 'tag', 'theme' => null],
+            ]);
+    });
 
-        expect($section->toArray()['layout'])->toBe('stack')
-            ->and($section->toArray()['data'])->toBe(site()->brandCoverageChart());
+    it('shows an empty text instead of empty chart reports', function () {
+        $this->kirby->impersonate('kirby');
+        freshUser('jane@example.com')->update(['bookmarks' => '']);
+
+        expect(site()->chartReports('topTagsChart', 'tag', 'No tags yet'))->toBe([
+            ['label' => 'No tags yet', 'value' => '0', 'icon' => 'tag'],
+        ]);
+    });
+
+    it('never evaluates queries in chart labels', function () {
+        freshUser('jane@example.com')->update(['bookmarks' => Kirby\Data\Yaml::encode([
+            ['title' => 'Evil', 'link' => 'https://example.org', 'tags' => '{{ site.title }}'],
+        ])]);
+
+        expect(site()->chartReports('topTagsChart')[0]['label'])->toBe('｛｛ site.title ｝｝');
+    });
+
+    it('never evaluates single-brace queries when the stats field renders user input', function () {
+        freshUser('jane@example.com')->update(['bookmarks' => Kirby\Data\Yaml::encode([
+            ['title' => 'Evil { site.title }', 'link' => 'https://evil.example.org', 'tags' => '{ kirby.users.count }'],
+        ])]);
+
+        $field   = new Kirby\Form\Field\StatsField(name: 'test', model: site(), reports: 'site.chartReports("topTagsChart")');
+        $missing = new Kirby\Form\Field\StatsField(name: 'test', model: site(), reports: 'site.missingBrandsReports');
+
+        expect($field->reports()[0]['label'])->toBe('｛ kirby.users.count ｝')
+            ->and($missing->reports()[0]['value'])->toBe('Evil ｛ site.title ｝');
+    });
+
+    it('only resolves the chart methods of this plugin', function () {
+        expect(site()->chartReports('totalUsers'))->toBe([]);
     });
 });
 
 describe('panel dashboard views', function () {
 
-    it('loads the sections of both dashboards from their blueprints', function (string $dashboard, string $section, string $type) {
-        expect(panelStatsDashboard($dashboard)->section($section)->type())->toBe($type);
+    it('builds both dashboards from native fields', function (string $dashboard, string $field, string $type) {
+        expect(panelStatsDashboard($dashboard)->fields()[$field]['type'])->toBe($type);
     })->with([
-        ['users', 'Users', 'actionstats'],
-        ['users', 'Activation', 'chart'],
-        ['bookmarks', 'TopTags', 'chart'],
-        ['bookmarks', 'MissingBrands', 'actionstats'],
+        ['users', 'users', 'stats'],
+        ['users', 'usersActions', 'buttons'],
+        ['users', 'activation', 'stats'],
+        ['bookmarks', 'topTags', 'stats'],
+        ['bookmarks', 'missingBrands', 'stats'],
     ]);
 
     it('knows only the bookmarks and users dashboards', function () {
@@ -359,15 +383,16 @@ describe('panel dashboard views', function () {
             ->and(panelStatsDashboard('system'))->toBeNull();
     });
 
-    it('builds the view for admins with the first tab and the section API parent', function () {
+    it('builds the view for admins with the resolved fields of the first tab', function () {
         createAdmin();
         kirby()->impersonate('admin@example.com');
 
         $view = panelStatsView('users', [['icon' => 'users', 'text' => 'All users', 'link' => 'users']]);
+        $users = $view['props']['tab']['columns']['users']['fields']['users'];
 
         expect($view['component'])->toBe('k-dashboard-view')
-            ->and($view['props']['parent'])->toBe('panel-stats/users')
-            ->and(array_keys($view['props']['tab']['columns']))->toContain('users')
+            ->and($users['type'])->toBe('stats')
+            ->and($users['reports'][0])->toMatchArray(['label' => 'Total Users', 'value' => (string)site()->totalUsers()])
             ->and($view['props']['buttons'][0]['link'])->toBe('users');
     });
 

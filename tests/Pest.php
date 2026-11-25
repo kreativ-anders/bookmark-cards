@@ -33,14 +33,6 @@ uses()
     ->beforeEach(function () {
         $this->tmp = sys_get_temp_dir() . '/bookmark-cards-tests/' . uniqid('', true);
 
-        // Kirby 6: the very first user of an installation must be an admin.
-        // Seed one as a plain account file (no hooks, no Stripe customer),
-        // like the admin every real installation already has.
-        Dir::make($this->tmp . '/accounts/seedadmn');
-        file_put_contents($this->tmp . '/accounts/seedadmn/index.php', '<?php return ' . var_export([
-            'email' => 'seed-admin@example.com', 'role' => 'admin', 'language' => 'en',
-        ], true) . ';');
-
         $this->stripe = new FakeStripeClient();
         ApiRequestor::setHttpClient($this->stripe);
 
@@ -67,6 +59,10 @@ uses()
         kirby()->session()->commit();
         ApiRequestor::setHttpClient(null);
         Dir::remove($this->tmp);
+
+        // Kirby 6 models reference their app in cycles: collect them per test,
+        // or the suite exceeds PHP's default memory limit
+        gc_collect_cycles();
     })
     ->in('Feature');
 
@@ -81,12 +77,30 @@ function registerUser(string $email = 'jane@example.com', string $password = 'Pa
 {
     $kirby = kirby();
     $kirby->impersonate('kirby');
-    $user = $kirby->users()->create([
-        'email'    => $email,
-        'role'     => 'user',
-        'language' => 'en',
-        'password' => $password,
-    ]);
+
+    // Kirby 6: the very first user of an installation must be an admin.
+    // Real installations always have one; tests start without accounts,
+    // so a temporary in-memory admin (no account file, no Stripe customer)
+    // exists only while the first test user is created.
+    $seed = null;
+    if ($kirby->users()->count() === 0) {
+        $seed = new User(['id' => 'seedadmn', 'email' => 'seed-admin@example.com', 'role' => 'admin']);
+        $kirby->users()->add($seed);
+    }
+
+    try {
+        $user = $kirby->users()->create([
+            'email'    => $email,
+            'role'     => 'user',
+            'language' => 'en',
+            'password' => $password,
+        ]);
+    } finally {
+        if ($seed !== null) {
+            $kirby->users()->remove($seed);
+        }
+    }
+
     $kirby->impersonate();
 
     return $user;

@@ -24,11 +24,13 @@ function panelStatsBookmarks(): array
 }
 
 /**
- * Bookmark titles shown as stat labels: never evaluate {{ queries }} from user input
+ * Bookmark titles, tags and domains shown in stats: never evaluate queries from user input.
+ * Kirby 6 string templates also evaluate single braces ({ query }), so every brace is
+ * replaced by its fullwidth look-alike (｛ ｝), which the template engine ignores.
  */
 function panelStatsLabel(string $value): string
 {
-    return str_replace(['{{', '}}'], ['{ {', '} }'], $value);
+    return str_replace(['{', '}'], ['｛', '｝'], $value);
 }
 
 function panelStatsPercentage(int|float $part, int|float $total, string $empty = '0%'): string
@@ -72,7 +74,7 @@ function panelStatsUsage(array $usage, callable|null $image = null, int $limit =
 
 /**
  * Blueprint of a dashboard view (site/blueprints/dashboard/<name>.yml),
- * its sections query the site. Null for unknown dashboards.
+ * its fields query the site. Null for unknown dashboards.
  */
 function panelStatsDashboard(string $name): Kirby\Cms\Blueprint|null
 {
@@ -84,7 +86,32 @@ function panelStatsDashboard(string $name): Kirby\Cms\Blueprint|null
 }
 
 /**
- * Panel view of a dashboard: its sections, laid out like a site tab (admins only)
+ * Chart items (site.userMixChart etc.) as reports of Kirby's native stats field:
+ * the bar value becomes the stat value, its info (or the share of the total
+ * for stacked charts without info) the stat info, its color the stat theme.
+ * Labels come from user input (tags, logo names), so queries are never evaluated.
+ */
+function panelStatsChartReports(array $items, string|null $icon = null, string|null $empty = null): array
+{
+    if ($items === [] || array_sum(array_column($items, 'value')) === 0 && $empty !== null) {
+        return $empty === null ? [] : [['label' => $empty, 'value' => '0', 'icon' => $icon]];
+    }
+
+    $total  = array_sum(array_column($items, 'value'));
+    $themes = ['good' => 'positive', 'warning' => 'notice', 'critical' => 'negative'];
+
+    return array_map(fn (array $item) => [
+        'label' => panelStatsLabel((string)$item['label']),
+        'value' => (string)$item['value'],
+        'info'  => panelStatsLabel((string)($item['info'] ?? panelStatsPercentage($item['value'], $total))),
+        'icon'  => $icon,
+        'theme' => $themes[$item['color'] ?? ''] ?? null,
+    ], $items);
+}
+
+/**
+ * Panel view of a dashboard: its fields, laid out like a site tab (admins only).
+ * All field props are resolved here, so the view needs no API requests.
  */
 function panelStatsView(string $name, array $buttons = []): array
 {
@@ -93,14 +120,14 @@ function panelStatsView(string $name, array $buttons = []): array
     }
 
     $blueprint = panelStatsDashboard($name);
+    $fields    = new Kirby\Form\Fields($blueprint->fields(), site());
 
     return [
         'component' => 'k-dashboard-view',
         'title'     => $blueprint->title(),
         'props'     => [
             'title'   => $blueprint->title(),
-            'parent'  => 'panel-stats/' . $name,
-            'tab'     => $blueprint->tab(),
+            'tab'     => $blueprint->tab()?->toViewProps($fields),
             'buttons' => $buttons,
         ],
     ];
@@ -120,6 +147,30 @@ Kirby::plugin('kreativ-anders/panel-stats', [
                 [
                     'pattern' => 'bookmarks',
                     'action'  => fn () => panelStatsView('bookmarks'),
+                ],
+            ],
+            'dialogs' => [
+                // "Copy list" of the missing logos: the list as selectable text
+                'missing-brands' => [
+                    'load' => function () {
+                        if (kirby()->user()?->isAdmin() !== true) {
+                            throw new Kirby\Exception\PermissionException(message: 'Only admins can see the statistics');
+                        }
+
+                        $list = site()->missingBrandsClipboard();
+
+                        return [
+                            'component' => 'k-text-dialog',
+                            'props'     => [
+                                'text'         => $list === ''
+                                    ? '✅ Every bookmark has a logo.'
+                                    : new Kirby\Toolkit\HtmlString('<pre style="white-space: pre-wrap; user-select: all">' . Kirby\Toolkit\Escape::html($list) . '</pre>'),
+                                'size'         => 'large',
+                                'cancelButton' => false,
+                                'submitButton' => false,
+                            ],
+                        ];
+                    },
                 ],
             ],
         ],
@@ -155,60 +206,13 @@ Kirby::plugin('kreativ-anders/panel-stats', [
             ],
         ],
     ],
-    'api' => [
-        'routes' => [
-            [
-                // sections of the dashboard views (k-sections loads "<parent>/sections/<name>")
-                'pattern' => 'panel-stats/(:any)/sections/(:any)',
-                'method'  => 'GET',
-                'action'  => function (string $dashboard, string $section) {
-                    if ($this->user()?->isAdmin() !== true) {
-                        throw new Kirby\Exception\PermissionException(message: 'Only admins can see the statistics');
-                    }
-
-                    return panelStatsDashboard($dashboard)?->section($section)?->toResponse();
-                },
-            ],
-        ],
-    ],
-    'sections' => [
-        // Kirby's stats section plus header buttons (see site.yml):
-        // `copy` copies the text of a query to the clipboard, `dialog` opens a Panel dialog
-        'actionstats' => [
-            'extends' => 'stats',
-            'props'   => [
-                'buttons' => fn (array $buttons = []) => $buttons,
-                'empty'   => fn (string|null $empty = null) => $empty,
-            ],
-            'computed' => [
-                'buttons' => function () {
-                    return array_values(array_map(fn (array $button) => [
-                        'text'   => $button['text'] ?? null,
-                        'icon'   => $button['icon'] ?? null,
-                        'copy'   => isset($button['copy']) ? (string)$this->model()->query($button['copy']) : null,
-                        'dialog' => $button['dialog'] ?? null,
-                    ], $this->buttons));
-                },
-            ],
-        ],
-        // bar list or single stacked bar, data from a site method (see site.yml)
-        'chart' => [
-            'props' => [
-                'headline' => fn ($headline = null) => $headline,
-                'layout'   => fn (string $layout = 'bars') => $layout === 'stack' ? 'stack' : 'bars',
-                'data'     => fn ($data = []) => $data,
-                'empty'    => fn (string $empty = 'No data yet') => $empty,
-            ],
-            'computed' => [
-                'data' => function () {
-                    $data = is_string($this->data) ? $this->model()->query($this->data) : $this->data;
-
-                    return is_array($data) ? array_values($data) : [];
-                },
-            ],
-        ],
-    ],
     'siteMethods' => [
+        // chart data (site.topTagsChart etc.) as reports of a native stats field, see site/blueprints/dashboard/*.yml
+        'chartReports' => function (string $chart, string|null $icon = null, string|null $empty = null) {
+            $charts = ['userMixChart', 'activationChart', 'activityChart', 'topTagsChart', 'topBrandsChart', 'brandCoverageChart'];
+
+            return in_array($chart, $charts, true) ? panelStatsChartReports(site()->$chart(), $icon, $empty) : [];
+        },
         'totalUsers' => function () {
             return kirby()->users()->count();
         },
