@@ -2,7 +2,7 @@
 
 Bookmark.cards is a bookmark collection tool in its simplest form.
 
-Built with [Kirby CMS](https://getkirby.com) 5, a small custom stylesheet (no CSS framework) and Stripe (via the local `memberkit` plugin).
+Built with [Kirby CMS](https://getkirby.com) 6, a small custom stylesheet (no CSS framework) and Stripe (via the local `memberkit` plugin).
 
 ## Setup
 
@@ -16,6 +16,12 @@ npm ci             # esbuild, fonts (@fontsource), Cypress
 ```
 
 Local configuration (Stripe keys, tiers) goes into `site/config/config.<host>.php`, e.g. `config.bookmark-cards.localhost.php` (git-ignored).
+
+The first account of an installation must be an admin (Kirby 6), registrations only work once one exists. The Panel installer is disabled (`panel.install`), so create it on the command line. Set the host, so `config.<host>.php` with the Stripe keys is loaded (every account gets a Stripe customer):
+
+```bash
+php -r '$_SERVER["SERVER_NAME"] = "bookmark-cards.localhost"; require "kirby/bootstrap.php"; $k = new Kirby\Cms\App(); $k->impersonate("kirby", fn () => $k->users()->create(["email" => "admin@example.com", "role" => "admin", "password" => "…"]));'
+```
 
 ### Deployment
 

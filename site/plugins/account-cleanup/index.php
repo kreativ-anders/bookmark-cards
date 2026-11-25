@@ -6,6 +6,7 @@ use Kirby\Exception\Exception;
 use Kirby\Exception\PermissionException;
 use Kirby\Filesystem\F;
 use Kirby\Toolkit\Escape;
+use Kirby\Toolkit\HtmlString;
 use Kirby\Toolkit\Str;
 
 require_once __DIR__ . '/StripeSync.php';
@@ -209,7 +210,7 @@ Kirby::plugin('bookmark-cards/account-cleanup', [
               return [
                 'component' => 'k-text-dialog',
                 'props' => [
-                  'text'         => $text . '<br><br>✅ No inactive accounts found.',
+                  'text'         => new HtmlString($text . '<br><br>✅ No inactive accounts found.'),
                   'cancelButton' => false,
                   'submitButton' => false,
                 ]
@@ -221,8 +222,8 @@ Kirby::plugin('bookmark-cards/account-cleanup', [
 
               return [
                 'value' => $user->id(),
-                'text'  => Escape::html($user->email()) . ' · last active ' . date('Y-m-d', AccountActivity::last($user)) .
-                           ' · ' . (is_array($bookmarks) ? count($bookmarks) : 0) . ' bookmarks',
+                'text'  => new HtmlString(Escape::html($user->email()) . ' · last active ' . date('Y-m-d', AccountActivity::last($user)) .
+                           ' · ' . (is_array($bookmarks) ? count($bookmarks) : 0) . ' bookmarks'),
               ];
             }, $users);
 
@@ -234,7 +235,7 @@ Kirby::plugin('bookmark-cards/account-cleanup', [
                   'info' => [
                     'type'  => 'info',
                     'theme' => 'notice',
-                    'text'  => $text,
+                    'text'  => new HtmlString($text),
                   ],
                   'accounts' => [
                     'type'    => 'checkboxes',
@@ -305,7 +306,7 @@ Kirby::plugin('bookmark-cards/account-cleanup', [
               return [
                 'component' => 'k-text-dialog',
                 'props' => [
-                  'text'         => $text . '<br><br>✅ Every account has a Stripe customer and every Stripe customer has an account.',
+                  'text'         => new HtmlString($text . '<br><br>✅ Every account has a Stripe customer and every Stripe customer has an account.'),
                   'cancelButton' => false,
                   'submitButton' => false,
                 ]
@@ -325,9 +326,9 @@ Kirby::plugin('bookmark-cards/account-cleanup', [
               return [
                 'value'    => $customer->id,
                 'disabled' => $live,
-                'text'     => Escape::html($customer->email ?? '(no email)') . ' · ' . Escape::html($customer->id) .
+                'text'     => new HtmlString(Escape::html($customer->email ?? '(no email)') . ' · ' . Escape::html($customer->id) .
                               ' · created ' . date('Y-m-d', $customer->created) . ' · ' . $metadata .
-                              ($live ? ' · ⚠️ has a subscription, handle in Stripe' : ''),
+                              ($live ? ' · ⚠️ has a subscription, handle in Stripe' : '')),
               ];
             }, $diff['stripe']);
 
@@ -336,8 +337,8 @@ Kirby::plugin('bookmark-cards/account-cleanup', [
 
               return [
                 'value' => $user->id(),
-                'text'  => Escape::html($user->email()) . ' · ' . Escape::html($user->tier()->or('no tier')->toString()) . ' · ' .
-                           ($id === '' ? 'no Stripe customer id' : 'unknown customer ' . Escape::html($id)),
+                'text'  => new HtmlString(Escape::html($user->email()) . ' · ' . Escape::html($user->tier()->or('no tier')->toString()) . ' · ' .
+                           ($id === '' ? 'no Stripe customer id' : 'unknown customer ' . Escape::html($id))),
               ];
             }, $diff['kirby']);
 
@@ -345,7 +346,7 @@ Kirby::plugin('bookmark-cards/account-cleanup', [
               'info' => [
                 'type'  => 'info',
                 'theme' => 'notice',
-                'text'  => $text,
+                'text'  => new HtmlString($text),
               ],
             ];
 

@@ -38,36 +38,39 @@ The statistics live in two Panel views (admins only), each laid out by its own b
 - **Bookmarks** (own menu entry, `site/blueprints/dashboard/bookmarks.yml`) - bookmark, tag and brand statistics
 - **Users › Statistics** (`site/blueprints/dashboard/users.yml`) - user statistics, opened with the "Statistics" button in the users list; the Users menu entry stays highlighted
 
-Sections query the site as before (`site.totalBookmarks` etc.) and load from the API at `panel-stats/<dashboard>/sections/<section>`. Menu order, the "Statistics" button and the highlighting are set in `site/config/config.php` (`panel.menu`, `panel.viewButtons.users`).
+The views use Kirby's own components only: native `stats` and `buttons` fields, laid out in columns like a site tab (`k-model-form`). All field props are resolved with the view (`panelStatsView()`), nothing is loaded afterwards. Menu order, the "Statistics" button and the highlighting are set in `site/config/config.php` (`panel.menu`, `panel.viewButtons.users`).
 
-### Stats with buttons
-A custom `actionstats` section works like Kirby's `stats` section and adds buttons to its header. A button either copies the text of a query to the clipboard (`copy`) or opens a Panel dialog (`dialog`):
+### Buttons
+Native `buttons` fields open Panel dialogs:
+- **Inactive accounts** (`inactive-accounts`, `site/plugins/account-cleanup`)
+- **Copy list** (`missing-brands`) shows the missing logos (`site.missingBrandsClipboard`) as text, a click selects the whole list for copying
 
 ```yaml
-MissingBrands:
-  type: actionstats
-  reports: site.missingBrandsReports
-  empty: Every bookmark has a logo
+missingBrandsActions:
+  label: Missing Brand Logos
+  type: buttons
   buttons:
     - text: Copy list
       icon: copy
-      copy: site.missingBrandsClipboard
+      dialog: missing-brands
 ```
 
-### Charts
-A custom `chart` section (`index.js`, `index.css`) draws a bar list (`layout: bars`, default) or one stacked bar with legend (`layout: stack`). `data` is a site method returning items with `label`, `value` and optional `info`, `color` (`series-1`…`series-3`, `good`, `warning`, `critical`) and `image`:
+### Charts as stats
+The chart data methods return items with `label`, `value` and optional `info`, `color` (`series-1`…`series-3`, `good`, `warning`, `critical`) and `image`:
 - `site.userMixChart()` - Paid / free active / free inactive
 - `site.activationChart()` - Registered → saved bookmarks → uses tags (share of all users; paid users are a tile)
 - `site.activityChart()` - Users by last activity
 - `site.topTagsChart()` / `site.topBrandsChart()` - Top 8 tags and logos by number of users, then by number of bookmarks ("2 users · 51×")
 - `site.brandCoverageChart()` - Bookmarks with / without logo
 
+`site.chartReports(chart, icon, empty)` turns them into reports of a native `stats` field: value and info as they are (the share of the total if there is no info), `good`/`warning`/`critical` as `positive`/`notice`/`negative` theme. `empty` is shown as a single report when there is no data. Labels from user input (tags, titles, domains) never evaluate queries: their braces are replaced by look-alikes (`panelStatsLabel()`).
+
 ```yaml
-UserMix:
-  type: chart
-  headline: User Mix
-  layout: stack
-  data: site.userMixChart
+topTags:
+  label: Top Tags
+  type: stats
+  size: small
+  reports: site.chartReports('topTagsChart', 'tag', 'No tags yet')
 ```
 
 ## Usage
@@ -75,7 +78,7 @@ UserMix:
 These methods are used in the dashboard blueprints to display dynamic statistics (simplified example, see `site/blueprints/dashboard/*.yml` for the full dashboards with icons, themes and info lines):
 
 ```yaml
-sections:
+fields:
   Users:
     type: stats
     size: huge
@@ -109,7 +112,7 @@ sections:
         value: "{{ site.bookmarksWithoutBrands }}"
         
   MissingBrands:
-    headline: Missing Brand Logos
+    label: Missing Brand Logos
     type: info
     text: "{{ site.missingBrandsText }}"
 ```
@@ -129,9 +132,9 @@ Bookmarks are matched against available brands using the bookmark's link and tit
 ### Viewing Brand Statistics
 
 1. Log in to the Kirby admin panel
-2. Navigate to the Site section
-3. View the "Brands" statistics panel for overview
-4. Scroll down to "Missing Brand Logos" section to see detailed list
+2. Open "Bookmarks" in the menu
+3. View the "Brands" statistics for an overview
+4. Scroll down to "Missing Brand Logos" for the detailed list, "Copy list" shows it as text
 
 The panel shows:
 - Brand coverage statistics (count and percentage)
@@ -142,7 +145,7 @@ The panel shows:
 ### Improving Brand Coverage
 
 To improve brand coverage:
-1. Check the "Missing Brand Logos" section in the admin panel
+1. Check "Missing Brand Logos" in the admin panel
 2. Create SVG logos for the most frequently used bookmarks without brands
 3. Add them to `assets/brand-names/` directory with the suggested name
 4. No build step needed – new SVGs are picked up automatically

@@ -6,8 +6,9 @@ columns:
   # ---------- At a glance: details in "Bookmarks" and "Users › Statistics" (site/plugins/panel-stats) ----------
   overview:
     width: 1/1
-    sections:
-      Overview:
+    fields:
+      overview:
+        label: Overview
         type: stats
         size: large
         reports:
@@ -30,10 +31,10 @@ columns:
   # ---------- Legal pages: the only pages with editable text, technical pages (login, register, ...) stay hidden ----------
   legal:
     width: 1/1
-    sections:
-      Legal:
-        type: pages
-        headline: Legal Pages
+    fields:
+      legal:
+        label: Legal Pages
+        type: pagelist
         query: site.children.filterBy('slug', 'in', ['imprint', 'privacy', 'terms'])
         status: all
         create: false

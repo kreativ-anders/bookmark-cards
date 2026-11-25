@@ -1,10 +1,11 @@
-# Panel view "Bookmarks" (site/plugins/panel-stats), queries run against the site
+# Panel view "Bookmarks" (site/plugins/panel-stats), native fields whose queries run against the site
 title: Bookmarks
 columns:
   bookmarks:
     width: 1/1
-    sections:
-      Bookmarks:
+    fields:
+      bookmarks:
+        label: Bookmarks
         type: stats
         size: large
         reports:
@@ -12,7 +13,7 @@ columns:
             value: "{{ site.totalBookmarks }}"
             info: "{{ site.bookmarksPerUser }}"
             icon: bookmark
-          # bookmark figures only: user shares (with bookmarks, using tags) are in the activation chart
+          # bookmark figures only: user shares (with bookmarks, using tags) are in the activation stats
           - label: Tagged Bookmarks
             value: "{{ site.taggedBookmarks }}"
             info: "{{ site.taggedBookmarksInfo }}"
@@ -23,26 +24,27 @@ columns:
             icon: list-bullet
   bookmarksLeft:
     width: 1/2
-    sections:
-      TopTags:
-        type: chart
-        headline: Top Tags
-        data: site.topTagsChart
-        empty: No tags yet
+    fields:
+      topTags:
+        label: Top Tags
+        type: stats
+        size: small
+        reports: site.chartReports('topTagsChart', 'tag', 'No tags yet')
   bookmarksRight:
     width: 1/2
-    sections:
-      TopBrands:
-        type: chart
-        headline: Most Used Logos
-        data: site.topBrandsChart
-        empty: No logos in use yet
+    fields:
+      topBrands:
+        label: Most Used Logos
+        type: stats
+        size: small
+        reports: site.chartReports('topBrandsChart', 'image', 'No logos in use yet')
 
   # ---------- Brands ----------
   brands:
     width: 1/1
-    sections:
-      Brands:
+    fields:
+      brands:
+        label: Brands
         type: stats
         size: large
         reports:
@@ -62,22 +64,24 @@ columns:
             icon: image
   brandsLeft:
     width: 1/2
-    sections:
-      BrandCoverage:
-        type: chart
-        headline: Brand Coverage
-        layout: stack
-        data: site.brandCoverageChart
+    fields:
+      brandCoverage:
+        label: Brand Coverage
+        type: stats
+        size: small
+        reports: site.chartReports('brandCoverageChart', 'image')
   brandsRight:
     width: 1/2
-    sections:
-      MissingBrands:
-        headline: Missing Brand Logos
-        type: actionstats
-        size: small
-        reports: site.missingBrandsReports
-        empty: Every bookmark has a logo
+    fields:
+      missingBrandsActions:
+        label: Missing Brand Logos
+        type: buttons
         buttons:
           - text: Copy list
             icon: copy
-            copy: site.missingBrandsClipboard
+            dialog: missing-brands
+      missingBrands:
+        label: false
+        type: stats
+        size: small
+        reports: site.missingBrandsReports

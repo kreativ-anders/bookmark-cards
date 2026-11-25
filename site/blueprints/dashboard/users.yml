@@ -1,15 +1,19 @@
-# Panel view "Users › Statistics" (site/plugins/panel-stats), queries run against the site
+# Panel view "Users › Statistics" (site/plugins/panel-stats), native fields whose queries run against the site
 title: User Statistics
 columns:
   users:
     width: 1/1
-    sections:
-      Users:
-        type: actionstats
+    fields:
+      usersActions:
+        label: Users
+        type: buttons
         buttons:
           - text: Inactive accounts
             icon: trash
             dialog: inactive-accounts
+      users:
+        label: false
+        type: stats
         # Available size options: small, medium, large, huge. Default is large
         size: huge
         reports:
@@ -34,20 +38,22 @@ columns:
             dialog: inactive-accounts
   usersLeft:
     width: 1/2
-    sections:
-      UserMix:
-        type: chart
-        headline: User Mix
-        layout: stack
-        data: site.userMixChart
-      Activation:
-        type: chart
-        headline: Activation
-        data: site.activationChart
+    fields:
+      userMix:
+        label: User Mix
+        type: stats
+        size: small
+        reports: site.chartReports('userMixChart', 'users')
+      activation:
+        label: Activation
+        type: stats
+        size: small
+        reports: site.chartReports('activationChart', 'check')
   usersRight:
     width: 1/2
-    sections:
-      Activity:
-        type: chart
-        headline: Last Activity
-        data: site.activityChart
+    fields:
+      activity:
+        label: Last Activity
+        type: stats
+        size: small
+        reports: site.chartReports('activityChart', 'clock')

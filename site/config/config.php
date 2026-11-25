@@ -17,10 +17,6 @@ return [
       'viewButtons' => [
         'users' => ['create', 'statistics', 'stripe-sync']
       ],
-      // Panel plugins use render functions, never `template` strings
-      'vue' => [
-        'compiler' => false
-      ]
   ],
   'content' => [
     'uuid' => false
