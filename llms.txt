@@ -13,7 +13,7 @@
 
 ## Tech stack
 
-- **Backend**: PHP 8.2+, [Kirby CMS](https://getkirby.com/) 5 (flat-file, no database), dependencies via Composer
+- **Backend**: PHP 8.3+, [Kirby CMS](https://getkirby.com/) 6 (flat-file, no database), dependencies via Composer
 - **Payments**: Stripe via the local memberkit plugin (`site/plugins/memberkit`)
 - **Frontend**: Vanilla JS, custom CSS (no framework, light/dark, WCAG AA), self-hosted Geist + Instrument Serif fonts, esbuild for build
 - **Analytics**: Pirsch (privacy-friendly, no cookies)
